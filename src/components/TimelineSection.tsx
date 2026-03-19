@@ -38,13 +38,6 @@ export default function TimelineSection() {
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: i * 0.05 }}
               >
-                {/* Dot on the line */}
-                <div
-                  className={`absolute left-[16px] sm:left-auto ${
-                    isRight ? "sm:-left-[5px]" : "sm:-right-[5px]"
-                  } top-1 w-[10px] h-[10px] rounded-full border-2 bg-primary/30 border-primary`}
-                />
-
                 <div>
                   <p className="font-mono text-primary text-xs tracking-widest mb-1">
                     {event.date}
