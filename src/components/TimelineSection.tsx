@@ -42,11 +42,7 @@ export default function TimelineSection() {
                 <div
                   className={`absolute left-[16px] sm:left-auto ${
                     isRight ? "sm:-left-[5px]" : "sm:-right-[5px]"
-                  } top-1 w-[10px] h-[10px] rounded-full border-2 ${
-                    event.important
-                      ? "bg-danger border-danger shadow-[0_0_8px_rgba(255,51,51,0.5)]"
-                      : "bg-primary/30 border-primary"
-                  }`}
+                  } top-1 w-[10px] h-[10px] rounded-full border-2 bg-primary/30 border-primary`}
                 />
 
                 <div>
