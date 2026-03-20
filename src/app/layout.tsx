@@ -27,9 +27,19 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Lyo Vision — AI Art & Autonomous Systems",
     description:
-      "AIアートプロンプトエンジニア Lyo のポートフォリオ＆活動拠点",
+      "AIアートプロンプトエンジニア Lyo のポートフォリオ＆活動拠点。3年間の研究と自律型AIエージェント開発の軌跡。",
     type: "website",
+    siteName: "Lyo Vision",
+    locale: "ja_JP",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lyo Vision — AI Art & Autonomous Systems",
+    description:
+      "AIアートプロンプトエンジニア Lyo のポートフォリオ＆活動拠点",
+    creator: "@ando_lyo",
+  },
+  metadataBase: new URL("https://lyo-vision.com"),
 };
 
 export default function RootLayout({

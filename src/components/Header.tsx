@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
@@ -11,16 +11,43 @@ const navLinks = [
   { label: "Timeline", href: "#timeline" },
   { label: "Membership", href: "#membership" },
   { label: "Achievements", href: "#achievements" },
+  { label: "Contact", href: "#contact" },
 ];
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+
+      // アクティブセクション検出
+      const sections = navLinks.map((l) => l.href.slice(1));
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sections[i]);
+        if (el && el.getBoundingClientRect().top <= 150) {
+          setActiveSection(sections[i]);
+          return;
+        }
+      }
+      setActiveSection("");
+    };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollTo = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    setIsOpen(false);
+    const id = href.slice(1);
+    const el = document.getElementById(id);
+    if (el) {
+      const offset = 80;
+      const y = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
   }, []);
 
   return (
@@ -34,7 +61,14 @@ export default function Header() {
       >
         <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-3 group">
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="flex items-center gap-3 group"
+          >
             <div className="w-1 h-8 bg-primary rounded-full" />
             <div className="flex flex-col leading-tight">
               <span className="font-mono text-[10px] tracking-[0.2em] text-text-secondary group-hover:text-primary transition-colors">
@@ -48,6 +82,24 @@ export default function Header() {
 
           {/* Right side */}
           <div className="flex items-center gap-4">
+            {/* Desktop nav links */}
+            <nav className="hidden lg:flex items-center gap-1">
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => scrollTo(e, link.href)}
+                  className={`px-3 py-1.5 font-mono text-[11px] tracking-wider uppercase transition-all ${
+                    activeSection === link.href.slice(1)
+                      ? "text-primary"
+                      : "text-text-secondary hover:text-white"
+                  }`}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+
             {/* CTA button - desktop */}
             <a
               href="https://note.com/ando_lyo_ai"
@@ -58,10 +110,10 @@ export default function Header() {
               note
             </a>
 
-            {/* Hamburger */}
+            {/* Hamburger - mobile/tablet only */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex flex-col gap-1.5 w-7 cursor-pointer"
+              className="flex lg:hidden flex-col gap-1.5 w-7 cursor-pointer"
               aria-label="Toggle menu"
             >
               <motion.span
@@ -99,8 +151,12 @@ export default function Header() {
                 <motion.a
                   key={link.href}
                   href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className="font-serif text-3xl sm:text-4xl text-white hover:text-primary transition-colors tracking-wide"
+                  onClick={(e) => scrollTo(e, link.href)}
+                  className={`font-serif text-3xl sm:text-4xl transition-colors tracking-wide ${
+                    activeSection === link.href.slice(1)
+                      ? "text-primary"
+                      : "text-white hover:text-primary"
+                  }`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}

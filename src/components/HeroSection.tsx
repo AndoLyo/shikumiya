@@ -1,11 +1,29 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import Image from "next/image";
 
+const PARTICLE_COUNT = 30;
+
 export default function HeroSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
+
+  // パーティクルの初期値をメモ化（SSR/CSR一致のためseed的に生成）
+  const particles = useMemo(
+    () =>
+      Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
+        id: i,
+        x: (i * 37 + 13) % 100,
+        y: (i * 53 + 7) % 100,
+        size: 1 + (i % 3),
+        duration: 8 + (i % 7) * 2,
+        delay: (i % 5) * 1.5,
+        isCyan: i % 4 !== 0,
+      })),
+    []
+  );
+
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
@@ -46,6 +64,39 @@ export default function HeroSection() {
           {/* Gradient overlay for depth */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-transparent to-transparent" />
         </motion.div>
+
+        {/* Floating particles */}
+        <div className="absolute inset-0 z-[5] pointer-events-none overflow-hidden">
+          {particles.map((p) => (
+            <motion.div
+              key={p.id}
+              className="absolute rounded-full"
+              style={{
+                left: `${p.x}%`,
+                top: `${p.y}%`,
+                width: p.size,
+                height: p.size,
+                background: p.isCyan
+                  ? "rgba(0, 229, 255, 0.6)"
+                  : "rgba(212, 168, 83, 0.5)",
+                boxShadow: p.isCyan
+                  ? "0 0 6px rgba(0, 229, 255, 0.4)"
+                  : "0 0 6px rgba(212, 168, 83, 0.3)",
+              }}
+              animate={{
+                y: [0, -40, 0],
+                x: [0, p.id % 2 === 0 ? 15 : -15, 0],
+                opacity: [0.2, 0.8, 0.2],
+              }}
+              transition={{
+                duration: p.duration,
+                delay: p.delay,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+        </div>
 
         {/* Year countdown overlay */}
         <motion.div
