@@ -9,7 +9,7 @@ const events = [
   { date: "2024.06", title: "note発信スタート", desc: "AIアートプロンプト集の連載を開始。初月から読者の反応を獲得", important: true },
   { date: "2025.06", title: "Lyo Vision 開業", desc: "個人事業主として「Lyo Vision」を設立。AIアート×自動化の2本柱を確立", important: true },
   { date: "2025.09", title: "Lab Member開始", desc: "月額500円のメンバーシッププラン開始。週3-5本のプロンプト配信、Q&Aサポート", important: false },
-  { date: "2026.01", title: "自律型AIエージェント開発", desc: "Claude Codeを活用し、18のAIエージェントと12+スキルの開発に成功", important: true },
+  { date: "2026.01", title: "自律型AIエージェント開発", desc: "Claude Codeを活用し、24のAIエージェントと12+スキルの開発に成功", important: true },
   { date: "2026.03", title: "開発日記シリーズ開始", desc: "エージェント開発の過程をすべて公開する「開発日記」連載をスタート", important: false },
 ];
 

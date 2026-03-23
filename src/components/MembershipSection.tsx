@@ -23,7 +23,7 @@ const plans = [
     name: "Lab Pro",
     price: "¥1,000",
     period: "/月",
-    current: false,
+    current: true,
     features: [
       "Lab Memberの全特典",
       "プレミアムプロンプトパック",

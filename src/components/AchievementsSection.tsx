@@ -52,7 +52,7 @@ function AnimatedStat({ value, suffix, label, delay = 0 }: StatProps) {
 const stats = [
   { value: 500, suffix: "回+", label: "有料記事 購入数" },
   { value: 56, suffix: "本", label: "note記事 公開数" },
-  { value: 18, suffix: "体", label: "AIエージェント構築" },
+  { value: 24, suffix: "体", label: "AIエージェント構築" },
   { value: 300, suffix: "h+", label: "Hires.fix 検証時間" },
 ];
 
