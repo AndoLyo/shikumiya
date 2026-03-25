@@ -21,22 +21,22 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lyo Vision — AI Art & Autonomous Systems",
+  title: "Lyo Vision — しくみや｜AIで仕組みを作り、全部公開する人",
   description:
-    "AIアートプロンプトエンジニア Lyo のポートフォリオ＆活動拠点。3年間の研究と自律型AIエージェント開発の軌跡。",
+    "コード書けない個人事業主がAI24体で事業を回している。Claude Code × 自律型AIエージェント × SNS自動化の全記録。",
   openGraph: {
-    title: "Lyo Vision — AI Art & Autonomous Systems",
+    title: "Lyo Vision — しくみや｜AIで仕組みを作り、全部公開する人",
     description:
-      "AIアートプロンプトエンジニア Lyo のポートフォリオ＆活動拠点。3年間の研究と自律型AIエージェント開発の軌跡。",
+      "コード書けない個人事業主がAI24体で事業を回している。Claude Code × 自律型AIエージェント × SNS自動化の全記録。",
     type: "website",
     siteName: "Lyo Vision",
     locale: "ja_JP",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lyo Vision — AI Art & Autonomous Systems",
+    title: "Lyo Vision — しくみや｜AIで仕組みを作り、全部公開する人",
     description:
-      "AIアートプロンプトエンジニア Lyo のポートフォリオ＆活動拠点",
+      "AIで仕組みを作り、全部公開する人｜しくみや Lyo Vision",
     creator: "@ando_lyo",
   },
   metadataBase: new URL("https://lyo-vision.com"),

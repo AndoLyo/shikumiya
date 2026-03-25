@@ -14,8 +14,9 @@ const links = {
     { label: "GitHub", href: "https://github.com/ando-lyo" },
     { label: "Instagram", href: "https://www.instagram.com/ando_lyo_ai/" },
   ],
-  membership: [
+  other: [
     { label: "Lab Member (¥500/月)", href: "https://note.com/ando_lyo_ai/membership" },
+    { label: "AIアートギャラリー", href: "/portfolio" },
     { label: "メールで問い合わせ", href: "mailto:ando.lyo.ai@gmail.com" },
   ],
 };
@@ -37,7 +38,7 @@ export default function Footer() {
               <div className="w-1 h-8 bg-primary rounded-full" />
               <div>
                 <p className="font-mono text-[10px] tracking-[0.2em] text-text-secondary">
-                  Make your vision.
+                  しくみや
                 </p>
                 <p className="font-serif text-lg font-bold text-white tracking-wide">
                   LYO VISION
@@ -45,9 +46,8 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-text-muted text-xs leading-relaxed mb-4">
-              AIアートプロンプトの研究3年。<br />
-              すべてのクリエイターに、<br />
-              テクノロジーの力を。
+              AIで仕組みを作り、全部公開する。<br />
+              しくみや Lyo Vision
             </p>
             <p className="text-text-muted text-[10px] font-mono">
               &copy; 2025-2026 Lyo Vision. All rights reserved.
@@ -88,10 +88,10 @@ export default function Footer() {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <h4 className="font-mono text-xs text-primary tracking-widest uppercase mb-4">
-              Membership
+              More
             </h4>
             <ul className="space-y-2">
-              {links.membership.map((l) => (
+              {links.other.map((l) => (
                 <li key={l.label}>
                   <a
                     href={l.href}

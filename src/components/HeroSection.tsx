@@ -133,7 +133,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            AI Prompt Engineer & System Architect
+            AI Automation Architect & Systems Builder
           </motion.p>
 
           {/* Catchcopy */}
@@ -143,7 +143,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            プロンプトで描く、未来のビジョン。
+            コード書けない個人事業主が、AI24体で事業を回してる。
           </motion.p>
 
           {/* Main title */}
@@ -164,7 +164,7 @@ export default function HeroSection() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.9 }}
           >
-            AI Art &times; Autonomous Systems
+            しくみや ― Build Systems, Share Everything
           </motion.p>
 
           {/* Decorative line */}
@@ -197,9 +197,9 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.5 }}
           >
-            AIアートプロンプトの研究3年。画像生成AIのプロンプト設計から、
-            自律型AIエージェントシステムの開発まで。
-            すべてのクリエイターに、テクノロジーの力を。
+            AIアートプロンプトの研究3年。そこからClaude Codeに出会い、
+            24体のAIエージェントでnote執筆・SNS投稿・サムネ設計まで自動化。
+            コードが書けなくても、仕組みは作れる。その全記録を公開中。
           </motion.p>
 
           {/* Quote */}

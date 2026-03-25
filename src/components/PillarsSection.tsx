@@ -6,6 +6,22 @@ import SectionHeading from "./SectionHeading";
 
 const pillars = [
   {
+    id: "shikumiya",
+    icon: "⚡",
+    title: "しくみや",
+    subtitle: "AI自動化 × エージェントシステム",
+    description:
+      "Claude Codeを活用した24体のAIエージェントシステムで、コンテンツ制作のワークフロー全体を自動化。note記事の構成・執筆・サムネイル設計・SNS投稿・SEO最適化まで、ほぼ全工程をAIが担当。SNS AutoControl Appの開発も進行中。",
+    features: [
+      "24体の自律型AIエージェント",
+      "note記事の構成→執筆→公開パイプライン",
+      "SNS AutoControl App（Instagram/Threads/X自動化）",
+      "サムネイル設計の自動化",
+      "開発プロセスの完全ドキュメント化",
+    ],
+    accent: "gold",
+  },
+  {
     id: "ai-art",
     icon: "🎨",
     title: "AI Art Prompting",
@@ -21,29 +37,13 @@ const pillars = [
     ],
     accent: "primary",
   },
-  {
-    id: "dev",
-    icon: "⚡",
-    title: "Autonomous Systems",
-    subtitle: "自律型AIエージェント開発",
-    description:
-      "Claude Codeを活用した自律型AIエージェントシステムを構築。24のエージェントと12以上のスキルスクリプトで、コンテンツ制作のワークフロー全体を自動化しています。",
-    features: [
-      "24の自律型AIエージェント",
-      "コンテンツ制作パイプラインの自動化",
-      "プロンプトテンプレート自動生成",
-      "サムネイル設計の自動化",
-      "開発プロセスの完全ドキュメント化",
-    ],
-    accent: "gold",
-  },
 ];
 
 const cards = [
-  { label: "テーマ", value: "AIの力で、個人クリエイターの可能性を拡張する", icon: "◆" },
+  { label: "テーマ", value: "AIで仕組みを作り、全部公開する", icon: "◆" },
   { label: "発信プラットフォーム", value: "note.com — 週3本の定期更新（月/水/金）", icon: "◆" },
   { label: "コンテンツ方針", value: "出し惜しみしない。失敗も含めてすべて共有", icon: "◆" },
-  { label: "対象読者", value: "AIアート初心者〜中級者、自動化に興味があるクリエイター", icon: "◆" },
+  { label: "対象読者", value: "AI自動化に興味がある個人事業主・クリエイター、AIアート初心者〜中級者", icon: "◆" },
   { label: "無料/有料比率", value: "70:30 — 信頼構築を最優先", icon: "◆" },
   { label: "マガジン", value: "開発日記 / プロンプト集 / Stable Diffusion", icon: "◆" },
 ];

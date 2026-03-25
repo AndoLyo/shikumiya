@@ -50,18 +50,32 @@ function AnimatedStat({ value, suffix, label, delay = 0 }: StatProps) {
 }
 
 const stats = [
+  { value: 50, suffix: "万円", label: "note売上（半年）" },
   { value: 500, suffix: "回+", label: "有料記事 購入数" },
-  { value: 56, suffix: "本", label: "note記事 公開数" },
   { value: 24, suffix: "体", label: "AIエージェント構築" },
-  { value: 300, suffix: "h+", label: "Hires.fix 検証時間" },
+  { value: 70, suffix: "%", label: "利益率" },
 ];
 
 const achievements = [
+  {
+    title: "note売上 半年で50万円達成",
+    desc: "有料記事とメンバーシップの組み合わせで利益率70%を実現",
+    tag: "50万円",
+    url: "https://note.com/ando_lyo_ai",
+    color: "text-gold",
+  },
   {
     title: "Easy Prompt Selector対応プロンプト集",
     desc: "3万文字超のYAMLファイル・100カテゴリ以上を収録。累計250回以上購入された人気コンテンツ",
     tag: "250回購入",
     url: "https://note.com/ando_lyo_ai/n/n6137781e8dce",
+    color: "text-primary",
+  },
+  {
+    title: "24体AIエージェントシステム構築",
+    desc: "Claude Codeで構築した自律型エージェント。記事制作・SNS投稿・サムネ設計まで全自動化",
+    tag: "24体稼働",
+    url: "https://note.com/ando_lyo_ai/m/m3294daf5f300",
     color: "text-gold",
   },
   {
@@ -71,42 +85,28 @@ const achievements = [
     url: "https://note.com/ando_lyo_ai/n/nd2a696b8f901",
     color: "text-primary",
   },
-  {
-    title: "noteコンテンツ 56記事公開",
-    desc: "AIアートプロンプト集・開発日記・チュートリアルの3マガジンで継続発信",
-    tag: "56記事",
-    url: "https://note.com/ando_lyo_ai",
-    color: "text-gold",
-  },
-  {
-    title: "AI Art Creation Lab メンバーシップ運営",
-    desc: "月額制メンバーシップを運営。限定記事16本+掲示板でメンバーをサポート",
-    tag: "運営中",
-    url: "https://note.com/ando_lyo_ai/membership",
-    color: "text-primary",
-  },
 ];
 
 const skills = [
   {
+    category: "AI自動化・エージェント",
+    items: ["Claude Code", "24体AIエージェント", "GAS", "Python", "Flask"],
+    color: "text-gold",
+  },
+  {
+    category: "SNS・コンテンツ自動化",
+    items: ["SNS AutoControl App", "note自動執筆", "サムネイル自動設計", "SEO最適化", "メンバーシップ運営"],
+    color: "text-primary",
+  },
+  {
     category: "AI画像生成",
     items: ["Midjourney", "Stable Diffusion", "DALL-E", "Flux", "Magnific AI"],
-    color: "text-primary",
+    color: "text-gold",
   },
   {
     category: "プロンプト設計",
     items: ["構造化プロンプト", "BREAK構文", "カラーコントロール", "Hires.fix最適化", "ネガティブプロンプト"],
-    color: "text-gold",
-  },
-  {
-    category: "開発・自動化",
-    items: ["Claude Code", "Python", "GAS", "Flask", "タスクスケジューラ"],
     color: "text-primary",
-  },
-  {
-    category: "コンテンツ制作",
-    items: ["note記事執筆", "サムネイル設計", "SEO最適化", "メンバーシップ運営"],
-    color: "text-gold",
   },
 ];
 

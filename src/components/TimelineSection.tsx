@@ -7,9 +7,10 @@ const events = [
   { date: "2023", title: "AIアート研究開始", desc: "Midjourneyでの画像生成を皮切りに、プロンプトエンジニアリングの研究を開始", important: false },
   { date: "2024", title: "Stable Diffusion本格稼働", desc: "ローカル環境でのSD運用開始。Hires.fix設定の検証に300時間以上を費やす", important: false },
   { date: "2024.06", title: "note発信スタート", desc: "AIアートプロンプト集の連載を開始。初月から読者の反応を獲得", important: true },
-  { date: "2025.06", title: "Lyo Vision 開業", desc: "個人事業主として「Lyo Vision」を設立。AIアート×自動化の2本柱を確立", important: true },
-  { date: "2025.09", title: "Lab Member開始", desc: "月額500円のメンバーシッププラン開始。週3-5本のプロンプト配信、Q&Aサポート", important: false },
-  { date: "2026.01", title: "自律型AIエージェント開発", desc: "Claude Codeを活用し、24のAIエージェントと12+スキルの開発に成功", important: true },
+  { date: "2025.06", title: "Lyo Vision 開業", desc: "個人事業主として「Lyo Vision」を設立。しくみやとしてAI自動化の2本柱を確立", important: true },
+  { date: "2025.09", title: "Lab Member開始", desc: "月額500円のメンバーシッププラン開始。note売上半年で50万円達成（利益率70%）", important: true },
+  { date: "2026.01", title: "24体AIエージェント完成", desc: "Claude Codeを活用し、24のAIエージェントと12+スキルでコンテンツ制作を全自動化", important: true },
+  { date: "2026.03", title: "SNS AutoControl App開発着手", desc: "Instagram・Threads・Xの投稿・返信を自動化するアプリの開発を開始", important: false },
   { date: "2026.03", title: "開発日記シリーズ開始", desc: "エージェント開発の過程をすべて公開する「開発日記」連載をスタート", important: false },
 ];
 

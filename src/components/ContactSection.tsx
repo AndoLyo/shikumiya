@@ -6,11 +6,12 @@ import SectionHeading from "./SectionHeading";
 const actions = [
   {
     title: "noteで記事を読む",
-    desc: "AIアートのプロンプト集・チュートリアル・開発日記を公開中",
+    desc: "開発日記・AIアートプロンプト集・チュートリアルを公開中",
     href: "https://note.com/ando_lyo_ai",
     cta: "noteを見る",
     color: "border-primary/30 hover:border-primary",
     ctaColor: "text-primary",
+    comingSoon: false,
   },
   {
     title: "Lab Memberに参加",
@@ -19,14 +20,25 @@ const actions = [
     cta: "メンバーシップを見る",
     color: "border-gold/30 hover:border-gold",
     ctaColor: "text-gold",
+    comingSoon: false,
+  },
+  {
+    title: "Discordコミュニティ",
+    desc: "AIアート・自動化に興味がある人のコミュニティ。情報交換・Q&Aなど",
+    href: "#",
+    cta: "Coming Soon",
+    color: "border-text-muted/20",
+    ctaColor: "text-text-muted",
+    comingSoon: true,
   },
   {
     title: "お仕事の相談・お問い合わせ",
-    desc: "プロンプト設計の依頼・コラボレーション・取材などお気軽に",
+    desc: "エージェント設計の依頼・コラボレーション・取材などお気軽に",
     href: "mailto:ando.lyo.ai@gmail.com",
     cta: "メールで問い合わせ",
     color: "border-primary/30 hover:border-primary",
     ctaColor: "text-primary",
+    comingSoon: false,
   },
 ];
 
@@ -43,35 +55,49 @@ export default function ContactSection() {
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
         >
-          AIアートやプロンプト設計について、
+          AIの仕組み作り・プロンプト設計について、
           記事の感想・お仕事の相談、なんでもお気軽にどうぞ。
         </motion.p>
 
-        <div className="grid sm:grid-cols-3 gap-6">
-          {actions.map((a, i) => (
-            <motion.a
-              key={a.title}
-              href={a.href}
-              target={a.href.startsWith("mailto:") ? undefined : "_blank"}
-              rel={a.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
-              className={`glass-card p-6 flex flex-col border transition-all duration-300 group ${a.color}`}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.1 }}
-              whileHover={{ y: -4 }}
-            >
-              <h4 className="font-serif text-white text-base font-semibold mb-2">
-                {a.title}
-              </h4>
-              <p className="text-text-muted text-xs leading-relaxed mb-4 flex-1">
-                {a.desc}
-              </p>
-              <span className={`font-mono text-xs tracking-wider ${a.ctaColor} group-hover:underline underline-offset-4`}>
-                → {a.cta}
-              </span>
-            </motion.a>
-          ))}
+        <div className="grid sm:grid-cols-2 gap-6">
+          {actions.map((a, i) => {
+            const isDisabled = a.comingSoon;
+            const Wrapper = isDisabled ? motion.div : motion.a;
+            const linkProps = isDisabled
+              ? {}
+              : {
+                  href: a.href,
+                  target: a.href.startsWith("mailto:") ? undefined : "_blank",
+                  rel: a.href.startsWith("mailto:") ? undefined : "noopener noreferrer",
+                };
+            return (
+              <Wrapper
+                key={a.title}
+                {...(linkProps as Record<string, unknown>)}
+                className={`glass-card p-6 flex flex-col border transition-all duration-300 group relative ${a.color} ${isDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
+                whileHover={isDisabled ? {} : { y: -4 }}
+              >
+                {isDisabled && (
+                  <span className="absolute -top-2 right-4 px-3 py-0.5 bg-text-muted/30 text-text-muted font-mono text-[9px] tracking-widest uppercase">
+                    Coming Soon
+                  </span>
+                )}
+                <h4 className="font-serif text-white text-base font-semibold mb-2">
+                  {a.title}
+                </h4>
+                <p className="text-text-muted text-xs leading-relaxed mb-4 flex-1">
+                  {a.desc}
+                </p>
+                <span className={`font-mono text-xs tracking-wider ${a.ctaColor} ${!isDisabled ? "group-hover:underline underline-offset-4" : ""}`}>
+                  → {a.cta}
+                </span>
+              </Wrapper>
+            );
+          })}
         </div>
 
         {/* Social links */}

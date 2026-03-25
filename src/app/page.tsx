@@ -6,7 +6,6 @@ import IntroSplash from "@/components/IntroSplash";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
-import PortfolioSection from "@/components/PortfolioSection";
 import PillarsSection from "@/components/PillarsSection";
 import ResourcesSection from "@/components/ResourcesSection";
 import TimelineSection from "@/components/TimelineSection";
@@ -48,7 +47,6 @@ export default function Home() {
           <main>
             <HeroSection />
             <AboutSection />
-            <PortfolioSection />
             <PillarsSection />
             <ResourcesSection />
             <TimelineSection />

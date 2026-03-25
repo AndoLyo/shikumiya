@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
   { label: "About", href: "#about" },
-  { label: "Portfolio", href: "#portfolio" },
   { label: "Pillars", href: "#pillars" },
   { label: "Resources", href: "#resources" },
   { label: "Timeline", href: "#timeline" },
@@ -72,7 +71,7 @@ export default function Header() {
             <div className="w-1 h-8 bg-primary rounded-full" />
             <div className="flex flex-col leading-tight">
               <span className="font-mono text-[10px] tracking-[0.2em] text-text-secondary group-hover:text-primary transition-colors">
-                Make your vision.
+                しくみや
               </span>
               <span className="font-serif text-sm font-bold text-white tracking-wide">
                 LYO VISION

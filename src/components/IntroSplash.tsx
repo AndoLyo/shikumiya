@@ -53,7 +53,7 @@ export default function IntroSplash({
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 1.0 }}
             >
-              AI Art &times; Autonomous Systems
+              しくみや ― AIで仕組みを作り、全部公開する人
             </motion.p>
 
             {/* Decorative line */}
@@ -85,7 +85,7 @@ export default function IntroSplash({
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 2.0 }}
             >
-              Best viewed with sound on
+              AIで事業を回す、すべてを記録する
             </motion.p>
           </motion.div>
 

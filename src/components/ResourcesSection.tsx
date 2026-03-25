@@ -5,9 +5,9 @@ import { motion } from "framer-motion";
 import SectionHeading from "./SectionHeading";
 
 const categories = [
+  { id: "dev", label: "開発日記" },
   { id: "prompt", label: "プロンプト集" },
   { id: "tutorial", label: "チュートリアル" },
-  { id: "dev", label: "開発日記" },
 ];
 
 interface Resource {
@@ -98,7 +98,7 @@ const typeColors: Record<string, { bg: string; text: string; label: string }> = 
 };
 
 export default function ResourcesSection() {
-  const [active, setActive] = useState("prompt");
+  const [active, setActive] = useState("dev");
 
   const filtered = resources.filter((r) => r.category === active);
 
@@ -113,8 +113,8 @@ export default function ResourcesSection() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          noteで公開中のコンテンツ。プロンプト集・チュートリアル・開発日記の3カテゴリ。
-          無料記事で信頼を構築し、有料記事で深い知見を提供しています。
+          noteで公開中のコンテンツ。開発日記・プロンプト集・チュートリアルの3カテゴリ。
+          AIで仕組みを作る過程をすべて記録しています。
         </motion.p>
 
         {/* Category tabs */}

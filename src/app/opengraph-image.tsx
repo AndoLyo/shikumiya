@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Lyo Vision — AI Art & Autonomous Systems";
+export const alt = "Lyo Vision — しくみや｜AIで仕組みを作り、全部公開する人";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -66,7 +66,7 @@ export default async function Image() {
             fontFamily: "monospace",
           }}
         >
-          AI Prompt Engineer & System Architect
+          AI Automation Architect & Systems Builder
         </div>
 
         {/* Main title */}
@@ -128,7 +128,7 @@ export default async function Image() {
             textShadow: "0 0 20px rgba(0, 229, 255, 0.5)",
           }}
         >
-          AI Art × Autonomous Systems
+          しくみや ― Build Systems, Share Everything
         </div>
 
         {/* Description */}
@@ -140,7 +140,7 @@ export default async function Image() {
             textAlign: "center" as const,
           }}
         >
-          プロンプトで描く、未来のビジョン。
+          コード書けない個人事業主が、AI24体で事業を回してる。
         </div>
       </div>
     ),

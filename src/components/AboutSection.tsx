@@ -58,10 +58,10 @@ export default function AboutSection() {
               {...fadeInUp}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              Lyo（リョウ）。個人事業「Lyo Vision」代表。
-              2023年からAIアート画像生成のプロンプト研究を始め、
-              Midjourney・Stable Diffusion・DALL-E・Fluxなど
-              主要ツールすべてのプロンプト設計技法を体系化してきました。
+              Lyo（リョウ）。個人事業「Lyo Vision」代表。屋号の裏テーマは「しくみや」。
+              AIで仕組みを作り、その過程をすべて公開している人。
+              コードは書けない。でもClaude Codeと24体のAIエージェントで、
+              事業を回す仕組みを構築しました。
             </motion.p>
 
             <motion.p
@@ -69,10 +69,10 @@ export default function AboutSection() {
               {...fadeInUp}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              3年間の研究で培ったプロンプトエンジニアリングの知見をベースに、
-              現在はClaude Codeを活用した自律型AIエージェントシステムの開発に注力。
-              24のAIエージェントと12以上のスキルスクリプトを構築し、
-              コンテンツ制作ワークフローの自動化を実現しています。
+              2023年からAIアート画像生成のプロンプト研究を始め、
+              Midjourney・Stable Diffusion・Flux等の技法を体系化。
+              その延長線上でClaude Codeに出会い、記事執筆・SNS投稿・サムネイル設計・SEO最適化まで、
+              コンテンツ制作ワークフローの自動化に成功。現在はSNS AutoControl Appの開発にも着手しています。
             </motion.p>
 
             <motion.p
@@ -80,9 +80,9 @@ export default function AboutSection() {
               {...fadeInUp}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              noteでは「AIアートプロンプト集」と「開発日記」の2本柱で発信中。
+              noteでは「開発日記」と「AIアートプロンプト集」の2本柱で発信中。
               月曜は開発日記、水曜はAIアート記事、金曜はプロンプト設計と、
-              週3本の定期更新で活動しています。
+              週3本の定期更新。note売上は半年で50万円を達成（利益率70%）。
             </motion.p>
 
             {/* Quote */}
@@ -93,7 +93,7 @@ export default function AboutSection() {
             >
               <p className="text-white text-lg sm:text-xl font-serif italic leading-relaxed">
                 &ldquo;自分にもできそう&rdquo;から、&ldquo;実際にできた&rdquo;へ。
-                すべてのクリエイターに、その体験を届けたい。
+                仕組みの作り方を、すべて見せる。
               </p>
             </motion.blockquote>
 
@@ -102,7 +102,7 @@ export default function AboutSection() {
               {...fadeInUp}
               transition={{ duration: 0.6, delay: 0.5 }}
             >
-              — AIアートで活動する人を支える。失敗も含めてすべて共有する。
+              — しくみや。失敗も含めてすべて共有する。
             </motion.p>
           </div>
         </div>
