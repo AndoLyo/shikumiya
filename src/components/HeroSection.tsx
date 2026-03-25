@@ -157,7 +157,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.3 }}
           >
-            24体のAIエージェントが、コンテンツ制作を丸ごと自動化。<br className="hidden sm:block" />
+            専門特化したAIエージェントチームが、コンテンツ制作を丸ごと自動化。<br className="hidden sm:block" />
             記事の構成から執筆、SNS投稿、サムネイル設計まで — その仕組みと作り方を、すべて公開しています。
           </motion.p>
 
