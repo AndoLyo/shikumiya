@@ -1,35 +1,50 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Smartphone, Bot, CalendarClock, Code2 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import SectionHeading from "./SectionHeading";
 
-const features = [
+const features: { icon: LucideIcon; title: string; description: string; color: string; iconBg: string }[] = [
   {
-    icon: "📱",
+    icon: Smartphone,
     title: "マルチプラットフォーム対応",
     description: "Instagram・Threads・Xへの投稿を一括管理。プラットフォームごとの最適化も自動。",
+    color: "text-cyan-400",
+    iconBg: "bg-cyan-500/10 border-cyan-500/20",
   },
   {
-    icon: "🤖",
+    icon: Bot,
     title: "AI自動生成",
     description: "投稿文・ハッシュタグ・リプライをAIが自動生成。あなたのトーンに合わせて学習。",
+    color: "text-violet-400",
+    iconBg: "bg-violet-500/10 border-violet-500/20",
   },
   {
-    icon: "📅",
+    icon: CalendarClock,
     title: "スケジュール投稿",
     description: "最適な投稿タイミングを分析し、予約投稿。寝ている間もSNSが動き続ける。",
+    color: "text-emerald-400",
+    iconBg: "bg-emerald-500/10 border-emerald-500/20",
   },
   {
-    icon: "📊",
+    icon: Code2,
     title: "開発過程をすべて公開",
     description: "このアプリの設計・実装・失敗もnoteで全記録。あなた自身のアプリ開発の参考に。",
+    color: "text-amber-400",
+    iconBg: "bg-amber-500/10 border-amber-500/20",
   },
 ];
 
 export default function ProductSection() {
   return (
     <section id="product" className="relative section-padding overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f] via-[#0d1117] to-[#0a0a0f]" />
+      {/* Gradient background */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f] via-[#0d1020] to-[#0a0a0f]" />
+        {/* Subtle radial glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-primary/[0.03] rounded-full blur-[100px]" />
+      </div>
 
       <div className="relative z-10 max-w-[1000px] mx-auto px-6">
         <SectionHeading title="PRODUCT" subtitle="SNS AutoControl App" align="center" />
@@ -45,37 +60,48 @@ export default function ProductSection() {
           投稿・リプライ・分析まですべてAIが担当します。
         </motion.p>
 
-        <motion.p
-          className="text-center text-primary font-mono text-xs tracking-widest uppercase mb-12"
+        <motion.div
+          className="flex items-center justify-center gap-3 mb-14"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
         >
-          Currently in Development — 開発過程をnoteで公開中
-        </motion.p>
+          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          <span className="text-primary font-mono text-xs tracking-widest uppercase">
+            Currently in Development
+          </span>
+          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+        </motion.div>
 
         <div className="grid sm:grid-cols-2 gap-6">
-          {features.map((f, i) => (
-            <motion.div
-              key={f.title}
-              className="glass-card p-6 flex gap-4"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-            >
-              <div className="text-2xl flex-shrink-0">{f.icon}</div>
-              <div>
-                <h4 className="text-white font-bold text-sm mb-2">{f.title}</h4>
-                <p className="text-text-secondary text-sm leading-relaxed">{f.description}</p>
-              </div>
-            </motion.div>
-          ))}
+          {features.map((f, i) => {
+            const Icon = f.icon;
+            return (
+              <motion.div
+                key={f.title}
+                className="group relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-7 flex gap-5 transition-all duration-500 hover:bg-white/[0.04] hover:border-white/10"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              >
+                {/* Icon */}
+                <div className={`flex-shrink-0 w-12 h-12 rounded-lg border ${f.iconBg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
+                  <Icon className={`w-6 h-6 ${f.color}`} strokeWidth={1.5} />
+                </div>
+
+                <div>
+                  <h4 className="text-white font-bold text-sm mb-2">{f.title}</h4>
+                  <p className="text-text-secondary text-sm leading-relaxed">{f.description}</p>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
 
         <motion.div
-          className="text-center mt-10"
+          className="text-center mt-12"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -84,7 +110,7 @@ export default function ProductSection() {
             href="https://note.com/ando_lyo_ai/m/m3294daf5f300"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-8 py-3 border border-primary/40 text-primary font-mono text-xs tracking-widest uppercase hover:bg-primary/10 transition-all"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-lg border border-primary/30 text-primary font-mono text-xs tracking-widest uppercase hover:bg-primary/10 hover:border-primary/50 transition-all duration-300"
           >
             開発日記を読む →
           </a>
