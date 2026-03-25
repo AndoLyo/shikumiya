@@ -160,6 +160,7 @@ export default function MembershipSection() {
                         {plan.price}
                       </span>
                       <span className="text-text-muted text-sm">{plan.period}</span>
+                      <span className="text-text-muted text-[10px] ml-1">（税込）</span>
                     </div>
 
                     <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-6" />
@@ -176,18 +177,21 @@ export default function MembershipSection() {
                     </ul>
 
                     {plan.current ? (
-                      <a
-                        href="https://note.com/ando_lyo_ai/membership"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`block text-center py-3 rounded-xl font-mono text-xs tracking-widest uppercase transition-all duration-300 ${
-                          plan.recommended
-                            ? "bg-gradient-to-r from-amber-500 to-amber-600 text-[#0a0a0f] font-bold hover:shadow-lg hover:shadow-amber-500/20"
-                            : "border border-primary/30 text-primary hover:bg-primary/10"
-                        }`}
-                      >
-                        Join Now
-                      </a>
+                      <>
+                        <a
+                          href="https://note.com/ando_lyo_ai/membership"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`block text-center py-3 rounded-xl font-mono text-xs tracking-widest uppercase transition-all duration-300 ${
+                            plan.recommended
+                              ? "bg-gradient-to-r from-amber-500 to-amber-600 text-[#0a0a0f] font-bold hover:shadow-lg hover:shadow-amber-500/20"
+                              : "border border-primary/30 text-primary hover:bg-primary/10"
+                          }`}
+                        >
+                          Join Now
+                        </a>
+                        <p className="text-center text-text-muted text-[10px] mt-2">いつでも解約OK・当月末まで利用可</p>
+                      </>
                     ) : (
                       <div className="block text-center py-3 rounded-xl border border-white/[0.06] text-text-muted font-mono text-xs tracking-widest uppercase cursor-not-allowed">
                         Coming Soon

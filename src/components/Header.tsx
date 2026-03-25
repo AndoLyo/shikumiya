@@ -4,13 +4,11 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
-  { label: "Problem", href: "#problem" },
   { label: "Solution", href: "#solution" },
   { label: "Product", href: "#product" },
-  { label: "Resources", href: "#resources" },
   { label: "Membership", href: "#membership" },
+  { label: "FAQ", href: "#faq" },
   { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
 ];
 
 export default function Header() {
@@ -51,6 +49,12 @@ export default function Header() {
 
   return (
     <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-primary focus:text-[#0a0a0f] focus:rounded-lg focus:text-sm focus:font-mono"
+      >
+        メインコンテンツにスキップ
+      </a>
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           scrolled

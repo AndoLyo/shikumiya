@@ -170,9 +170,9 @@ export default function HeroSection() {
           >
             <a
               href="#problem"
-              className="px-8 py-3.5 rounded-xl bg-primary/10 border border-primary/40 text-primary font-mono text-xs tracking-widest uppercase hover:bg-primary/20 hover:border-primary/60 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10"
+              className="px-8 py-3.5 rounded-xl bg-primary text-[#0a0a0f] font-bold font-mono text-xs tracking-widest uppercase hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20"
             >
-              仕組みを見る
+              無料で仕組みを学ぶ
             </a>
             <a
               href="https://note.com/ando_lyo_ai"
@@ -183,6 +183,14 @@ export default function HeroSection() {
               → noteで記事を読む
             </a>
           </motion.div>
+          <motion.p
+            className="mt-4 text-text-muted text-xs font-mono"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 1.7 }}
+          >
+            ※ すべての記事の70%は無料で公開中
+          </motion.p>
         </motion.div>
 
         {/* Bottom gradient fade */}
