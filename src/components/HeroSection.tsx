@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useMemo } from "react";
-import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 
 const PARTICLE_COUNT = 30;
@@ -9,7 +9,6 @@ const PARTICLE_COUNT = 30;
 export default function HeroSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  // パーティクルの初期値をメモ化（SSR/CSR一致のためseed的に生成）
   const particles = useMemo(
     () =>
       Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
@@ -29,25 +28,15 @@ export default function HeroSection() {
     offset: ["start start", "end start"],
   });
 
-  // Parallax: image moves slower
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  // Year countdown: 2026 -> 1980
-  const year = useTransform(scrollYProgress, [0, 1], [2026, 1980]);
-  const yearOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.2, 0.5, 0.8],
-    [0, 1, 1, 0]
-  );
-  // Text fades
   const contentOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
   return (
     <section
       ref={sectionRef}
       id="hero"
-      className="relative h-[200vh]"
+      className="relative h-[150vh]"
     >
-      {/* Sticky container */}
       <div className="sticky top-0 h-screen overflow-hidden">
         {/* Background image with parallax */}
         <motion.div className="absolute inset-0" style={{ y: imageY }}>
@@ -59,9 +48,7 @@ export default function HeroSection() {
             priority
             sizes="100vw"
           />
-          {/* Dark overlay */}
-          <div className="absolute inset-0 bg-black/60" />
-          {/* Gradient overlay for depth */}
+          <div className="absolute inset-0 bg-black/65" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-transparent to-transparent" />
         </motion.div>
 
@@ -98,29 +85,6 @@ export default function HeroSection() {
           ))}
         </div>
 
-        {/* Year countdown overlay */}
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
-          style={{ opacity: yearOpacity }}
-        >
-          <motion.span
-            className="font-serif text-white/10 font-bold select-none"
-            style={{ fontSize: "clamp(6rem, 20vw, 16rem)" }}
-          >
-            <YearDisplay year={year} />
-          </motion.span>
-        </motion.div>
-
-        {/* Rewinding text */}
-        <motion.div
-          className="absolute bottom-32 left-1/2 -translate-x-1/2 z-10"
-          style={{ opacity: yearOpacity }}
-        >
-          <span className="font-mono text-primary/60 text-xs tracking-[0.5em] uppercase">
-            Rewinding...
-          </span>
-        </motion.div>
-
         {/* Main content */}
         <motion.div
           className="relative z-20 h-full flex flex-col items-center justify-center px-6 text-center"
@@ -133,38 +97,39 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            AI Automation Architect & Systems Builder
+            AI Automation for Creators & Solo Businesses
           </motion.p>
 
-          {/* Catchcopy */}
+          {/* Catchcopy - visitor perspective */}
           <motion.p
-            className="font-serif text-white/90 text-lg sm:text-2xl mb-2"
+            className="font-serif text-white/90 text-lg sm:text-2xl mb-2 leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            コード書けない個人事業主が、AI24体で事業を回してる。
+            SNS投稿も、記事執筆も、サムネ作成も。<br className="hidden sm:block" />
+            あなたの代わりにAIが動く仕組み、作りませんか？
           </motion.p>
 
           {/* Main title */}
           <motion.h1
             className="font-serif text-white font-bold leading-none tracking-wider"
-            style={{ fontSize: "clamp(2.5rem, 8vw, 8rem)" }}
+            style={{ fontSize: "clamp(2.5rem, 8vw, 7rem)" }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            LYO VISION
+            しくみや
           </motion.h1>
 
           {/* Subtitle */}
           <motion.p
-            className="font-mono text-primary text-xs sm:text-sm tracking-[0.5em] uppercase mt-4 glow-text"
+            className="font-mono text-primary text-xs sm:text-sm tracking-[0.3em] uppercase mt-4 glow-text"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.9 }}
           >
-            しくみや ― Build Systems, Share Everything
+            Build Systems, Share Everything
           </motion.p>
 
           {/* Decorative line */}
@@ -179,75 +144,41 @@ export default function HeroSection() {
             <div className="w-12 h-px bg-primary/30" />
           </motion.div>
 
-          {/* Activity time */}
-          <motion.div
-            className="mt-6 font-mono text-xs"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1.3 }}
-          >
-            <span className="text-text-muted tracking-widest">Activity Since: </span>
-            <span className="text-primary">2023 —</span>
-          </motion.div>
-
-          {/* Description */}
+          {/* Description - value for the visitor */}
           <motion.p
             className="mt-6 max-w-[700px] text-text-secondary text-sm sm:text-base leading-relaxed"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.3 }}
+          >
+            24体のAIエージェントが、コンテンツ制作を丸ごと自動化。<br className="hidden sm:block" />
+            記事の構成から執筆、SNS投稿、サムネイル設計まで — その仕組みと作り方を、すべて公開しています。
+          </motion.p>
+
+          {/* CTA buttons */}
+          <motion.div
+            className="mt-8 flex flex-col sm:flex-row items-center gap-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 1.5 }}
           >
-            AIアートプロンプトの研究3年。そこからClaude Codeに出会い、
-            24体のAIエージェントでnote執筆・SNS投稿・サムネ設計まで自動化。
-            コードが書けなくても、仕組みは作れる。その全記録を公開中。
-          </motion.p>
-
-          {/* Quote */}
-          <motion.p
-            className="mt-4 text-white/80 text-base sm:text-lg font-serif italic"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1.7 }}
-          >
-            &ldquo;出し惜しみしない。失敗も含めてすべて共有する。&rdquo;
-          </motion.p>
-
-          {/* Platforms */}
-          <motion.div
-            className="mt-6 flex items-center gap-3 text-text-muted text-xs font-mono"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1.9 }}
-          >
-            <a href="https://note.com/ando_lyo_ai" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">note</a>
-            <span className="text-primary/40">|</span>
-            <a href="https://x.com/ando_lyo" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">X</a>
-            <span className="text-primary/40">|</span>
-            <a href="https://github.com/ando-lyo" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">GitHub</a>
-            <span className="text-primary/40">|</span>
-            <a href="https://www.instagram.com/ando_lyo_ai/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Instagram</a>
+            <a
+              href="#problem"
+              className="px-8 py-3 bg-primary/10 border border-primary text-primary font-mono text-xs tracking-widest uppercase hover:bg-primary/20 transition-all"
+            >
+              仕組みを見る
+            </a>
+            <a
+              href="https://note.com/ando_lyo_ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-text-muted text-sm font-mono tracking-wider hover:text-primary transition-colors"
+            >
+              → noteで記事を読む
+            </a>
           </motion.div>
-
-          {/* CTA */}
-          <motion.a
-            href="https://note.com/ando_lyo_ai"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-8 text-primary text-sm font-mono tracking-wider hover:underline underline-offset-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 2.1 }}
-          >
-            → noteで活動をチェック
-          </motion.a>
         </motion.div>
       </div>
     </section>
   );
-}
-
-// Year display component that rounds the motion value
-function YearDisplay({ year }: { year: MotionValue<number> }) {
-  const rounded = useTransform(year, (v: number) => Math.round(v));
-  return <motion.span>{rounded}</motion.span>;
 }

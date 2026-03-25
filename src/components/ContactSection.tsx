@@ -6,7 +6,7 @@ import SectionHeading from "./SectionHeading";
 const actions = [
   {
     title: "noteで記事を読む",
-    desc: "開発日記・AIアートプロンプト集・チュートリアルを公開中",
+    desc: "開発日記・チュートリアル・プロンプト集を無料で公開中",
     href: "https://note.com/ando_lyo_ai",
     cta: "noteを見る",
     color: "border-primary/30 hover:border-primary",
@@ -14,8 +14,8 @@ const actions = [
     comingSoon: false,
   },
   {
-    title: "Lab Memberに参加",
-    desc: "限定プロンプト・先行公開記事・掲示板でのQ&Aにアクセス",
+    title: "メンバーシップに参加",
+    desc: "限定記事・自動化スクリプト・Q&Aで、あなたの仕組み作りを加速",
     href: "https://note.com/ando_lyo_ai/membership",
     cta: "メンバーシップを見る",
     color: "border-gold/30 hover:border-gold",
@@ -24,7 +24,7 @@ const actions = [
   },
   {
     title: "Discordコミュニティ",
-    desc: "AIアート・自動化に興味がある人のコミュニティ。情報交換・Q&Aなど",
+    desc: "AI自動化に興味がある人の情報交換・相談の場",
     href: "#",
     cta: "Coming Soon",
     color: "border-text-muted/20",
@@ -46,7 +46,7 @@ export default function ContactSection() {
   return (
     <section id="contact" className="section-padding bg-[#0d0d12]">
       <div className="max-w-[900px] mx-auto px-6">
-        <SectionHeading title="CONTACT" subtitle="お問い合わせ・つながる" align="center" />
+        <SectionHeading title="CONTACT" subtitle="次のステップを選ぶ" align="center" />
 
         <motion.p
           className="text-center text-text-secondary max-w-[500px] mx-auto mb-12 text-sm"
@@ -55,8 +55,8 @@ export default function ContactSection() {
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
         >
-          AIの仕組み作り・プロンプト設計について、
-          記事の感想・お仕事の相談、なんでもお気軽にどうぞ。
+          仕組み作りを始めたい方も、まず記事を読んでみたい方も。
+          あなたに合ったスタート地点を選んでください。
         </motion.p>
 
         <div className="grid sm:grid-cols-2 gap-6">

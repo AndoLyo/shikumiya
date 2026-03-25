@@ -4,53 +4,42 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import SectionHeading from "./SectionHeading";
 
-const pillars = [
+const solutions = [
   {
-    id: "shikumiya",
-    icon: "⚡",
-    title: "しくみや",
-    subtitle: "AI自動化 × エージェントシステム",
-    description:
-      "Claude Codeを活用した24体のAIエージェントシステムで、コンテンツ制作のワークフロー全体を自動化。note記事の構成・執筆・サムネイル設計・SNS投稿・SEO最適化まで、ほぼ全工程をAIが担当。SNS AutoControl Appの開発も進行中。",
-    features: [
-      "24体の自律型AIエージェント",
-      "note記事の構成→執筆→公開パイプライン",
-      "SNS AutoControl App（Instagram/Threads/X自動化）",
-      "サムネイル設計の自動化",
-      "開発プロセスの完全ドキュメント化",
-    ],
-    accent: "gold",
+    icon: "📝",
+    title: "記事制作の自動化",
+    description: "構成→執筆→SEO→サムネイル→公開まで、AIエージェントがパイプラインで処理。あなたはテーマを決めるだけ。",
   },
   {
-    id: "ai-art",
+    icon: "📱",
+    title: "SNS投稿の自動化",
+    description: "Instagram・Threads・Xへの投稿文生成からスケジュール投稿まで。プラットフォームごとの最適化もAIが判断。",
+  },
+  {
     icon: "🎨",
-    title: "AI Art Prompting",
-    subtitle: "画像生成AIプロンプト設計",
-    description:
-      "Midjourney・Stable Diffusion・DALL-E・Fluxなど、主要ツールすべてのプロンプト設計技法を体系化。300時間以上の検証データをベースに、再現性のある実践的なテクニックを発信しています。",
-    features: [
-      "Hires.fix設定の黄金比（300時間検証）",
-      "カラーコントロール＆色移り防止テクニック",
-      "BREAK構文の活用法",
-      "ツール別プロンプト最適化",
-      "Before/After実例ドキュメント",
-    ],
-    accent: "primary",
+    title: "サムネイル設計の自動化",
+    description: "記事の内容を読み取り、クリック率の高いサムネイルをAIが設計。プロンプト生成まで一気通貫。",
   },
-];
-
-const cards = [
-  { label: "テーマ", value: "AIで仕組みを作り、全部公開する", icon: "◆" },
-  { label: "発信プラットフォーム", value: "note.com — 週3本の定期更新（月/水/金）", icon: "◆" },
-  { label: "コンテンツ方針", value: "出し惜しみしない。失敗も含めてすべて共有", icon: "◆" },
-  { label: "対象読者", value: "AI自動化に興味がある個人事業主・クリエイター、AIアート初心者〜中級者", icon: "◆" },
-  { label: "無料/有料比率", value: "70:30 — 信頼構築を最優先", icon: "◆" },
-  { label: "マガジン", value: "開発日記 / プロンプト集 / Stable Diffusion", icon: "◆" },
+  {
+    icon: "🔍",
+    title: "SEO・タイトル最適化",
+    description: "タイトル案・ハッシュタグ・冒頭文をAIが複数パターン生成。数字に基づいた改善提案も。",
+  },
+  {
+    icon: "🤖",
+    title: "24体のAIエージェント",
+    description: "制作部・編集部・広報部・経営企画部。役割ごとに専門化したAIが連携して、1人分以上の仕事をこなす。",
+  },
+  {
+    icon: "📖",
+    title: "すべてをオープンに公開",
+    description: "仕組みの設計図・コード・失敗談まで全部見せる。あなたが同じ仕組みを作るためのドキュメントを提供。",
+  },
 ];
 
 export default function PillarsSection() {
   return (
-    <section id="pillars" className="relative section-padding overflow-hidden">
+    <section id="solution" className="relative section-padding overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
         <Image
@@ -64,64 +53,31 @@ export default function PillarsSection() {
       </div>
 
       <div className="relative z-10 max-w-[1200px] mx-auto px-6">
-        <SectionHeading title="PILLARS" subtitle="2つの柱" align="center" />
+        <SectionHeading title="SOLUTION" subtitle="しくみやが解決すること" align="center" />
 
-        {/* Two pillars */}
-        <div className="grid md:grid-cols-2 gap-6 mb-20">
-          {pillars.map((pillar, i) => (
+        <motion.p
+          className="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-sm"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+        >
+          AIの力を借りて、コンテンツ制作のあらゆる工程を仕組み化。
+          あなたは「何を伝えるか」に集中できます。
+        </motion.p>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {solutions.map((s, i) => (
             <motion.div
-              key={pillar.id}
-              className="glass-card p-8 sm:p-10"
+              key={s.title}
+              className="glass-card p-6"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.6, delay: i * 0.15 }}
-            >
-              <div className="text-3xl mb-4">{pillar.icon}</div>
-              <h3
-                className={`font-serif text-2xl sm:text-3xl font-bold mb-1 ${
-                  pillar.accent === "primary" ? "text-primary" : "text-gold"
-                }`}
-              >
-                {pillar.title}
-              </h3>
-              <p className="font-mono text-xs text-text-muted tracking-widest uppercase mb-4">
-                {pillar.subtitle}
-              </p>
-              <p className="text-text-secondary leading-relaxed mb-6 text-sm">
-                {pillar.description}
-              </p>
-              <ul className="space-y-2">
-                {pillar.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm">
-                    <span
-                      className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                        pillar.accent === "primary" ? "bg-primary" : "bg-gold"
-                      }`}
-                    />
-                    <span className="text-text-secondary">{f}</span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Info cards grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border/20">
-          {cards.map((card, i) => (
-            <motion.div
-              key={card.label}
-              className="glass-card p-6"
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: i * 0.05 }}
+              transition={{ duration: 0.5, delay: i * 0.08 }}
             >
-              <p className="font-mono text-primary text-xs tracking-widest uppercase mb-2">
-                {card.icon} {card.label}
-              </p>
-              <p className="text-white text-sm leading-relaxed">{card.value}</p>
+              <div className="text-2xl mb-3">{s.icon}</div>
+              <h3 className="text-white font-bold text-sm mb-2">{s.title}</h3>
+              <p className="text-text-secondary text-sm leading-relaxed">{s.description}</p>
             </motion.div>
           ))}
         </div>

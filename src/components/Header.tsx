@@ -4,12 +4,12 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
-  { label: "About", href: "#about" },
-  { label: "Pillars", href: "#pillars" },
+  { label: "Problem", href: "#problem" },
+  { label: "Solution", href: "#solution" },
+  { label: "Product", href: "#product" },
   { label: "Resources", href: "#resources" },
-  { label: "Timeline", href: "#timeline" },
   { label: "Membership", href: "#membership" },
-  { label: "Achievements", href: "#achievements" },
+  { label: "About", href: "#about" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -70,11 +70,11 @@ export default function Header() {
           >
             <div className="w-1 h-8 bg-primary rounded-full" />
             <div className="flex flex-col leading-tight">
-              <span className="font-mono text-[10px] tracking-[0.2em] text-text-secondary group-hover:text-primary transition-colors">
+              <span className="font-serif text-sm font-bold text-white tracking-wide">
                 しくみや
               </span>
-              <span className="font-serif text-sm font-bold text-white tracking-wide">
-                LYO VISION
+              <span className="font-mono text-[10px] tracking-[0.2em] text-text-secondary group-hover:text-primary transition-colors">
+                by Lyo Vision
               </span>
             </div>
           </a>

@@ -9,13 +9,12 @@ const plans = [
     price: "¥500",
     period: "/月",
     current: true,
+    headline: "仕組みの裏側を見る",
     features: [
-      "有料記事の先行アクセス",
-      "週3-5本のプロンプト配信",
-      "開発の裏側・インサイト",
-      "デザインファイル共有",
-      "自動化スクリプト共有",
-      "Q&Aサポート",
+      "有料記事の先行アクセスで、公開前の知見をキャッチ",
+      "週3-5本のプロンプト配信で、すぐ試せる素材が届く",
+      "自動化スクリプト共有で、あなたの仕組み作りを加速",
+      "Q&Aサポートで、詰まったときに相談できる",
     ],
     accent: "primary",
   },
@@ -24,12 +23,12 @@ const plans = [
     price: "¥1,000",
     period: "/月",
     current: true,
+    headline: "自分の仕組みを作る",
     features: [
-      "Lab Memberの全特典",
-      "プレミアムプロンプトパック",
-      "1on1フィードバック（月1回）",
-      "エージェント設計レビュー",
-      "非公開開発ノート",
+      "Lab Memberの全特典に加えて",
+      "1on1フィードバック（月1回）で個別の課題を解決",
+      "エージェント設計レビューで、あなたのAIシステムを改善",
+      "非公開開発ノートで、公開記事には書けない深い話",
     ],
     accent: "gold",
   },
@@ -38,12 +37,12 @@ const plans = [
     price: "¥3,000",
     period: "/月",
     current: false,
+    headline: "一緒に作る",
     features: [
-      "Lab Proの全特典",
-      "共同プロジェクト参加権",
-      "カスタムプロンプト制作",
-      "優先サポート",
-      "クレジット表記",
+      "Lab Proの全特典に加えて",
+      "共同プロジェクト参加権で、実践の場を共有",
+      "カスタムプロンプト制作で、あなた専用のツールを設計",
+      "優先サポートで最速レスポンス",
     ],
     accent: "danger",
   },
@@ -53,7 +52,7 @@ export default function MembershipSection() {
   return (
     <section id="membership" className="section-padding bg-[#0d0d12]">
       <div className="max-w-[1200px] mx-auto px-6">
-        <SectionHeading title="MEMBERSHIP" subtitle="Lab Member プログラム" align="center" />
+        <SectionHeading title="MEMBERSHIP" subtitle="あなたの仕組み作りを加速する" align="center" />
 
         <motion.p
           className="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-sm"
@@ -61,11 +60,10 @@ export default function MembershipSection() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          Lyoの活動を支え、より深い知見にアクセスできるメンバーシップ。
-          共にAIの可能性を探求しませんか。
+          記事を読むだけでは分からない裏側の知見、スクリプト、設計ノウハウ。
+          メンバーシップに参加すると、あなた自身の仕組み作りに必要な素材が手に入ります。
         </motion.p>
 
-        {/* Plans grid */}
         <div className="grid md:grid-cols-3 gap-6 max-w-[900px] mx-auto">
           {plans.map((plan, i) => (
             <motion.div
@@ -90,7 +88,7 @@ export default function MembershipSection() {
               )}
 
               <h3
-                className={`font-serif text-xl font-bold mb-2 ${
+                className={`font-serif text-xl font-bold mb-1 ${
                   plan.accent === "primary"
                     ? "text-primary"
                     : plan.accent === "gold"
@@ -100,6 +98,7 @@ export default function MembershipSection() {
               >
                 {plan.name}
               </h3>
+              <p className="text-text-muted text-xs mb-3">{plan.headline}</p>
               <div className="flex items-baseline gap-1 mb-6">
                 <span className="text-white text-3xl font-bold font-serif">
                   {plan.price}
