@@ -1,15 +1,59 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 import SectionHeading from "./SectionHeading";
 
+// Animated counter hook
+function useCounter(target: number, duration: number = 2000, startCounting: boolean = false) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!startCounting) return;
+    let start = 0;
+    const increment = target / (duration / 16);
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= target) {
+        setCount(target);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [target, duration, startCounting]);
+  return count;
+}
+
 const stats = [
-  { value: "24体", label: "AIエージェント稼働中" },
-  { value: "¥50万", label: "note売上（半年）" },
-  { value: "70%", label: "利益率" },
-  { value: "500+", label: "有料記事の購入回数" },
+  { value: 24, suffix: "体", label: "AIエージェント稼働中", color: "text-cyan-400" },
+  { value: 50, suffix: "万", label: "note売上（半年）", prefix: "¥", color: "text-amber-400" },
+  { value: 70, suffix: "%", label: "利益率", color: "text-emerald-400" },
+  { value: 500, suffix: "+", label: "有料記事の購入回数", color: "text-violet-400" },
 ];
+
+function StatCard({ stat, delay }: { stat: typeof stats[number]; delay: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const count = useCounter(stat.value, 2000, isInView);
+
+  return (
+    <motion.div
+      ref={ref}
+      className="relative rounded-xl bg-white/[0.02] border border-white/[0.06] p-5 text-center group hover:border-white/[0.12] transition-all duration-300"
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.5, delay }}
+    >
+      <div className={`font-serif text-3xl font-bold ${stat.color}`}>
+        {stat.prefix || ""}{count}{stat.suffix}
+      </div>
+      <div className="text-text-muted text-xs mt-1">{stat.label}</div>
+    </motion.div>
+  );
+}
 
 export default function AboutSection() {
   return (
@@ -20,10 +64,11 @@ export default function AboutSection() {
           src="/portfolio/work_03.webp"
           alt=""
           fill
-          className="object-cover opacity-15"
+          className="object-cover opacity-[0.08]"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-[#0a0a0f]/85" />
+        <div className="absolute inset-0 bg-[#0a0a0f]/90" />
+        <div className="absolute inset-0 mesh-gradient-2" />
       </div>
 
       <div className="relative z-10 max-w-[1200px] mx-auto px-6">
@@ -36,7 +81,7 @@ export default function AboutSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8 }}
           >
-            <div className="relative aspect-[3/4] max-h-[500px] mx-auto lg:mx-0">
+            <div className="relative aspect-[3/4] max-h-[500px] mx-auto lg:mx-0 rounded-2xl overflow-hidden">
               <Image
                 src="/portfolio/about.webp"
                 alt="Lyo key visual"
@@ -44,8 +89,10 @@ export default function AboutSection() {
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 40vw"
               />
-              <div className="absolute -top-3 -left-3 w-16 h-16 border-t-2 border-l-2 border-primary/30" />
-              <div className="absolute -bottom-3 -right-3 w-16 h-16 border-b-2 border-r-2 border-primary/30" />
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f]/60 via-transparent to-transparent" />
+              {/* Glow border effect */}
+              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
             </div>
           </motion.div>
 
@@ -54,7 +101,7 @@ export default function AboutSection() {
             <SectionHeading title="ABOUT" subtitle="なぜ、この情報を信頼できるのか" />
 
             <motion.p
-              className="text-text-secondary leading-[1.8] mb-6"
+              className="text-text-secondary leading-[1.8] mb-6 text-[15px]"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
@@ -66,7 +113,7 @@ export default function AboutSection() {
             </motion.p>
 
             <motion.p
-              className="text-text-secondary leading-[1.8] mb-8"
+              className="text-text-secondary leading-[1.8] mb-8 text-[15px]"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
@@ -76,21 +123,12 @@ export default function AboutSection() {
               机上の空論ではなく、実際に動いているシステムの設計図を共有しています。
             </motion.p>
 
-            {/* Stats */}
-            <motion.div
-              className="grid grid-cols-2 gap-4 mb-8"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              {stats.map((s) => (
-                <div key={s.label} className="glass-card p-4 text-center">
-                  <div className="text-primary font-serif text-xl font-bold">{s.value}</div>
-                  <div className="text-text-muted text-xs mt-1">{s.label}</div>
-                </div>
+            {/* Stats with animated counters */}
+            <div className="grid grid-cols-2 gap-3 mb-8">
+              {stats.map((s, i) => (
+                <StatCard key={s.label} stat={s} delay={0.3 + i * 0.1} />
               ))}
-            </motion.div>
+            </div>
 
             {/* Quote */}
             <motion.blockquote
@@ -98,7 +136,7 @@ export default function AboutSection() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
             >
               <p className="text-white text-lg font-serif italic leading-relaxed">
                 &ldquo;出し惜しみしない。失敗も含めてすべて共有する。&rdquo;
@@ -107,6 +145,8 @@ export default function AboutSection() {
           </div>
         </div>
       </div>
+
+      <div className="absolute bottom-0 left-0 right-0 section-divider" />
     </section>
   );
 }

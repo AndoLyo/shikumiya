@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Smartphone, Bot, CalendarClock, Code2 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import Image from "next/image";
 import SectionHeading from "./SectionHeading";
 
 const features: { icon: LucideIcon; title: string; description: string; color: string; iconBg: string }[] = [
@@ -39,61 +40,75 @@ const features: { icon: LucideIcon; title: string; description: string; color: s
 export default function ProductSection() {
   return (
     <section id="product" className="relative section-padding overflow-hidden">
-      {/* Gradient background */}
+      {/* Background image */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f] via-[#0d1020] to-[#0a0a0f]" />
-        {/* Subtle radial glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-primary/[0.03] rounded-full blur-[100px]" />
+        <Image
+          src="/portfolio/work_15.webp"
+          alt=""
+          fill
+          className="object-cover opacity-[0.08]"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f] via-[#0a0a12]/95 to-[#0a0a0f]" />
       </div>
 
-      <div className="relative z-10 max-w-[1000px] mx-auto px-6">
+      {/* Radial glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-primary/[0.04] rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="relative z-10 max-w-[1100px] mx-auto px-6">
         <SectionHeading title="PRODUCT" subtitle="SNS AutoControl App" align="center" />
 
-        <motion.p
-          className="text-center text-text-secondary max-w-[600px] mx-auto mb-4 text-sm"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-        >
-          SNS運用を自動化するアプリを開発中。
-          3つのプラットフォームを1つのダッシュボードで管理し、
-          投稿・リプライ・分析まですべてAIが担当します。
-        </motion.p>
-
+        {/* Hero description */}
         <motion.div
-          className="flex items-center justify-center gap-3 mb-14"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
         >
-          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <span className="text-primary font-mono text-xs tracking-widest uppercase">
-            Currently in Development
-          </span>
-          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          <p className="text-text-secondary max-w-[600px] mx-auto mb-6 text-sm leading-relaxed">
+            SNS運用を自動化するアプリを開発中。
+            3つのプラットフォームを1つのダッシュボードで管理し、
+            投稿・リプライ・分析まですべてAIが担当します。
+          </p>
+
+          {/* Status badge */}
+          <div className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full border border-primary/20 bg-primary/[0.05]">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/60" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
+            </span>
+            <span className="text-primary font-mono text-xs tracking-widest uppercase">
+              Currently in Development
+            </span>
+          </div>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 gap-6">
+        {/* Feature cards */}
+        <div className="grid sm:grid-cols-2 gap-5">
           {features.map((f, i) => {
             const Icon = f.icon;
             return (
               <motion.div
                 key={f.title}
-                className="group relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-7 flex gap-5 transition-all duration-500 hover:bg-white/[0.04] hover:border-white/10"
+                className="glow-border"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
               >
-                {/* Icon */}
-                <div className={`flex-shrink-0 w-12 h-12 rounded-lg border ${f.iconBg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
-                  <Icon className={`w-6 h-6 ${f.color}`} strokeWidth={1.5} />
-                </div>
+                <div className="relative rounded-2xl bg-[#0d0d15]/80 backdrop-blur-sm p-7 flex gap-5 h-full group overflow-hidden">
+                  {/* Hover glow */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white/[0.02] to-transparent" />
 
-                <div>
-                  <h4 className="text-white font-bold text-sm mb-2">{f.title}</h4>
-                  <p className="text-text-secondary text-sm leading-relaxed">{f.description}</p>
+                  {/* Icon */}
+                  <div className={`relative flex-shrink-0 w-12 h-12 rounded-xl border ${f.iconBg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
+                    <Icon className={`w-6 h-6 ${f.color}`} strokeWidth={1.5} />
+                  </div>
+
+                  <div className="relative">
+                    <h4 className="text-white font-bold text-sm mb-2">{f.title}</h4>
+                    <p className="text-text-secondary text-sm leading-relaxed">{f.description}</p>
+                  </div>
                 </div>
               </motion.div>
             );
@@ -110,12 +125,14 @@ export default function ProductSection() {
             href="https://note.com/ando_lyo_ai/m/m3294daf5f300"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-lg border border-primary/30 text-primary font-mono text-xs tracking-widest uppercase hover:bg-primary/10 hover:border-primary/50 transition-all duration-300"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl border border-primary/30 text-primary font-mono text-xs tracking-widest uppercase hover:bg-primary/10 hover:border-primary/50 transition-all duration-300"
           >
             開発日記を読む →
           </a>
         </motion.div>
       </div>
+
+      <div className="absolute bottom-0 left-0 right-0 section-divider" />
     </section>
   );
 }
