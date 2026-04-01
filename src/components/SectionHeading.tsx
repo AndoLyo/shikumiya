@@ -5,10 +5,12 @@ import { motion } from "framer-motion";
 export default function SectionHeading({
   title,
   subtitle,
+  number,
   align = "left",
 }: {
   title: string;
   subtitle?: string;
+  number?: string;
   align?: "left" | "center";
 }) {
   return (
@@ -19,17 +21,29 @@ export default function SectionHeading({
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.6 }}
     >
-      <h2
-        className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold text-white uppercase tracking-wide"
-      >
+      {/* Decorative number */}
+      {number && (
+        <span className="block font-mono text-primary/40 text-xs tracking-[0.4em] mb-3">
+          {number}
+        </span>
+      )}
+
+      {/* Main title in Japanese */}
+      <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-wide leading-tight">
         {title}
       </h2>
+
+      {/* Subtitle */}
       {subtitle && (
-        <p className="mt-3 font-mono text-primary text-xs sm:text-sm tracking-[0.3em] uppercase">
+        <p className="mt-3 text-text-secondary text-sm tracking-wide">
           {subtitle}
         </p>
       )}
-      <div className="mt-4 deco-line mx-0" style={align === "center" ? { margin: "1rem auto 0" } : {}} />
+
+      <div
+        className="mt-4 deco-line mx-0"
+        style={align === "center" ? { margin: "1rem auto 0" } : {}}
+      />
     </motion.div>
   );
 }

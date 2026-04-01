@@ -2,18 +2,17 @@
 
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
-import TrustBarSection from "@/components/TrustBarSection";
-import ProblemSection from "@/components/ProblemSection";
-import PillarsSection from "@/components/PillarsSection";
-import ProductSection from "@/components/ProductSection";
-import ResourcesSection from "@/components/ResourcesSection";
-import MembershipSection from "@/components/MembershipSection";
-import FAQSection from "@/components/FAQSection";
+import ShowcaseSection from "@/components/ShowcaseSection";
+import ServiceSection from "@/components/ServiceSection";
+import PricingSection from "@/components/PricingSection";
+import RoadmapSection from "@/components/RoadmapSection";
 import AboutSection from "@/components/AboutSection";
+import ResourcesSection from "@/components/ResourcesSection";
+import FAQSection from "@/components/FAQSection";
 import ContactSection from "@/components/ContactSection";
-import MobileCTA from "@/components/MobileCTA";
 import ScrollProgress from "@/components/ScrollProgress";
 import Footer from "@/components/Footer";
+import MobileCTA from "@/components/MobileCTA";
 
 export default function Home() {
   return (
@@ -22,14 +21,13 @@ export default function Home() {
       <Header />
       <main id="main-content">
         <HeroSection />
-        <TrustBarSection />
-        <ProblemSection />
-        <PillarsSection />
-        <ProductSection />
-        <ResourcesSection />
-        <MembershipSection />
-        <FAQSection />
+        <ShowcaseSection />
+        <ServiceSection />
+        <PricingSection />
+        <RoadmapSection />
         <AboutSection />
+        <ResourcesSection />
+        <FAQSection />
         <ContactSection />
       </main>
       <Footer />
