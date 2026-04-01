@@ -34,8 +34,8 @@ const plans: Plan[] = [
       { text: "SNSリンク設置", included: true },
       { text: "レスポンシブ対応（スマホ対応）", included: true },
       { text: "公開後もサイトはずっと残る", included: true },
+      { text: "初回1回のみ編集可能", included: true },
       { text: "独自ドメイン", included: false },
-      { text: "カスタマイズ", included: false },
       { text: "会員コンテンツ", included: false },
     ],
     cta: "このプランで始める",
@@ -50,7 +50,7 @@ const plans: Plan[] = [
     features: [
       { text: "テンプレートプランの全機能", included: true },
       { text: "独自ドメイン対応", included: true },
-      { text: "カスタマイズ回数無制限", included: true },
+      { text: "カスタマイズ月3回まで", included: true },
       { text: "会員専用コンテンツ", included: true },
       { text: "新テンプレート優先提供", included: true },
       { text: "いつでも解約OK（サイトは残る）", included: true },
@@ -180,7 +180,7 @@ export default function PricingSection() {
 
                   {/* CTA */}
                   <a
-                    href="#contact"
+                    href="/order"
                     className={`block text-center py-3 rounded-xl text-xs tracking-widest transition-all duration-300 ${
                       plan.outline
                         ? "border border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50"

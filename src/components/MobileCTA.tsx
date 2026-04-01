@@ -26,7 +26,7 @@ export default function MobileCTA() {
         >
           <div className="h-14 bg-[#0a0a0f]/95 backdrop-blur-xl border-t border-white/[0.06] flex items-center justify-center px-4">
             <a
-              href="#pricing"
+              href="/order"
               className="w-full max-w-sm block text-center py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-cyan-600 text-[#0a0a0f] text-xs tracking-widest font-bold transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20"
             >
               ¥980〜 サイトを作る
