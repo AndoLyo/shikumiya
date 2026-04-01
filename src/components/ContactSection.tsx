@@ -16,7 +16,7 @@ export default function ContactSection() {
         <SectionHeading
           title="お問い合わせ・お申し込み"
           subtitle="サイト制作のご依頼・ご質問はこちらから"
-          number="— 07"
+          number="— 08"
           align="center"
         />
 

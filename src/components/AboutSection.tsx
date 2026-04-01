@@ -82,7 +82,7 @@ export default function AboutSection() {
 
           {/* Text */}
           <div className="w-full lg:w-[65%]">
-            <SectionHeading title="運営者について" number="— 02" />
+            <SectionHeading title="運営者について" number="— 05" />
 
             <motion.p
               className="text-text-secondary leading-[1.9] mb-4 text-[15px]"

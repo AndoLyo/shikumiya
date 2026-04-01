@@ -41,7 +41,7 @@ export default function ResourcesSection() {
         <SectionHeading
           title="制作過程を公開中"
           subtitle="サイトの作り方・AI活用・失敗談まで、noteで全記録しています。"
-          number="— 04"
+          number="— 06"
           align="center"
         />
 

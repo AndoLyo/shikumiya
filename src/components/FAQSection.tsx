@@ -45,7 +45,7 @@ export default function FAQSection() {
       <div className="absolute inset-0 mesh-gradient-1" />
 
       <div className="relative z-10 max-w-[700px] mx-auto px-6">
-        <SectionHeading title="よくある質問" number="— 06" align="center" />
+        <SectionHeading title="よくある質問" number="— 07" align="center" />
 
         <div className="space-y-3">
           {faqs.map((faq, i) => {
