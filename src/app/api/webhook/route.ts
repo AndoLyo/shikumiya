@@ -155,6 +155,30 @@ async function createSite(metadata: Record<string, string>): Promise<string> {
     if (vercelRes.ok) {
       const vercelData = await vercelRes.json();
       siteUrl = `https://${vercelData.name}.vercel.app`;
+
+      // Step 4: Trigger initial deployment
+      await new Promise((r) => setTimeout(r, 2000));
+      const deployRes = await fetch("https://api.vercel.com/v13/deployments", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${vercelToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: repoName,
+          target: "production",
+          gitSource: {
+            type: "github",
+            org: templateOwner,
+            repo: repoName,
+            ref: "main",
+          },
+        }),
+      });
+
+      if (!deployRes.ok) {
+        console.error("Vercel deploy trigger failed:", await deployRes.text());
+      }
     } else {
       console.error(
         "Vercel project creation failed:",
