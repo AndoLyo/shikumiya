@@ -197,6 +197,77 @@ html {
   transform: scale(1.1);
 }
 
+/* ========== Template-specific styles ========== */
+
+/* Cinematic Dark: scroll snap */
+.tpl-snap-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y proximity;
+}
+
+@media (min-width: 768px) {
+  .tpl-snap-container {
+    scroll-snap-type: y mandatory;
+  }
+}
+
+.tpl-snap-section {
+  min-height: 100vh;
+  scroll-snap-align: start;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .tpl-snap-section {
+    height: 100vh;
+    min-height: auto;
+  }
+}
+
+.tpl-ornament-line {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-accent-cyan, #00bbdd), var(--color-accent-pink, #d42d83));
+}
+
+/* Elegant Mono: viewport frame */
+.viewport-frame {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  border: var(--frame-width, 6px) solid #111111;
+}
+
+@media (min-width: 768px) {
+  .viewport-frame {
+    border-width: var(--frame-width, 12px);
+  }
+}
+
+.corner-ornament {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+}
+
+.corner-ornament.top-left { top: var(--frame-width, 6px); left: var(--frame-width, 6px); }
+.corner-ornament.top-right { top: var(--frame-width, 6px); right: var(--frame-width, 6px); transform: rotate(90deg); }
+.corner-ornament.bottom-left { bottom: var(--frame-width, 6px); left: var(--frame-width, 6px); transform: rotate(-90deg); }
+.corner-ornament.bottom-right { bottom: var(--frame-width, 6px); right: var(--frame-width, 6px); transform: rotate(180deg); }
+
+@media (min-width: 768px) {
+  .corner-ornament.top-left { top: var(--frame-width, 12px); left: var(--frame-width, 12px); }
+  .corner-ornament.top-right { top: var(--frame-width, 12px); right: var(--frame-width, 12px); }
+  .corner-ornament.bottom-left { bottom: var(--frame-width, 12px); left: var(--frame-width, 12px); }
+  .corner-ornament.bottom-right { bottom: var(--frame-width, 12px); right: var(--frame-width, 12px); }
+}
+
 /* Reduced motion accessibility */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
