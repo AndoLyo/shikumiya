@@ -48,13 +48,20 @@ const problems: {
 
 export default function ProblemSection() {
   return (
-    <section id="problem" className="relative section-padding overflow-hidden">
+    <section
+      id="problem"
+      className="relative section-padding overflow-hidden"
+    >
       {/* Mesh gradient background */}
       <div className="absolute inset-0 bg-[#0a0a0f]" />
       <div className="absolute inset-0 mesh-gradient-1" />
 
       <div className="relative z-10 max-w-[1100px] mx-auto px-6">
-        <SectionHeading title="PROBLEM" subtitle="こんな悩み、ありませんか？" align="center" />
+        <SectionHeading
+          title="こんな悩み、ありませんか？"
+          number="— 01"
+          align="center"
+        />
 
         <div className="mt-16 space-y-8">
           {problems.map((p, i) => {
@@ -69,9 +76,7 @@ export default function ProblemSection() {
                 viewport={{ once: true, margin: "-80px" }}
                 transition={{ duration: 0.7, delay: i * 0.15 }}
               >
-                <div
-                  className="relative rounded-2xl bg-[#0d0d15]/80 backdrop-blur-xl p-8 sm:p-10 flex flex-col sm:flex-row items-start gap-6 overflow-hidden"
-                >
+                <div className="relative rounded-2xl bg-[#0d0d15]/80 backdrop-blur-xl p-8 sm:p-10 flex flex-col sm:flex-row items-start gap-6 overflow-hidden">
                   {/* Background glow */}
                   <div
                     className="absolute top-0 right-0 w-[300px] h-[300px] rounded-full blur-[100px] pointer-events-none"
@@ -84,8 +89,13 @@ export default function ProblemSection() {
                   </div>
 
                   {/* Icon */}
-                  <div className={`relative flex-shrink-0 w-14 h-14 rounded-xl ${p.iconBg} border border-white/[0.06] flex items-center justify-center`}>
-                    <Icon className={`w-7 h-7 ${p.color}`} strokeWidth={1.5} />
+                  <div
+                    className={`relative flex-shrink-0 w-14 h-14 rounded-xl ${p.iconBg} border border-white/[0.06] flex items-center justify-center`}
+                  >
+                    <Icon
+                      className={`w-7 h-7 ${p.color}`}
+                      strokeWidth={1.5}
+                    />
                   </div>
 
                   {/* Text */}
@@ -111,7 +121,7 @@ export default function ProblemSection() {
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
         >
-          <p className="text-text-muted text-sm font-mono tracking-wider mb-4">
+          <p className="text-text-muted text-sm tracking-wider mb-4">
             これ、全部まとめて解決できます。
           </p>
           <div className="w-px h-12 bg-gradient-to-b from-primary/40 to-transparent" />

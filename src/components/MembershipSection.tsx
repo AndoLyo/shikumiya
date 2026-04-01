@@ -78,22 +78,20 @@ const plans: {
 
 export default function MembershipSection() {
   return (
-    <section id="membership" className="relative section-padding overflow-hidden">
+    <section
+      id="membership"
+      className="relative section-padding overflow-hidden"
+    >
       <div className="absolute inset-0 bg-[#0a0a0f]" />
       <div className="absolute inset-0 mesh-gradient-1" />
 
       <div className="relative z-10 max-w-[1200px] mx-auto px-6">
-        <SectionHeading title="MEMBERSHIP" subtitle="あなたの仕組み作りを加速する" align="center" />
-
-        <motion.p
-          className="text-center text-text-secondary max-w-[600px] mx-auto mb-14 text-sm"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-        >
-          記事を読むだけでは分からない裏側の知見、スクリプト、設計ノウハウ。
-          メンバーシップに参加すると、あなた自身の仕組み作りに必要な素材が手に入ります。
-        </motion.p>
+        <SectionHeading
+          title="あなたの仕組み作りを加速する"
+          subtitle="記事を読むだけでは分からない裏側の知見、スクリプト、設計ノウハウ。メンバーシップに参加すると、あなた自身の仕組み作りに必要な素材が手に入ります。"
+          number="— 05"
+          align="center"
+        />
 
         <div className="grid md:grid-cols-3 gap-6 max-w-[960px] mx-auto items-start">
           {plans.map((plan, i) => {
@@ -109,17 +107,15 @@ export default function MembershipSection() {
               >
                 {/* Recommended badge */}
                 {plan.recommended && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20 px-5 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-[#0a0a0f] font-mono text-[10px] tracking-widest uppercase font-bold shadow-lg shadow-amber-500/20">
-                    Recommended
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20 px-5 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-[#0a0a0f] text-[10px] tracking-widest font-bold shadow-lg shadow-amber-500/20">
+                    おすすめ
                   </div>
                 )}
 
                 <div
                   className={`glow-border ${plan.recommended ? "ring-1 ring-amber-500/20" : ""}`}
                 >
-                  <div
-                    className="relative rounded-2xl bg-[#0d0d15]/80 backdrop-blur-sm p-8 overflow-hidden"
-                  >
+                  <div className="relative rounded-2xl bg-[#0d0d15]/80 backdrop-blur-sm p-8 overflow-hidden">
                     {/* Background glow */}
                     <div
                       className="absolute -top-20 -right-20 w-[200px] h-[200px] rounded-full blur-[80px] pointer-events-none"
@@ -127,19 +123,22 @@ export default function MembershipSection() {
                     />
 
                     {plan.current && !plan.recommended && (
-                      <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 font-mono text-[9px] text-primary tracking-widest uppercase">
-                        Available
+                      <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[9px] text-primary tracking-widest">
+                        受付中
                       </div>
                     )}
                     {!plan.current && (
-                      <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/[0.05] border border-white/[0.08] font-mono text-[9px] text-text-muted tracking-widest uppercase">
-                        Coming Soon
+                      <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/[0.05] border border-white/[0.08] text-[9px] text-text-muted tracking-widest">
+                        準備中
                       </div>
                     )}
 
                     {/* Icon */}
                     <div className="w-12 h-12 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center mb-5">
-                      <Icon className={`w-6 h-6 ${plan.iconColor}`} strokeWidth={1.5} />
+                      <Icon
+                        className={`w-6 h-6 ${plan.iconColor}`}
+                        strokeWidth={1.5}
+                      />
                     </div>
 
                     <h3
@@ -147,20 +146,26 @@ export default function MembershipSection() {
                         plan.accent === "primary"
                           ? "text-primary"
                           : plan.accent === "gold"
-                          ? "text-gold"
-                          : "text-rose-400"
+                            ? "text-gold"
+                            : "text-rose-400"
                       }`}
                     >
                       {plan.name}
                     </h3>
-                    <p className="text-text-muted text-xs mb-4">{plan.headline}</p>
+                    <p className="text-text-muted text-xs mb-4">
+                      {plan.headline}
+                    </p>
 
                     <div className="flex items-baseline gap-1 mb-6">
                       <span className="text-white text-3xl font-bold font-serif">
                         {plan.price}
                       </span>
-                      <span className="text-text-muted text-sm">{plan.period}</span>
-                      <span className="text-text-muted text-[10px] ml-1">（税込）</span>
+                      <span className="text-text-muted text-sm">
+                        {plan.period}
+                      </span>
+                      <span className="text-text-muted text-[10px] ml-1">
+                        （税込）
+                      </span>
                     </div>
 
                     <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-6" />
@@ -168,9 +173,15 @@ export default function MembershipSection() {
                     <ul className="space-y-3 mb-8">
                       {plan.features.map((f) => (
                         <li key={f} className="flex items-start gap-3 text-sm">
-                          <span className={`mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                            plan.accent === "primary" ? "bg-primary" : plan.accent === "gold" ? "bg-gold" : "bg-rose-400"
-                          }`} />
+                          <span
+                            className={`mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                              plan.accent === "primary"
+                                ? "bg-primary"
+                                : plan.accent === "gold"
+                                  ? "bg-gold"
+                                  : "bg-rose-400"
+                            }`}
+                          />
                           <span className="text-text-secondary">{f}</span>
                         </li>
                       ))}
@@ -182,19 +193,21 @@ export default function MembershipSection() {
                           href="https://note.com/ando_lyo_ai/membership"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`block text-center py-3 rounded-xl font-mono text-xs tracking-widest uppercase transition-all duration-300 ${
+                          className={`block text-center py-3 rounded-xl text-xs tracking-widest transition-all duration-300 ${
                             plan.recommended
                               ? "bg-gradient-to-r from-amber-500 to-amber-600 text-[#0a0a0f] font-bold hover:shadow-lg hover:shadow-amber-500/20"
                               : "border border-primary/30 text-primary hover:bg-primary/10"
                           }`}
                         >
-                          Join Now
+                          参加する
                         </a>
-                        <p className="text-center text-text-muted text-[10px] mt-2">いつでも解約OK・当月末まで利用可</p>
+                        <p className="text-center text-text-muted text-[10px] mt-2">
+                          いつでも解約OK・当月末まで利用可
+                        </p>
                       </>
                     ) : (
-                      <div className="block text-center py-3 rounded-xl border border-white/[0.06] text-text-muted font-mono text-xs tracking-widest uppercase cursor-not-allowed">
-                        Coming Soon
+                      <div className="block text-center py-3 rounded-xl border border-white/[0.06] text-text-muted text-xs tracking-widest cursor-not-allowed">
+                        準備中
                       </div>
                     )}
                   </div>
