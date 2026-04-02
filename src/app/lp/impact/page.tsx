@@ -2,26 +2,31 @@
 
 import Image from "next/image";
 import AnimatedCTA from "@/components/AnimatedCTA";
+import StickyMobileCTA from "@/components/StickyMobileCTA";
 
 export default function LPImpactPage() {
   return (
-    <main className="min-h-screen bg-black flex flex-col items-center justify-center">
+    <main className="min-h-screen bg-black flex flex-col">
       {/* LP Image */}
       <div className="w-full">
         <Image
-          src="/lp-impact.png"
+          src="/lp-impact.webp"
           alt="こんなサイトが、980円。"
-          width={1920}
-          height={1080}
+          width={2752}
+          height={1536}
           className="w-full h-auto"
           priority
+          sizes="100vw"
         />
       </div>
 
       {/* Animated CTA */}
-      <div className="w-full bg-black">
+      <div className="bg-black pb-24">
         <AnimatedCTA />
       </div>
+
+      {/* Sticky CTA for mobile */}
+      <StickyMobileCTA />
     </main>
   );
 }
