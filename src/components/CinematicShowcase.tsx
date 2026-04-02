@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef } from "react";
 import Link from "next/link";
+import LazyIframe from "./LazyIframe";
 import {
   Heart,
   Cpu,
@@ -136,27 +137,19 @@ function TemplateCard({
         href={`/portfolio-templates/${tpl.id}`}
         className="group block rounded-xl overflow-hidden border border-white/[0.06] hover:border-white/[0.2] transition-all duration-300 hover:-translate-y-1"
       >
-        {/* Color Preview */}
-        <div
-          className="h-40 sm:h-52 relative overflow-hidden"
-          style={{ background: tpl.colors[0] }}
-        >
-          <div className="absolute inset-3 flex flex-col gap-1.5 opacity-50 group-hover:opacity-80 transition-opacity duration-300">
-            <div className="h-1 w-10 rounded-full" style={{ background: tpl.colors[1] }} />
-            <div className="flex-1 flex gap-1.5 mt-1">
-              <div className="flex-[2] rounded" style={{ background: `${tpl.colors[1]}18` }} />
-              <div className="flex-1 rounded" style={{ background: `${tpl.colors[2]}12` }} />
-            </div>
-            <div className="flex gap-1">
-              <div className="h-0.5 w-8 rounded-full" style={{ background: `${tpl.colors[2]}30` }} />
-              <div className="h-0.5 w-5 rounded-full" style={{ background: `${tpl.colors[1]}20` }} />
-            </div>
-          </div>
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-            <span className="text-white text-[10px] tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0 drop-shadow-lg font-mono">
-              デモを見る →
-            </span>
-          </div>
+        {/* Live Preview (lazy loaded) */}
+        <LazyIframe
+          src={`/portfolio-templates/${tpl.id}`}
+          title={tpl.name}
+          fallbackBg={tpl.colors[0]}
+          fallbackColors={[tpl.colors[1], tpl.colors[2]]}
+          className="h-40 sm:h-52"
+          scale={0.25}
+        />
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center pointer-events-none">
+          <span className="text-white text-[10px] tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0 drop-shadow-lg font-mono">
+            デモを見る →
+          </span>
         </div>
 
         {/* Info */}
@@ -368,27 +361,14 @@ export default function CinematicShowcase() {
                         href={`/portfolio-templates/${tpl.id}`}
                         className="group block rounded-xl overflow-hidden border border-white/[0.06] hover:border-white/[0.2] transition-all duration-300 hover:-translate-y-1"
                       >
-                        <div
-                          className="h-36 sm:h-44 relative overflow-hidden"
-                          style={{ background: tpl.colors[0] }}
-                        >
-                          <div className="absolute inset-3 flex flex-col gap-1.5 opacity-50 group-hover:opacity-80 transition-opacity duration-300">
-                            <div className="h-1 w-10 rounded-full" style={{ background: tpl.colors[1] }} />
-                            <div className="flex-1 flex gap-1.5 mt-1">
-                              <div className="flex-[2] rounded" style={{ background: `${tpl.colors[1]}18` }} />
-                              <div className="flex-1 rounded" style={{ background: `${tpl.colors[2]}12` }} />
-                            </div>
-                            <div className="flex gap-1">
-                              <div className="h-0.5 w-8 rounded-full" style={{ background: `${tpl.colors[2]}30` }} />
-                              <div className="h-0.5 w-5 rounded-full" style={{ background: `${tpl.colors[1]}20` }} />
-                            </div>
-                          </div>
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                            <span className="text-white text-[10px] tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-mono">
-                              デモを見る →
-                            </span>
-                          </div>
-                        </div>
+                        <LazyIframe
+                          src={`/portfolio-templates/${tpl.id}`}
+                          title={tpl.name}
+                          fallbackBg={tpl.colors[0]}
+                          fallbackColors={[tpl.colors[1], tpl.colors[2]]}
+                          className="h-36 sm:h-44"
+                          scale={0.2}
+                        />
                         <div className="px-3 py-2.5 bg-[#0d0d15]">
                           <div className="flex items-center gap-2 mb-0.5">
                             {(() => {
