@@ -273,6 +273,48 @@ export default function OrderPage() {
     const allTools = [...tools, ...(toolOtherChecked && toolOther.trim() ? [toolOther.trim()] : [])];
 
     try {
+      // Step 1: Upload images one by one to a Gist (avoid body size limit)
+      let imageGistId = "";
+      setError("画像をアップロード中...");
+
+      for (let i = 0; i < works.length; i++) {
+        const w = works[i];
+        setError(`画像をアップロード中... (${i + 1}/${works.length})`);
+        const uploadRes = await fetch("/api/upload-images", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gistId: imageGistId || undefined,
+            fileName: `work_${String(i + 1).padStart(2, "0")}`,
+            imageData: w.data,
+            orderId: `${artistName.trim()}-${Date.now()}`,
+          }),
+        });
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok) throw new Error(uploadData.error || "画像アップロードに失敗しました");
+        imageGistId = uploadData.gistId;
+      }
+
+      // Upload profile image if present
+      if (profileImage) {
+        setError("プロフィール画像をアップロード中...");
+        const profileRes = await fetch("/api/upload-images", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gistId: imageGistId || undefined,
+            fileName: "profile",
+            imageData: profileImage.data,
+          }),
+        });
+        const profileData = await profileRes.json();
+        if (!profileRes.ok) throw new Error(profileData.error || "プロフィール画像のアップロードに失敗しました");
+        imageGistId = profileData.gistId;
+      }
+
+      setError("決済ページを準備中...");
+
+      // Step 2: Send metadata (no images) to checkout
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -286,8 +328,9 @@ export default function OrderPage() {
           catchcopy: catchcopy.trim(),
           bio: bio.trim(),
           motto: motto.trim(),
-          works: works.map((w) => ({ data: w.data, name: w.name, title: w.title })),
-          profileImage: profileImage || undefined,
+          worksMeta: works.map((w, i) => ({ name: `work_${String(i + 1).padStart(2, "0")}`, title: w.title })),
+          hasProfileImage: !!profileImage,
+          imageGistId,
           snsX: snsX.trim(),
           snsInstagram: snsInstagram.trim(),
           snsPixiv: snsPixiv.trim(),

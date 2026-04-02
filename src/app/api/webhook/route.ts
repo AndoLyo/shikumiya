@@ -28,6 +28,9 @@ interface OrderData {
   snsOther?: string;
   profileImage?: { name: string; data: string };
   works: OrderWork[];
+  imageGistId?: string;
+  worksMeta?: Array<{ name: string; title?: string }>;
+  hasProfileImage?: boolean;
   createdAt: string;
 }
 
@@ -56,34 +59,42 @@ export async function POST(req: NextRequest) {
     const metadata = session.metadata || {};
 
     try {
-      // 1. Retrieve full order data from GitHub Gist
+      // 1. Retrieve order metadata from Gist
       const gistId = metadata.gist_id;
       if (!gistId) {
         throw new Error("No gist_id in session metadata");
       }
 
-      const orderData = await fetchOrderFromGist(gistId);
+      const orderMeta = await fetchOrderFromGist(gistId);
 
-      // 2. Create site via GitHub API (with images)
-      const siteUrl = await createSite(orderData);
+      // 2. Retrieve images from separate image Gist
+      const imageGistId = metadata.image_gist_id || orderMeta.imageGistId;
+      let imageFiles: Record<string, string> = {};
+      if (imageGistId) {
+        imageFiles = await fetchImageGist(imageGistId);
+      }
 
-      // 3. Delete the gist (cleanup)
+      // 3. Create site via GitHub API (with images)
+      const siteUrl = await createSite(orderMeta, imageFiles);
+
+      // 4. Delete gists (cleanup)
       await deleteGist(gistId);
+      if (imageGistId) await deleteGist(imageGistId);
 
       // 4. Notify GAS for spreadsheet logging + email
       await notifyGAS({
-        order_id: orderData.orderId,
-        artist_name: orderData.artistName,
-        email: orderData.email,
-        template: orderData.template,
-        plan: orderData.plan,
+        order_id: orderMeta.orderId,
+        artist_name: orderMeta.artistName,
+        email: orderMeta.email,
+        template: orderMeta.template,
+        plan: orderMeta.plan,
         siteUrl,
         stripeSessionId: session.id,
         amountTotal: session.amount_total,
-        customerEmail: session.customer_email || orderData.email,
+        customerEmail: session.customer_email || orderMeta.email,
       });
 
-      console.log(`Site created for ${orderData.artistName}: ${siteUrl}`);
+      console.log(`Site created for ${orderMeta.artistName}: ${siteUrl}`);
     } catch (err) {
       console.error("Site creation failed:", err);
       // Don't return error - Stripe will retry. Log and handle manually.
@@ -116,6 +127,28 @@ async function fetchOrderFromGist(gistId: string): Promise<OrderData> {
   return JSON.parse(content) as OrderData;
 }
 
+async function fetchImageGist(gistId: string): Promise<Record<string, string>> {
+  const githubToken = process.env.GITHUB_TOKEN!;
+  const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+    headers: {
+      Authorization: `token ${githubToken}`,
+      Accept: "application/vnd.github.v3+json",
+    },
+  });
+
+  if (!res.ok) {
+    console.error(`Failed to fetch image gist ${gistId}`);
+    return {};
+  }
+
+  const gistData = await res.json();
+  const files: Record<string, string> = {};
+  for (const [name, file] of Object.entries(gistData.files || {})) {
+    files[name] = (file as { content: string }).content;
+  }
+  return files;
+}
+
 async function deleteGist(gistId: string): Promise<void> {
   const githubToken = process.env.GITHUB_TOKEN!;
 
@@ -133,14 +166,14 @@ async function deleteGist(gistId: string): Promise<void> {
   }
 }
 
-async function createSite(orderData: OrderData): Promise<string> {
+async function createSite(orderMeta: OrderData, imageFiles: Record<string, string>): Promise<string> {
   const githubToken = process.env.GITHUB_TOKEN!;
   const templateOwner = process.env.GITHUB_OWNER || "AndoLyo";
   const templateRepo =
     process.env.GITHUB_TEMPLATE_REPO || "shikumiya-template";
 
   // Generate repo name from artist name (sanitize for GitHub)
-  const repoName = `site-${orderData.artistName
+  const repoName = `site-${orderMeta.artistName
     ?.toLowerCase()
     .replace(/[^a-z0-9-]/g, "-")
     .replace(/-+/g, "-")
@@ -159,7 +192,7 @@ async function createSite(orderData: OrderData): Promise<string> {
         owner: templateOwner,
         name: repoName,
         private: false,
-        description: `${orderData.artistName}のギャラリーサイト — しくみや`,
+        description: `${orderMeta.artistName}のギャラリーサイト — しくみや`,
       }),
     },
   );
@@ -172,48 +205,71 @@ async function createSite(orderData: OrderData): Promise<string> {
   // Wait for repo to be ready
   await new Promise((r) => setTimeout(r, 3000));
 
-  // Step 2: Push work images to the repo
+  // Step 2: Push images from imageFiles Gist to the repo
   const workFilenames: { src: string; title: string; description: string }[] = [];
+  const worksMeta = (orderMeta as unknown as Record<string, unknown>).worksMeta as Array<{name: string; title?: string}> || [];
 
-  for (let i = 0; i < orderData.works.length; i++) {
-    const work = orderData.works[i];
-    const imageData = work.data.replace(/^data:image\/\w+;base64,/, "");
-    const ext = work.name.split(".").pop() || "webp";
-    const filename = `work_${String(i + 1).padStart(2, "0")}.${ext}`;
-
-    const pushRes = await fetch(
-      `https://api.github.com/repos/${templateOwner}/${repoName}/contents/public/images/${filename}`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `token ${githubToken}`,
-          Accept: "application/vnd.github.v3+json",
+  let workIndex = 0;
+  for (const [gistFileName, imageData] of Object.entries(imageFiles)) {
+    if (gistFileName === "profile") {
+      // Profile image
+      const pushRes = await fetch(
+        `https://api.github.com/repos/${templateOwner}/${repoName}/contents/public/images/about.webp`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `token ${githubToken}`,
+            Accept: "application/vnd.github.v3+json",
+          },
+          body: JSON.stringify({
+            message: "Add profile image",
+            content: imageData.replace(/^data:image\/\w+;base64,/, ""),
+          }),
         },
-        body: JSON.stringify({
-          message: `Add work image: ${filename}`,
-          content: imageData,
-        }),
-      },
-    );
+      );
+      if (!pushRes.ok) {
+        console.error("Failed to push profile image:", await pushRes.text());
+      }
+    } else {
+      // Work image
+      workIndex++;
+      const filename = `work_${String(workIndex).padStart(2, "0")}.webp`;
+      const meta = worksMeta[workIndex - 1];
 
-    if (!pushRes.ok) {
-      console.error(`Failed to push image ${filename}:`, await pushRes.text());
+      const pushRes = await fetch(
+        `https://api.github.com/repos/${templateOwner}/${repoName}/contents/public/images/${filename}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `token ${githubToken}`,
+            Accept: "application/vnd.github.v3+json",
+          },
+          body: JSON.stringify({
+            message: `Add work image: ${filename}`,
+            content: imageData.replace(/^data:image\/\w+;base64,/, ""),
+          }),
+        },
+      );
+
+      if (!pushRes.ok) {
+        console.error(`Failed to push image ${filename}:`, await pushRes.text());
+      }
+
+      workFilenames.push({
+        src: `/images/${filename}`,
+        title: meta?.title || `作品 ${String(workIndex).padStart(2, "0")}`,
+        description: "",
+      });
     }
-
-    workFilenames.push({
-      src: `/images/${filename}`,
-      title: work.title || `作品 ${String(i + 1).padStart(2, "0")}`,
-      description: work.description || "",
-    });
   }
 
-  // Step 3: Push profile image if provided
-  if (orderData.profileImage?.data) {
-    const profileData = orderData.profileImage.data.replace(
+  // Legacy: Push profile image if it was in orderMeta directly
+  if (!imageFiles["profile"] && orderMeta.profileImage?.data) {
+    const profileData = orderMeta.profileImage.data.replace(
       /^data:image\/\w+;base64,/,
       "",
     );
-    const profileExt = orderData.profileImage.name.split(".").pop() || "webp";
+    const profileExt = orderMeta.profileImage.name.split(".").pop() || "webp";
     const profileFilename = `about.${profileExt}`;
 
     const profileRes = await fetch(
@@ -237,7 +293,7 @@ async function createSite(orderData: OrderData): Promise<string> {
   }
 
   // Step 4: Update site.config.ts with full order data
-  const siteConfig = generateSiteConfig(orderData, workFilenames);
+  const siteConfig = generateSiteConfig(orderMeta, workFilenames);
 
   // Get current file SHA (needed for update)
   const fileRes = await fetch(
@@ -266,7 +322,7 @@ async function createSite(orderData: OrderData): Promise<string> {
         Accept: "application/vnd.github.v3+json",
       },
       body: JSON.stringify({
-        message: `Setup: ${orderData.artistName}のサイト設定`,
+        message: `Setup: ${orderMeta.artistName}のサイト設定`,
         content: Buffer.from(siteConfig).toString("base64"),
         ...(sha ? { sha } : {}),
       }),
@@ -338,41 +394,41 @@ async function createSite(orderData: OrderData): Promise<string> {
 }
 
 function generateSiteConfig(
-  orderData: OrderData,
+  orderMeta: OrderData,
   workFilenames: { src: string; title: string; description: string }[],
 ): string {
-  const name = orderData.artistName || "Your Name";
-  const bio = orderData.bio || "";
-  const template = orderData.template || "ai-art-portfolio";
-  const catchcopy = orderData.catchcopy || "";
-  const motto = orderData.motto || "";
-  const siteTitle = orderData.siteTitle || `${name} — Gallery`;
-  const genres = orderData.genres || [];
-  const tools = orderData.tools || [];
+  const name = orderMeta.artistName || "Your Name";
+  const bio = orderMeta.bio || "";
+  const template = orderMeta.template || "ai-art-portfolio";
+  const catchcopy = orderMeta.catchcopy || "";
+  const motto = orderMeta.motto || "";
+  const siteTitle = orderMeta.siteTitle || `${name} — Gallery`;
+  const genres = orderMeta.genres || [];
+  const tools = orderMeta.tools || [];
 
   // Determine profile image path
-  const profileExt = orderData.profileImage?.name?.split(".").pop() || "webp";
-  const aboutImage = orderData.profileImage?.data
+  const profileExt = orderMeta.profileImage?.name?.split(".").pop() || "webp";
+  const aboutImage = orderMeta.profileImage?.data
     ? `/images/about.${profileExt}`
     : "/images/about.webp";
 
   // Build social links array
   const socialLinks: string[] = [];
-  if (orderData.snsX)
+  if (orderMeta.snsX)
     socialLinks.push(
-      `    { label: "X (Twitter)", href: ${JSON.stringify(orderData.snsX)} },`,
+      `    { label: "X (Twitter)", href: ${JSON.stringify(orderMeta.snsX)} },`,
     );
-  if (orderData.snsInstagram)
+  if (orderMeta.snsInstagram)
     socialLinks.push(
-      `    { label: "Instagram", href: ${JSON.stringify(orderData.snsInstagram)} },`,
+      `    { label: "Instagram", href: ${JSON.stringify(orderMeta.snsInstagram)} },`,
     );
-  if (orderData.snsPixiv)
+  if (orderMeta.snsPixiv)
     socialLinks.push(
-      `    { label: "Pixiv", href: ${JSON.stringify(orderData.snsPixiv)} },`,
+      `    { label: "Pixiv", href: ${JSON.stringify(orderMeta.snsPixiv)} },`,
     );
-  if (orderData.snsOther)
+  if (orderMeta.snsOther)
     socialLinks.push(
-      `    { label: "Other", href: ${JSON.stringify(orderData.snsOther)} },`,
+      `    { label: "Other", href: ${JSON.stringify(orderMeta.snsOther)} },`,
     );
 
   // Build works array
@@ -435,7 +491,7 @@ ${worksEntries}
     title: "CONTACT",
     subtitle: "お問い合わせ・SNS",
     description: "お仕事のご依頼・コラボレーション・ご質問はお気軽にどうぞ。",
-    email: ${JSON.stringify(orderData.email || "")},
+    email: ${JSON.stringify(orderMeta.email || "")},
     social: [
 ${socialLinks.join("\n")}
     ],
