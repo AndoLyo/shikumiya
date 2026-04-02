@@ -139,44 +139,28 @@ export default function ShowcaseSection() {
                   href={`/templates/${tpl.id}`}
                   className="group block rounded-xl overflow-hidden border border-white/[0.06] hover:border-white/[0.2] transition-all duration-300 hover:-translate-y-1"
                 >
-                  {/* Preview */}
+                  {/* Live Preview */}
                   <div
-                    className="h-32 sm:h-36 relative overflow-hidden"
+                    className="h-36 sm:h-44 relative overflow-hidden"
                     style={{ background: tpl.colors[0] }}
                   >
-                    {/* Abstract mockup */}
-                    <div className="absolute inset-3 flex flex-col gap-1.5 opacity-50 group-hover:opacity-80 transition-opacity duration-300">
-                      <div
-                        className="h-1 w-10 rounded-full"
-                        style={{ background: tpl.colors[1] }}
-                      />
-                      <div className="flex-1 flex gap-1.5 mt-1">
-                        <div
-                          className="flex-[2] rounded"
-                          style={{ background: `${tpl.colors[1]}18` }}
-                        />
-                        <div
-                          className="flex-1 rounded"
-                          style={{ background: `${tpl.colors[2]}12` }}
-                        />
-                      </div>
-                      <div className="flex gap-1">
-                        {[1, 2, 1].map((w, j) => (
-                          <div
-                            key={j}
-                            className="h-0.5 rounded-full"
-                            style={{
-                              width: `${w * 16}px`,
-                              background: `${tpl.colors[j % 2 === 0 ? 1 : 2]}30`,
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </div>
+                    <iframe
+                      src={`/templates/${tpl.id}`}
+                      className="absolute top-0 left-0 border-none pointer-events-none"
+                      style={{
+                        width: "1280px",
+                        height: "800px",
+                        transform: "scale(0.18)",
+                        transformOrigin: "top left",
+                      }}
+                      tabIndex={-1}
+                      loading="lazy"
+                      title={tpl.name}
+                    />
 
                     {/* Hover overlay */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
-                      <span className="text-white text-[10px] tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                      <span className="text-white text-[10px] tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0 drop-shadow-lg">
                         デモを見る →
                       </span>
                     </div>
