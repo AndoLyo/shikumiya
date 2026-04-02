@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "template-site", "test"]
+  "exclude": ["node_modules", "template-site", "test", "tmp_orders"]
 }
