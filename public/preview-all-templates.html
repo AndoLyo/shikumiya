@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Templates Preview - All 10 Templates</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans JP', sans-serif;
+      background: #0a0a0f;
+      color: #e5e5e5;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 15, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .header h1 span {
+      color: #00e5ff;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      background: transparent;
+      color: #999;
+      font-size: 12px;
+      font-family: monospace;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.05em;
+    }
+
+    .btn:hover { border-color: rgba(255,255,255,0.2); color: #fff; }
+    .btn.active { border-color: #00e5ff; color: #00e5ff; background: rgba(0,229,255,0.05); }
+
+    .grid {
+      display: grid;
+      gap: 24px;
+      padding: 32px;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+
+    .grid.cols-1 { grid-template-columns: 1fr; }
+    .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+    .card {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      background: #0d0d15;
+      transition: border-color 0.3s;
+    }
+
+    .card:hover { border-color: rgba(255,255,255,0.15); }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(15,15,25,0.5);
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+
+    .card-title .name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .card-title .name-ja {
+      font-size: 11px;
+      color: #888;
+      font-family: monospace;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .card-actions a {
+      font-size: 11px;
+      font-family: monospace;
+      color: #00e5ff;
+      text-decoration: none;
+      padding: 4px 10px;
+      border: 1px solid rgba(0,229,255,0.2);
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .card-actions a:hover {
+      background: rgba(0,229,255,0.1);
+      border-color: rgba(0,229,255,0.4);
+    }
+
+    .card-body {
+      position: relative;
+      background: #111;
+    }
+
+    .card-body iframe {
+      width: 100%;
+      border: 0;
+      display: block;
+    }
+
+    .card-info {
+      padding: 12px 16px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-info .features {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .card-info .features span {
+      font-size: 10px;
+      font-family: monospace;
+      color: #666;
+      padding: 3px 8px;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 99px;
+      letter-spacing: 0.03em;
+    }
+
+    .card-info .colors {
+      display: flex;
+      gap: 4px;
+    }
+
+    .card-info .colors .swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .size-label {
+      font-size: 10px;
+      font-family: monospace;
+      color: #666;
+      padding: 2px 8px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 4px;
+    }
+
+    @media (max-width: 1200px) {
+      .grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+      .header { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+      .grid { padding: 16px; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1><span>Portfolio Templates</span> - Preview All 10</h1>
+    <div class="controls">
+      <span class="size-label" id="sizeLabel">Desktop (1280x800)</span>
+      <button class="btn" onclick="setSize('mobile')">Mobile</button>
+      <button class="btn" onclick="setSize('tablet')">Tablet</button>
+      <button class="btn active" onclick="setSize('desktop')">Desktop</button>
+      <span style="color:#333">|</span>
+      <button class="btn" onclick="setColumns(1)">1 Col</button>
+      <button class="btn active" onclick="setColumns(2)">2 Col</button>
+      <button class="btn" onclick="setColumns(3)">3 Col</button>
+    </div>
+  </div>
+
+  <div class="grid cols-2" id="grid"></div>
+
+  <script>
+    const BASE_URL = window.location.origin;
+
+    const templates = [
+      {
+        id: "pastel-pop",
+        name: "Pastel Pop",
+        nameJa: "パステル・ポップ",
+        dotColor: "#FF7EB3",
+        features: ["Masonry", "Filter", "Pastel"],
+        colors: ["#FFF5F9", "#FF7EB3", "#7EC8E3"],
+      },
+      {
+        id: "cyber-neon",
+        name: "Cyber Neon",
+        nameJa: "サイバー・ネオン",
+        dotColor: "#00F0FF",
+        features: ["Glitch", "Snap Scroll", "Neon"],
+        colors: ["#0A0A14", "#00F0FF", "#FF00E5"],
+      },
+      {
+        id: "ink-wash",
+        name: "Ink Wash",
+        nameJa: "墨絵・和風",
+        dotColor: "#C73E3A",
+        features: ["Vertical Text", "Horizontal Scroll", "Hanko"],
+        colors: ["#F5F0E8", "#C73E3A", "#3D6B5E"],
+      },
+      {
+        id: "studio-white",
+        name: "Studio White",
+        nameJa: "スタジオ・ホワイト",
+        dotColor: "#000000",
+        features: ["Lightbox", "Side Nav", "Minimal"],
+        colors: ["#FAFAFA", "#000000", "#999999"],
+      },
+      {
+        id: "retro-pop",
+        name: "Retro Pop",
+        nameJa: "レトロ・ポップ",
+        dotColor: "#FF6B35",
+        features: ["Collage", "Bold Border", "Vivid"],
+        colors: ["#FFFDF0", "#FF6B35", "#00B4D8"],
+      },
+      {
+        id: "dark-elegance",
+        name: "Dark Elegance",
+        nameJa: "ダーク・エレガンス",
+        dotColor: "#C9A96E",
+        features: ["Fullscreen Slider", "Auto-play", "Overlay"],
+        colors: ["#0D0D0D", "#C9A96E", "#F0EDE6"],
+      },
+      {
+        id: "watercolor-soft",
+        name: "Watercolor Soft",
+        nameJa: "水彩・ソフト",
+        dotColor: "#7FB5D5",
+        features: ["Organic SVG", "Frost Glass", "Watercolor"],
+        colors: ["#F8F5F0", "#7FB5D5", "#E8B4C8"],
+      },
+      {
+        id: "comic-panel",
+        name: "Comic Panel",
+        nameJa: "コミック・パネル",
+        dotColor: "#E63946",
+        features: ["Panel Grid", "Speech Bubble", "Speed Lines"],
+        colors: ["#FFFEF5", "#E63946", "#2563EB"],
+      },
+      {
+        id: "floating-gallery",
+        name: "Floating Gallery",
+        nameJa: "フローティング・ギャラリー",
+        dotColor: "#6C63FF",
+        features: ["3D Tilt", "Parallax", "Glass UI"],
+        colors: ["#111118", "#6C63FF", "#A5A0FF"],
+      },
+      {
+        id: "mosaic-bold",
+        name: "Mosaic Bold",
+        nameJa: "モザイク・ボールド",
+        dotColor: "#FF3D00",
+        features: ["Mosaic Grid", "B&W→Color", "Bold Typo"],
+        colors: ["#F5F5F5", "#FF3D00", "#0A0A0A"],
+      },
+    ];
+
+    let currentHeight = 800;
+
+    function renderCards() {
+      const grid = document.getElementById("grid");
+      grid.innerHTML = templates.map(t => `
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="dot" style="background:${t.dotColor}"></div>
+              <span class="name">${t.name}</span>
+              <span class="name-ja">${t.nameJa}</span>
+            </div>
+            <div class="card-actions">
+              <a href="${BASE_URL}/portfolio-templates/${t.id}" target="_blank">Open Full</a>
+            </div>
+          </div>
+          <div class="card-body">
+            <iframe
+              src="/portfolio-templates/${t.id}"
+              height="${currentHeight}"
+              loading="lazy"
+              title="${t.name}"
+            ></iframe>
+          </div>
+          <div class="card-info">
+            <div class="features">
+              ${t.features.map(f => `<span>${f}</span>`).join("")}
+            </div>
+            <div class="colors">
+              ${t.colors.map(c => `<div class="swatch" style="background:${c}"></div>`).join("")}
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function setSize(size) {
+      document.querySelectorAll(".controls .btn").forEach(b => {
+        if (["Mobile", "Tablet", "Desktop"].includes(b.textContent)) {
+          b.classList.remove("active");
+        }
+      });
+      event.target.classList.add("active");
+
+      const label = document.getElementById("sizeLabel");
+      const iframes = document.querySelectorAll(".card-body iframe");
+      const bodies = document.querySelectorAll(".card-body");
+
+      if (size === "mobile") {
+        label.textContent = "Mobile (375x667)";
+        currentHeight = 667;
+        bodies.forEach(b => {
+          b.style.maxWidth = "375px";
+          b.style.margin = "0 auto";
+        });
+        iframes.forEach(f => f.style.height = "667px");
+      } else if (size === "tablet") {
+        label.textContent = "Tablet (768x1024)";
+        currentHeight = 800;
+        bodies.forEach(b => {
+          b.style.maxWidth = "768px";
+          b.style.margin = "0 auto";
+        });
+        iframes.forEach(f => f.style.height = "800px");
+      } else {
+        label.textContent = "Desktop (1280x800)";
+        currentHeight = 800;
+        bodies.forEach(b => {
+          b.style.maxWidth = "none";
+          b.style.margin = "0";
+        });
+        iframes.forEach(f => f.style.height = "800px");
+      }
+    }
+
+    function setColumns(n) {
+      const grid = document.getElementById("grid");
+      grid.className = `grid cols-${n}`;
+      document.querySelectorAll(".controls .btn").forEach(b => {
+        if (["1 Col", "2 Col", "3 Col"].includes(b.textContent)) {
+          b.classList.remove("active");
+        }
+      });
+      event.target.classList.add("active");
+    }
+
+    renderCards();
+  </script>
+</body>
+</html>

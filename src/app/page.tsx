@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Header from "@/components/Header";
-import ShowcaseSection from "@/components/ShowcaseSection";
+import CinematicShowcase from "@/components/CinematicShowcase";
 import PricingSection from "@/components/PricingSection";
 import FAQSection from "@/components/FAQSection";
 import ContactSection from "@/components/ContactSection";
@@ -89,8 +89,8 @@ export default function Home() {
           <AnimatedCTA />
         </div>
 
-        {/* テンプレート一覧 */}
-        <ShowcaseSection />
+        {/* テンプレート一覧 — 映画の幕開け演出 */}
+        <CinematicShowcase />
 
         {/* 料金プラン */}
         <PricingSection />
