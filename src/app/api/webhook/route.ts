@@ -393,6 +393,36 @@ async function createSite(orderMeta: OrderData, imageFiles: Record<string, strin
   return siteUrl;
 }
 
+function detectColorTheme(requests: string): { primary: string; accent: string; background: string } {
+  const r = requests.toLowerCase();
+  // White/light themes
+  if (r.includes("白") || r.includes("ホワイト") || r.includes("ライト") || r.includes("white") || r.includes("明るい")) {
+    return { primary: "#2563eb", accent: "#d4a853", background: "#ffffff" };
+  }
+  // Pink themes
+  if (r.includes("ピンク") || r.includes("pink")) {
+    return { primary: "#ec4899", accent: "#f9a8d4", background: "#0a0a0f" };
+  }
+  // Green themes
+  if (r.includes("緑") || r.includes("グリーン") || r.includes("green")) {
+    return { primary: "#10b981", accent: "#34d399", background: "#0a0a0f" };
+  }
+  // Purple themes
+  if (r.includes("紫") || r.includes("パープル") || r.includes("purple")) {
+    return { primary: "#8b5cf6", accent: "#a78bfa", background: "#0a0a0f" };
+  }
+  // Red themes
+  if (r.includes("赤") || r.includes("レッド") || r.includes("red")) {
+    return { primary: "#ef4444", accent: "#f87171", background: "#0a0a0f" };
+  }
+  // Orange themes
+  if (r.includes("オレンジ") || r.includes("orange")) {
+    return { primary: "#f97316", accent: "#fb923c", background: "#0a0a0f" };
+  }
+  // Default
+  return { primary: "#00e5ff", accent: "#d4a853", background: "#0a0a0f" };
+}
+
 function generateSiteConfig(
   orderMeta: OrderData,
   workFilenames: { src: string; title: string; description: string }[],
@@ -405,6 +435,10 @@ function generateSiteConfig(
   const siteTitle = orderMeta.siteTitle || `${name} — Gallery`;
   const genres = orderMeta.genres || [];
   const tools = orderMeta.tools || [];
+  const requests = (orderMeta as unknown as Record<string, string>).requests || "";
+
+  // Auto-detect color theme from requests
+  const colors = detectColorTheme(requests);
 
   // Determine profile image path
   const profileExt = orderMeta.profileImage?.name?.split(".").pop() || "webp";
@@ -449,9 +483,9 @@ export const siteConfig = {
   template: ${JSON.stringify(template)},
 
   colors: {
-    primary: "#00e5ff",
-    accent: "#d4a853",
-    background: "#0a0a0f",
+    primary: "${colors.primary}",
+    accent: "${colors.accent}",
+    background: "${colors.background}",
   },
 
   hero: {
@@ -494,7 +528,7 @@ ${worksEntries}
     email: ${JSON.stringify(orderMeta.email || "")},
     social: [
 ${socialLinks.join("\n")}
-    ],
+    ] as { label: string; href: string }[],
   },
 
   nav: [
