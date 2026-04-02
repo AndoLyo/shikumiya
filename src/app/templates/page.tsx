@@ -1,10 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Layout, Grid3X3, Sun, MoveHorizontal, Frame, Palette, ExternalLink, SplitSquareHorizontal, Layers, Zap, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { Layout, Grid3X3, Sun, MoveHorizontal, Frame, Palette, ExternalLink, SplitSquareHorizontal, Layers, Zap, Sparkles, ChevronDown } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import SectionHeading from "@/components/SectionHeading";
+import DevicePreview from "@/components/DevicePreview";
 
 interface Template {
   id: string;
@@ -211,6 +213,45 @@ function TemplateCard({ template, index }: { template: Template; index: number }
   );
 }
 
+function TemplatePreviewSection() {
+  const [selectedId, setSelectedId] = useState(templates[5].id); // ai-art-portfolio default
+  const selectedTemplate = templates.find((t) => t.id === selectedId) || templates[5];
+  const previewUrl = `/templates/${selectedTemplate.id}`;
+
+  return (
+    <section className="max-w-[1100px] mx-auto px-6 mb-24">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+      >
+        <SectionHeading title="LIVE PREVIEW" subtitle="実際のテンプレートを確認" />
+
+        {/* Template selector */}
+        <div className="flex justify-center mb-8">
+          <div className="relative">
+            <select
+              value={selectedId}
+              onChange={(e) => setSelectedId(e.target.value)}
+              className="appearance-none bg-[#0d0d15]/80 border border-white/[0.1] rounded-xl px-5 py-3 pr-10 text-white font-mono text-sm tracking-wider cursor-pointer hover:border-white/[0.2] focus:border-primary/50 focus:outline-none transition-colors"
+            >
+              {templates.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name} — {t.nameJa}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Device Preview */}
+        <DevicePreview url={previewUrl} title={selectedTemplate.name} />
+      </motion.div>
+    </section>
+  );
+}
+
 export default function TemplatesPage() {
   return (
     <>
@@ -232,7 +273,7 @@ export default function TemplatesPage() {
             href="/"
             className="font-mono text-xs text-text-secondary hover:text-primary transition-colors tracking-wider"
           >
-            ← Back to Top
+            ← トップに戻る
           </Link>
         </div>
       </header>
@@ -247,7 +288,7 @@ export default function TemplatesPage() {
           >
             <SectionHeading
               title="TEMPLATES"
-              subtitle="Claude Codeで作った、プロ品質のポートフォリオテンプレート"
+              subtitle="プロ品質のポートフォリオテンプレート10種"
             />
           </motion.div>
 
@@ -257,9 +298,7 @@ export default function TemplatesPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15 }}
           >
-            プロのデザイナーサイトを分析し、その構造を再現したテンプレート集。
-            すべてClaude Codeだけで実装しています。
-            コードが書けなくても、自分だけのポートフォリオサイトが作れます。
+            プロのデザイナーサイトを参考に設計したテンプレート集。あなたの作品が映えるサイトが、フォーム入力だけで完成します。
           </motion.p>
 
           <motion.div
@@ -275,9 +314,6 @@ export default function TemplatesPage() {
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.05] text-emerald-400 font-mono text-[11px] tracking-wider">
               FREE
             </span>
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.02] text-text-secondary font-mono text-[11px] tracking-wider">
-              Next.js + Tailwind CSS
-            </span>
           </motion.div>
         </section>
 
@@ -290,56 +326,8 @@ export default function TemplatesPage() {
           </div>
         </section>
 
-        {/* Before / After */}
-        <section className="max-w-[1100px] mx-auto px-6 mb-24">
-          <motion.div
-            className="glow-border"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <div className="rounded-2xl bg-[#0d0d15]/80 backdrop-blur-sm p-8 sm:p-12">
-              <div className="grid sm:grid-cols-2 gap-8 items-center">
-                {/* Before */}
-                <div className="text-center">
-                  <div className="w-full aspect-video rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center mb-4">
-                    <div className="text-center">
-                      <div className="text-4xl mb-2 opacity-30">🖥️</div>
-                      <p className="text-text-muted text-xs font-mono">サイトがない状態</p>
-                    </div>
-                  </div>
-                  <span className="font-mono text-xs text-text-muted tracking-widest uppercase">
-                    Before
-                  </span>
-                </div>
-
-                {/* After */}
-                <div className="text-center">
-                  <div className="w-full aspect-video rounded-xl bg-gradient-to-br from-primary/10 via-violet-500/10 to-amber-500/10 border border-primary/20 flex items-center justify-center mb-4">
-                    <div className="text-center">
-                      <div className="text-4xl mb-2">✨</div>
-                      <p className="text-primary text-xs font-mono">
-                        プロ品質のポートフォリオ
-                      </p>
-                    </div>
-                  </div>
-                  <span className="font-mono text-xs text-primary tracking-widest uppercase">
-                    After — built with Claude Code
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-8 pt-8 border-t border-white/[0.06] text-center">
-                <p className="text-text-secondary text-sm mb-2">
-                  プロのサイトを分析 → テンプレートに落とし込み → 自分仕様に編集
-                </p>
-                <p className="text-text-muted text-xs">
-                  作り方の詳しい手順はnote記事で公開しています
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </section>
+        {/* Live Preview */}
+        <TemplatePreviewSection />
 
         {/* CTA */}
         <section className="max-w-[700px] mx-auto px-6 text-center">
@@ -349,21 +337,18 @@ export default function TemplatesPage() {
             viewport={{ once: true }}
           >
             <h3 className="font-serif text-2xl sm:text-3xl text-white font-bold mb-4">
-              自分のサイトも作りたい？
+              あなたのサイトを作りませんか？
             </h3>
             <p className="text-text-secondary text-sm mb-8 leading-relaxed">
-              テンプレートの選び方から、自分仕様への編集、デプロイまで。
-              手順をすべてnote記事にまとめています。
+              テンプレートを選んで、フォームに入力するだけ。あなただけのギャラリーサイトが完成します。
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="https://note.com/ando_lyo_ai"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/order"
                 className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-primary/10 border border-primary/40 text-primary font-mono text-xs tracking-widest uppercase hover:bg-primary/20 hover:border-primary/60 transition-all duration-300"
               >
-                noteで作り方を読む →
-              </a>
+                ¥980でサイトを作る →
+              </Link>
               <Link
                 href="/"
                 className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-white/[0.1] text-text-secondary font-mono text-xs tracking-widest uppercase hover:border-white/[0.2] hover:text-white transition-all duration-300"
