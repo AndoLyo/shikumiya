@@ -1,5 +1,5 @@
 /**
- * しくみや — Stripe Webhook Handler (GAS)
+ * しくみや — Stripe Webhook Handler + 注文管理API (GAS)
  *
  * Setup:
  * 1. Create a new Google Spreadsheet
@@ -9,13 +9,21 @@
  * 5. Copy the URL and set as GAS_WEBHOOK_URL env var in Vercel
  */
 
-// Spreadsheet ID — replace with your actual spreadsheet ID
-const SPREADSHEET_ID = "YOUR_SPREADSHEET_ID";
+const SPREADSHEET_ID = "1AYtEM0IlSAXcMoYOVKTjrIF16gqrn-AOdCipLCFS4MQ";
 const SHEET_NAME = "注文データ";
+
+// ━━━━━━━━━━━━━━━━━━━━
+// POST: Stripe Webhookからの注文受信
+// ━━━━━━━━━━━━━━━━━━━━
 
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
+
+    // Check if this is a status update request
+    if (data.action === "update_status") {
+      return updateOrderStatus(data.row, data.status);
+    }
 
     // 1. Log to spreadsheet
     logToSheet(data);
@@ -34,11 +42,80 @@ function doPost(e) {
   }
 }
 
+// ━━━━━━━━━━━━━━━━━━━━
+// GET: 未処理注文の取得
+// ━━━━━━━━━━━━━━━━━━━━
+
+function doGet(e) {
+  try {
+    const action = e.parameter.action || "pending";
+
+    if (action === "pending") {
+      return getPendingOrders();
+    }
+
+    if (action === "complete") {
+      const row = parseInt(e.parameter.row);
+      if (!row) {
+        return jsonResponse({ success: false, error: "row parameter required" });
+      }
+      return updateOrderStatus(row, "完了");
+    }
+
+    return jsonResponse({ success: false, error: "Unknown action" });
+  } catch (error) {
+    console.error("Error:", error);
+    return jsonResponse({ success: false, error: error.message });
+  }
+}
+
+function getPendingOrders() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) return jsonResponse({ orders: [] });
+
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
+  const orders = [];
+
+  for (let i = 1; i < data.length; i++) {
+    const status = data[i][13]; // ステータス列 (14番目、0-indexed=13)
+    if (status === "制作中") {
+      const order = {};
+      headers.forEach((h, j) => {
+        order[h] = data[i][j];
+      });
+      order._row = i + 1; // スプレッドシートの行番号（1-indexed + ヘッダー分）
+      orders.push(order);
+    }
+  }
+
+  return jsonResponse({ orders });
+}
+
+function updateOrderStatus(row, status) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) return jsonResponse({ success: false, error: "Sheet not found" });
+
+  sheet.getRange(row, 14).setValue(status); // ステータス列を更新
+  return jsonResponse({ success: true, row, status });
+}
+
+function jsonResponse(obj) {
+  return ContentService.createTextOutput(
+    JSON.stringify(obj),
+  ).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━
+// スプレッドシート記録
+// ━━━━━━━━━━━━━━━━━━━━
+
 function logToSheet(data) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   let sheet = ss.getSheetByName(SHEET_NAME);
 
-  // Create sheet with headers if it doesn't exist
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
     sheet.appendRow([
@@ -56,9 +133,12 @@ function logToSheet(data) {
       "Stripe Session ID",
       "金額",
       "ステータス",
+      "要望",
+      "キャッチコピー",
+      "モットー",
+      "GistID",
     ]);
-    // Format header
-    sheet.getRange(1, 1, 1, 14).setFontWeight("bold");
+    sheet.getRange(1, 1, 1, 18).setFontWeight("bold");
   }
 
   sheet.appendRow([
@@ -76,8 +156,16 @@ function logToSheet(data) {
     data.stripeSessionId || "",
     data.amountTotal || "",
     "制作中",
+    data.requests || "",
+    data.catchcopy || "",
+    data.motto || "",
+    data.image_gist_id || data.imageGistId || "",
   ]);
 }
+
+// ━━━━━━━━━━━━━━━━━━━━
+// メール送信
+// ━━━━━━━━━━━━━━━━━━━━
 
 function sendCompletionEmail(data) {
   const email = data.customerEmail || data.email;
@@ -127,12 +215,15 @@ X: https://x.com/ando_lyo
   GmailApp.sendEmail(
     "ando.lyo.ai@gmail.com",
     `【しくみや】新規注文: ${artistName}様 (${plan})`,
-    `新規注文が入りました。\n\nアーティスト名: ${artistName}\nプラン: ${plan}\nテンプレート: ${data.template}\nサイトURL: ${siteUrl}\nメール: ${email}`,
+    `新規注文が入りました。\n\nアーティスト名: ${artistName}\nプラン: ${plan}\nテンプレート: ${data.template}\nサイトURL: ${siteUrl}\nメール: ${email}\n要望: ${data.requests || "なし"}`,
     { name: "しくみや自動通知" },
   );
 }
 
-// Test function
+// ━━━━━━━━━━━━━━━━━━━━
+// テスト
+// ━━━━━━━━━━━━━━━━━━━━
+
 function testDoPost() {
   const testData = {
     postData: {
@@ -147,10 +238,16 @@ function testDoPost() {
         siteUrl: "https://site-test.vercel.app",
         stripeSessionId: "cs_test_123",
         amountTotal: 980,
+        requests: "白基調にしてほしい",
       }),
     },
   };
 
   const result = doPost(testData);
+  console.log(result.getContent());
+}
+
+function testGetPending() {
+  const result = getPendingOrders();
   console.log(result.getContent());
 }
