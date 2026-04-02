@@ -6,9 +6,7 @@ import Link from "next/link";
 
 const navLinks = [
   { label: "テンプレート", href: "#showcase" },
-  { label: "制作の流れ", href: "#service" },
   { label: "料金", href: "#pricing" },
-  { label: "運営者", href: "#about" },
   { label: "よくある質問", href: "#faq" },
 ];
 
