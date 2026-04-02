@@ -3,6 +3,34 @@ import { NextRequest, NextResponse } from "next/server";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
+interface OrderWork {
+  name: string;
+  data: string; // base64 data URL
+  title?: string;
+  description?: string;
+}
+
+interface OrderData {
+  orderId: string;
+  artistName: string;
+  email: string;
+  template: string;
+  plan: string;
+  bio?: string;
+  catchcopy?: string;
+  motto?: string;
+  siteTitle?: string;
+  genres?: string[];
+  tools?: string[];
+  snsX?: string;
+  snsInstagram?: string;
+  snsPixiv?: string;
+  snsOther?: string;
+  profileImage?: { name: string; data: string };
+  works: OrderWork[];
+  createdAt: string;
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const sig = req.headers.get("stripe-signature");
@@ -28,19 +56,34 @@ export async function POST(req: NextRequest) {
     const metadata = session.metadata || {};
 
     try {
-      // 1. Create site via GitHub API
-      const siteUrl = await createSite(metadata);
+      // 1. Retrieve full order data from GitHub Gist
+      const gistId = metadata.gist_id;
+      if (!gistId) {
+        throw new Error("No gist_id in session metadata");
+      }
 
-      // 2. Notify GAS for spreadsheet logging + email
+      const orderData = await fetchOrderFromGist(gistId);
+
+      // 2. Create site via GitHub API (with images)
+      const siteUrl = await createSite(orderData);
+
+      // 3. Delete the gist (cleanup)
+      await deleteGist(gistId);
+
+      // 4. Notify GAS for spreadsheet logging + email
       await notifyGAS({
-        ...metadata,
+        order_id: orderData.orderId,
+        artist_name: orderData.artistName,
+        email: orderData.email,
+        template: orderData.template,
+        plan: orderData.plan,
         siteUrl,
         stripeSessionId: session.id,
         amountTotal: session.amount_total,
-        customerEmail: session.customer_email || metadata.email,
+        customerEmail: session.customer_email || orderData.email,
       });
 
-      console.log(`Site created for ${metadata.artist_name}: ${siteUrl}`);
+      console.log(`Site created for ${orderData.artistName}: ${siteUrl}`);
     } catch (err) {
       console.error("Site creation failed:", err);
       // Don't return error - Stripe will retry. Log and handle manually.
@@ -50,14 +93,54 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ received: true });
 }
 
-async function createSite(metadata: Record<string, string>): Promise<string> {
+async function fetchOrderFromGist(gistId: string): Promise<OrderData> {
+  const githubToken = process.env.GITHUB_TOKEN!;
+
+  const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+    headers: {
+      Authorization: `token ${githubToken}`,
+      Accept: "application/vnd.github.v3+json",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch gist ${gistId}: ${await res.text()}`);
+  }
+
+  const gistData = await res.json();
+  const content = gistData.files?.["order.json"]?.content;
+  if (!content) {
+    throw new Error(`Gist ${gistId} has no order.json file`);
+  }
+
+  return JSON.parse(content) as OrderData;
+}
+
+async function deleteGist(gistId: string): Promise<void> {
+  const githubToken = process.env.GITHUB_TOKEN!;
+
+  try {
+    await fetch(`https://api.github.com/gists/${gistId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `token ${githubToken}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+    });
+  } catch (err) {
+    // Non-critical — log but don't fail
+    console.error(`Failed to delete gist ${gistId}:`, err);
+  }
+}
+
+async function createSite(orderData: OrderData): Promise<string> {
   const githubToken = process.env.GITHUB_TOKEN!;
   const templateOwner = process.env.GITHUB_OWNER || "AndoLyo";
   const templateRepo =
     process.env.GITHUB_TEMPLATE_REPO || "shikumiya-template";
 
   // Generate repo name from artist name (sanitize for GitHub)
-  const repoName = `site-${metadata.artist_name
+  const repoName = `site-${orderData.artistName
     ?.toLowerCase()
     .replace(/[^a-z0-9-]/g, "-")
     .replace(/-+/g, "-")
@@ -76,7 +159,7 @@ async function createSite(metadata: Record<string, string>): Promise<string> {
         owner: templateOwner,
         name: repoName,
         private: false,
-        description: `${metadata.artist_name}のギャラリーサイト — しくみや`,
+        description: `${orderData.artistName}のギャラリーサイト — しくみや`,
       }),
     },
   );
@@ -89,8 +172,72 @@ async function createSite(metadata: Record<string, string>): Promise<string> {
   // Wait for repo to be ready
   await new Promise((r) => setTimeout(r, 3000));
 
-  // Step 2: Update site.config.ts with user data
-  const siteConfig = generateSiteConfig(metadata);
+  // Step 2: Push work images to the repo
+  const workFilenames: { src: string; title: string; description: string }[] = [];
+
+  for (let i = 0; i < orderData.works.length; i++) {
+    const work = orderData.works[i];
+    const imageData = work.data.replace(/^data:image\/\w+;base64,/, "");
+    const ext = work.name.split(".").pop() || "webp";
+    const filename = `work_${String(i + 1).padStart(2, "0")}.${ext}`;
+
+    const pushRes = await fetch(
+      `https://api.github.com/repos/${templateOwner}/${repoName}/contents/public/images/${filename}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${githubToken}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+        body: JSON.stringify({
+          message: `Add work image: ${filename}`,
+          content: imageData,
+        }),
+      },
+    );
+
+    if (!pushRes.ok) {
+      console.error(`Failed to push image ${filename}:`, await pushRes.text());
+    }
+
+    workFilenames.push({
+      src: `/images/${filename}`,
+      title: work.title || `作品 ${String(i + 1).padStart(2, "0")}`,
+      description: work.description || "",
+    });
+  }
+
+  // Step 3: Push profile image if provided
+  if (orderData.profileImage?.data) {
+    const profileData = orderData.profileImage.data.replace(
+      /^data:image\/\w+;base64,/,
+      "",
+    );
+    const profileExt = orderData.profileImage.name.split(".").pop() || "webp";
+    const profileFilename = `about.${profileExt}`;
+
+    const profileRes = await fetch(
+      `https://api.github.com/repos/${templateOwner}/${repoName}/contents/public/images/${profileFilename}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${githubToken}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+        body: JSON.stringify({
+          message: `Add profile image: ${profileFilename}`,
+          content: profileData,
+        }),
+      },
+    );
+
+    if (!profileRes.ok) {
+      console.error("Failed to push profile image:", await profileRes.text());
+    }
+  }
+
+  // Step 4: Update site.config.ts with full order data
+  const siteConfig = generateSiteConfig(orderData, workFilenames);
 
   // Get current file SHA (needed for update)
   const fileRes = await fetch(
@@ -119,7 +266,7 @@ async function createSite(metadata: Record<string, string>): Promise<string> {
         Accept: "application/vnd.github.v3+json",
       },
       body: JSON.stringify({
-        message: `Setup: ${metadata.artist_name}のサイト設定`,
+        message: `Setup: ${orderData.artistName}のサイト設定`,
         content: Buffer.from(siteConfig).toString("base64"),
         ...(sha ? { sha } : {}),
       }),
@@ -131,7 +278,7 @@ async function createSite(metadata: Record<string, string>): Promise<string> {
     throw new Error(`site.config.ts update failed: ${err}`);
   }
 
-  // Step 3: Create Vercel project from repo
+  // Step 5: Create Vercel project from repo
   const vercelToken = process.env.VERCEL_TOKEN;
   let siteUrl = `https://${repoName}.vercel.app`;
 
@@ -156,7 +303,7 @@ async function createSite(metadata: Record<string, string>): Promise<string> {
       const vercelData = await vercelRes.json();
       siteUrl = `https://${vercelData.name}.vercel.app`;
 
-      // Step 4: Trigger initial deployment
+      // Step 6: Trigger initial deployment
       await new Promise((r) => setTimeout(r, 2000));
       const deployRes = await fetch("https://api.vercel.com/v13/deployments", {
         method: "POST",
@@ -190,34 +337,56 @@ async function createSite(metadata: Record<string, string>): Promise<string> {
   return siteUrl;
 }
 
-function generateSiteConfig(metadata: Record<string, string>): string {
-  const name = metadata.artist_name || "Your Name";
-  const bio = metadata.bio || "";
-  const template = metadata.template || "ai-art-portfolio";
+function generateSiteConfig(
+  orderData: OrderData,
+  workFilenames: { src: string; title: string; description: string }[],
+): string {
+  const name = orderData.artistName || "Your Name";
+  const bio = orderData.bio || "";
+  const template = orderData.template || "ai-art-portfolio";
+  const catchcopy = orderData.catchcopy || "";
+  const motto = orderData.motto || "";
+  const siteTitle = orderData.siteTitle || `${name} — Gallery`;
+  const genres = orderData.genres || [];
+  const tools = orderData.tools || [];
+
+  // Determine profile image path
+  const profileExt = orderData.profileImage?.name?.split(".").pop() || "webp";
+  const aboutImage = orderData.profileImage?.data
+    ? `/images/about.${profileExt}`
+    : "/images/about.webp";
 
   // Build social links array
   const socialLinks: string[] = [];
-  if (metadata.sns_x)
+  if (orderData.snsX)
     socialLinks.push(
-      `    { label: "X (Twitter)", href: ${JSON.stringify(metadata.sns_x)} },`,
+      `    { label: "X (Twitter)", href: ${JSON.stringify(orderData.snsX)} },`,
     );
-  if (metadata.sns_instagram)
+  if (orderData.snsInstagram)
     socialLinks.push(
-      `    { label: "Instagram", href: ${JSON.stringify(metadata.sns_instagram)} },`,
+      `    { label: "Instagram", href: ${JSON.stringify(orderData.snsInstagram)} },`,
     );
-  if (metadata.sns_pixiv)
+  if (orderData.snsPixiv)
     socialLinks.push(
-      `    { label: "Pixiv", href: ${JSON.stringify(metadata.sns_pixiv)} },`,
+      `    { label: "Pixiv", href: ${JSON.stringify(orderData.snsPixiv)} },`,
     );
-  if (metadata.sns_other)
+  if (orderData.snsOther)
     socialLinks.push(
-      `    { label: "Other", href: ${JSON.stringify(metadata.sns_other)} },`,
+      `    { label: "Other", href: ${JSON.stringify(orderData.snsOther)} },`,
     );
+
+  // Build works array
+  const worksEntries = workFilenames
+    .map(
+      (w) =>
+        `    { src: ${JSON.stringify(w.src)}, title: ${JSON.stringify(w.title)}, description: ${JSON.stringify(w.description)} },`,
+    )
+    .join("\n");
 
   return `// Generated by しくみや — ${new Date().toISOString()}
 export const siteConfig = {
   name: ${JSON.stringify(name)},
-  siteTitle: ${JSON.stringify(`${name} — Gallery`)},
+  siteTitle: ${JSON.stringify(siteTitle)},
   description: ${JSON.stringify(bio || `${name}のギャラリーサイト`)},
   url: "",
   lang: "ja",
@@ -231,7 +400,8 @@ export const siteConfig = {
 
   hero: {
     tagline: "Gallery",
-    catchcopy: ${JSON.stringify(bio ? bio.slice(0, 50) : `${name}の作品`)},
+    catchcopy: ${JSON.stringify(catchcopy || (bio ? bio.slice(0, 50) : `${name}の作品`))},
+    motto: ${JSON.stringify(motto)},
     subtitle: "Art Portfolio",
     description: ${JSON.stringify(bio || "")},
     backgroundImage: "/images/hero.webp",
@@ -246,9 +416,7 @@ export const siteConfig = {
     subtitle: "作品ギャラリー",
     description: "",
     works: [
-      { src: "/images/work_01.webp", title: "作品 01" },
-      { src: "/images/work_02.webp", title: "作品 02" },
-      { src: "/images/work_03.webp", title: "作品 03" },
+${worksEntries}
     ],
     initialDisplay: 8,
   },
@@ -256,17 +424,18 @@ export const siteConfig = {
   about: {
     title: "ABOUT",
     subtitle: "アーティストについて",
-    image: "/images/about.webp",
+    image: ${JSON.stringify(aboutImage)},
     paragraphs: [${bio ? JSON.stringify(bio) : '""'}],
-    quote: "",
-    tools: [],
+    quote: ${JSON.stringify(motto)},
+    genres: ${JSON.stringify(genres)},
+    tools: ${JSON.stringify(tools)},
   },
 
   contact: {
     title: "CONTACT",
     subtitle: "お問い合わせ・SNS",
     description: "お仕事のご依頼・コラボレーション・ご質問はお気軽にどうぞ。",
-    email: ${JSON.stringify(metadata.email || "")},
+    email: ${JSON.stringify(orderData.email || "")},
     social: [
 ${socialLinks.join("\n")}
     ],

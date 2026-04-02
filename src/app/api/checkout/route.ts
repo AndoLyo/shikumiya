@@ -8,12 +8,59 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     // Validate required fields
-    if (!body.artistName || !body.email || !body.template || !body.plan) {
+    if (!body.artistName || !body.email || !body.template || !body.works?.length) {
       return NextResponse.json(
-        { error: "必須項目が不足しています。" },
+        { error: "必須項目が入力されていません" },
         { status: 400 }
       );
     }
+
+    if (body.works.length < 3) {
+      return NextResponse.json(
+        { error: "作品画像は3枚以上必要です" },
+        { status: 400 }
+      );
+    }
+
+    // Generate unique order ID
+    const orderId = `order_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+    // Store full order data as a GitHub Gist (private)
+    // Stripe metadata has a 500-char limit per field and 50 field limit,
+    // so images (base64) cannot be stored there.
+    const githubToken = process.env.GITHUB_TOKEN!;
+    const gistRes = await fetch("https://api.github.com/gists", {
+      method: "POST",
+      headers: {
+        Authorization: `token ${githubToken}`,
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        description: `しくみや注文データ: ${orderId}`,
+        public: false,
+        files: {
+          "order.json": {
+            content: JSON.stringify({
+              orderId,
+              ...body,
+              createdAt: new Date().toISOString(),
+            }),
+          },
+        },
+      }),
+    });
+
+    if (!gistRes.ok) {
+      console.error("Gist creation failed:", await gistRes.text());
+      return NextResponse.json(
+        { error: "注文データの保存に失敗しました" },
+        { status: 500 }
+      );
+    }
+
+    const gistData = await gistRes.json();
+    const gistId = gistData.id;
 
     // Determine price ID based on plan
     const priceId =
@@ -21,16 +68,13 @@ export async function POST(req: NextRequest) {
         ? process.env.STRIPE_PRICE_OMAKASE!
         : process.env.STRIPE_PRICE_TEMPLATE!;
 
-    // Store form data in metadata (Stripe metadata values must be strings, max 500 chars each)
+    // Store only a reference in Stripe metadata (within 500-char limits)
     const metadata: Record<string, string> = {
+      order_id: orderId,
+      gist_id: gistId,
       artist_name: String(body.artistName).slice(0, 500),
       email: String(body.email).slice(0, 500),
       template: String(body.template).slice(0, 500),
-      bio: String(body.bio || "").slice(0, 500),
-      sns_x: String(body.snsX || "").slice(0, 500),
-      sns_instagram: String(body.snsInstagram || "").slice(0, 500),
-      sns_pixiv: String(body.snsPixiv || "").slice(0, 500),
-      sns_other: String(body.snsOther || "").slice(0, 500),
       plan: String(body.plan),
     };
 
@@ -53,9 +97,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url: session.url });
   } catch (err) {
-    console.error("Stripe checkout error:", err);
+    console.error("Checkout error:", err);
     return NextResponse.json(
-      { error: "決済セッションの作成に失敗しました。" },
+      { error: "決済セッションの作成に失敗しました" },
       { status: 500 }
     );
   }
