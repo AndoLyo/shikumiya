@@ -749,7 +749,7 @@ export default function OrderPage() {
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
                       multiple
-                      onChange={(e) => handleWorkFiles(e.target.files)}
+                      onChange={(e) => { handleWorkFiles(e.target.files); e.target.value = ""; }}
                       className="hidden"
                     />
                   </div>
