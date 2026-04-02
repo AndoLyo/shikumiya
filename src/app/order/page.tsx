@@ -173,6 +173,11 @@ export default function OrderPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  // Background upload state
+  const [imageGistId, setImageGistId] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadedCount, setUploadedCount] = useState(0);
+
   const worksInputRef = useRef<HTMLInputElement>(null);
   const profileInputRef = useRef<HTMLInputElement>(null);
 
@@ -219,6 +224,7 @@ export default function OrderPage() {
     const toProcess = Array.from(files).slice(0, remaining);
     const maxSize = 5 * 1024 * 1024;
 
+    const newWorks: WorkImage[] = [];
     for (const file of toProcess) {
       if (file.size > maxSize) {
         setError(`${file.name} は5MBを超えています`);
@@ -229,13 +235,38 @@ export default function OrderPage() {
         continue;
       }
       const data = await fileToBase64(file);
-      const idx = works.length + toProcess.indexOf(file) + 1;
-      setWorks((prev) => [
-        ...prev,
-        { data, name: file.name, title: `作品 ${String(prev.length + 1).padStart(2, "0")}` },
-      ]);
+      newWorks.push({ data, name: file.name, title: `作品 ${String(works.length + newWorks.length + 1).padStart(2, "0")}` });
     }
-  }, [works.length]);
+
+    if (newWorks.length === 0) return;
+    setWorks((prev) => [...prev, ...newWorks]);
+
+    // Background upload immediately
+    setUploading(true);
+    let gistId = imageGistId;
+    for (const w of newWorks) {
+      try {
+        const res = await fetch("/api/upload-images", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gistId: gistId || undefined,
+            fileName: `work_${String(works.length + newWorks.indexOf(w) + 1).padStart(2, "0")}`,
+            imageData: w.data,
+          }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          gistId = data.gistId;
+          setImageGistId(gistId);
+          setUploadedCount((c) => c + 1);
+        }
+      } catch {
+        // Silent fail — will retry on submit if needed
+      }
+    }
+    setUploading(false);
+  }, [works.length, imageGistId]);
 
   const removeWork = (idx: number) => {
     setWorks((prev) => prev.filter((_, i) => i !== idx));
@@ -252,7 +283,24 @@ export default function OrderPage() {
     if (!file.type.match(/^image\/(jpeg|png|webp)$/)) { setError("JPG/PNG/WebP形式の画像を選択してください"); return; }
     const data = await fileToBase64(file);
     setProfileImage({ data, name: file.name });
-  }, []);
+
+    // Background upload
+    try {
+      const res = await fetch("/api/upload-images", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          gistId: imageGistId || undefined,
+          fileName: "profile",
+          imageData: data,
+        }),
+      });
+      const result = await res.json();
+      if (res.ok) setImageGistId(result.gistId);
+    } catch {
+      // Will retry on submit
+    }
+  }, [imageGistId]);
 
   // ─── Drop handler factory ──────────────────────────────
   const onDrop = (handler: (files: FileList | null) => void) => (e: React.DragEvent) => {
@@ -273,48 +321,13 @@ export default function OrderPage() {
     const allTools = [...tools, ...(toolOtherChecked && toolOther.trim() ? [toolOther.trim()] : [])];
 
     try {
-      // Step 1: Upload images one by one to a Gist (avoid body size limit)
-      let imageGistId = "";
-      setError("画像をアップロード中...");
-
-      for (let i = 0; i < works.length; i++) {
-        const w = works[i];
-        setError(`画像をアップロード中... (${i + 1}/${works.length})`);
-        const uploadRes = await fetch("/api/upload-images", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            gistId: imageGistId || undefined,
-            fileName: `work_${String(i + 1).padStart(2, "0")}`,
-            imageData: w.data,
-            orderId: `${artistName.trim()}-${Date.now()}`,
-          }),
-        });
-        const uploadData = await uploadRes.json();
-        if (!uploadRes.ok) throw new Error(uploadData.error || "画像アップロードに失敗しました");
-        imageGistId = uploadData.gistId;
+      // Images are already uploaded in background. Just send metadata.
+      if (uploading) {
+        setError("画像のアップロードが完了するまでお待ちください...");
+        setIsSubmitting(false);
+        return;
       }
 
-      // Upload profile image if present
-      if (profileImage) {
-        setError("プロフィール画像をアップロード中...");
-        const profileRes = await fetch("/api/upload-images", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            gistId: imageGistId || undefined,
-            fileName: "profile",
-            imageData: profileImage.data,
-          }),
-        });
-        const profileData = await profileRes.json();
-        if (!profileRes.ok) throw new Error(profileData.error || "プロフィール画像のアップロードに失敗しました");
-        imageGistId = profileData.gistId;
-      }
-
-      setError("決済ページを準備中...");
-
-      // Step 2: Send metadata (no images) to checkout
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -743,7 +756,11 @@ export default function OrderPage() {
                   >
                     <Upload className="w-8 h-8 text-text-muted mx-auto mb-3" />
                     <p className="text-text-secondary text-sm">ドラッグ&ドロップ、またはクリックして選択</p>
-                    <p className="text-text-muted text-xs mt-1">{works.length}/10枚</p>
+                    <p className="text-text-muted text-xs mt-1">
+                      {works.length}/10枚
+                      {uploading && <span className="text-primary ml-2">アップロード中...</span>}
+                      {!uploading && uploadedCount > 0 && <span className="text-emerald-400 ml-2">✓ {uploadedCount}枚アップ済み</span>}
+                    </p>
                     <input
                       ref={worksInputRef}
                       type="file"
