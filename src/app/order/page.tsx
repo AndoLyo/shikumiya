@@ -623,22 +623,24 @@ export default function OrderPage() {
                             : "border-white/[0.06] hover:border-white/[0.15]"
                         }`}
                       >
-                        {/* Color preview */}
+                        {/* Live iframe preview */}
                         <div
-                          className="h-20 relative overflow-hidden"
+                          className="h-24 sm:h-28 relative overflow-hidden"
                           style={{ background: tpl.colors[0] }}
                         >
-                          <div className="absolute inset-2.5 flex flex-col gap-1 opacity-60 group-hover:opacity-80 transition-opacity">
-                            <div className="h-0.5 w-6 rounded-full" style={{ background: tpl.colors[1] }} />
-                            <div className="flex-1 flex gap-1 mt-0.5">
-                              <div className="flex-1 rounded" style={{ background: `${tpl.colors[1]}20` }} />
-                              <div className="w-1/3 rounded" style={{ background: `${tpl.colors[2]}15` }} />
-                            </div>
-                            <div className="flex gap-0.5">
-                              <div className="h-0.5 w-4 rounded-full" style={{ background: `${tpl.colors[2]}40` }} />
-                              <div className="h-0.5 w-3 rounded-full" style={{ background: `${tpl.colors[1]}30` }} />
-                            </div>
-                          </div>
+                          <iframe
+                            src={`/templates/${tpl.id}`}
+                            className="absolute top-0 left-0 border-none pointer-events-none"
+                            style={{
+                              width: "1280px",
+                              height: "800px",
+                              transform: "scale(0.12)",
+                              transformOrigin: "top left",
+                            }}
+                            tabIndex={-1}
+                            loading="lazy"
+                            title={tpl.name}
+                          />
                           {template === tpl.id && (
                             <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                               <Check className="w-3 h-3 text-[#0a0a0f]" />
