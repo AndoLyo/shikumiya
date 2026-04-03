@@ -532,8 +532,8 @@ function FieldInput({
         >
           <option value="">選択してください</option>
           {field.options?.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
             </option>
           ))}
         </select>
