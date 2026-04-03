@@ -5,6 +5,7 @@ import { HeroSection } from "@/components/portfolio-templates/cyber-neon/HeroSec
 import { WorksSection } from "@/components/portfolio-templates/cyber-neon/WorksSection";
 import { AboutSection } from "@/components/portfolio-templates/cyber-neon/AboutSection";
 import { ContactSection } from "@/components/portfolio-templates/cyber-neon/ContactSection";
+import { Footer } from "@/components/portfolio-templates/cyber-neon/Footer";
 
 export default function CyberNeonPage() {
   return (
@@ -30,6 +31,7 @@ export default function CyberNeonPage() {
         <AboutSection />
         <ContactSection />
       </main>
+      <Footer />
     </div>
   );
 }
