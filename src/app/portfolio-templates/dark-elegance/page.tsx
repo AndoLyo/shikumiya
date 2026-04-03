@@ -1,14 +1,17 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { HeroSection } from "@/components/portfolio-templates/dark-elegance/HeroSection";
 import { HeroSlider } from "@/components/portfolio-templates/dark-elegance/HeroSlider";
 import { AboutPanel } from "@/components/portfolio-templates/dark-elegance/AboutPanel";
 import { ContactOverlay } from "@/components/portfolio-templates/dark-elegance/ContactOverlay";
+import { ContactSection } from "@/components/portfolio-templates/dark-elegance/ContactSection";
 import { NavigationDots } from "@/components/portfolio-templates/dark-elegance/NavigationDots";
 
 const TOTAL_SLIDES = 8;
 
 export default function DarkElegancePage() {
+  const [showHero, setShowHero] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -42,6 +45,10 @@ export default function DarkElegancePage() {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
+  const handleEnterFromHero = useCallback(() => {
+    setShowHero(false);
+  }, []);
+
   return (
     <div
       className="dark-elegance-template"
@@ -56,14 +63,22 @@ export default function DarkElegancePage() {
           "--de-border": "rgba(201, 169, 110, 0.2)",
           position: "relative",
           width: "100%",
-          height: "100vh",
-          overflow: "hidden",
+          minHeight: "100vh",
+          overflow: showHero ? "hidden" : undefined,
           background: "var(--de-bg)",
           color: "var(--de-text)",
         } as React.CSSProperties
       }
     >
+      {/* Hero landing section */}
+      {showHero && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 60 }}>
+          <HeroSection onEnter={handleEnterFromHero} />
+        </div>
+      )}
+
       {/* Full-screen hero slider */}
+      <div style={{ height: "100vh", position: "relative", overflow: "hidden" }}>
       <HeroSlider
         externalSlide={currentSlide}
         onSlideChange={setCurrentSlide}
@@ -87,6 +102,10 @@ export default function DarkElegancePage() {
 
       {/* Contact overlay (full-screen modal) */}
       <ContactOverlay isOpen={isContactOpen} onClose={closeContact} />
+      </div>
+
+      {/* Contact section at bottom */}
+      <ContactSection />
     </div>
   );
 }

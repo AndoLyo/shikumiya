@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { SideNav } from "@/components/portfolio-templates/studio-white/SideNav";
+import { HeroSection } from "@/components/portfolio-templates/studio-white/HeroSection";
 import { GalleryGrid } from "@/components/portfolio-templates/studio-white/GalleryGrid";
 import { Lightbox } from "@/components/portfolio-templates/studio-white/Lightbox";
 import { AboutSection } from "@/components/portfolio-templates/studio-white/AboutSection";
+import { ContactSection } from "@/components/portfolio-templates/studio-white/ContactSection";
 
 export type Work = {
   id: number;
@@ -147,10 +149,10 @@ export default function StudioWhitePage() {
           transition: "margin-left 0.3s ease",
         }}
       >
+        <HeroSection />
         <GalleryGrid works={works} onOpen={(index) => setLightboxIndex(index)} />
         <AboutSection />
-        {/* Bottom whitespace */}
-        <div style={{ height: "120px" }} />
+        <ContactSection />
       </main>
 
       <Lightbox
