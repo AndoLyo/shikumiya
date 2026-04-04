@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useCallback, use } from "react";
+import { useState, useRef, useCallback, useEffect, use } from "react";
+import imageCompression from "browser-image-compression";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -81,6 +82,20 @@ function fileToBase64(file: File): Promise<string> {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+}
+
+// ─── Image Compression ─────────────────────────────────────
+async function compressImage(file: File): Promise<File> {
+  const options = {
+    maxSizeMB: 1,
+    maxWidthOrHeight: 1920,
+    useWebWorker: true,
+  };
+  try {
+    return await imageCompression(file, options);
+  } catch {
+    return file; // fallback to original if compression fails
+  }
 }
 
 // ─── Ratio icon helper ─────────────────────────────────────
@@ -300,6 +315,68 @@ export default function OrderTemplatePage({
   const profileInputRef = useRef<HTMLInputElement>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
 
+  // ─── localStorage Auto-Save ─────────────────────────────
+  const [showRestore, setShowRestore] = useState(false);
+  const [savedData, setSavedData] = useState<Record<string, unknown> | null>(null);
+
+  // Restore on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(`order-form-${templateId}`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setSavedData(parsed);
+        setShowRestore(true);
+      }
+    } catch { /* corrupted data — ignore */ }
+  }, [templateId]);
+
+  // Restore handler
+  const restoreData = (data: Record<string, unknown>) => {
+    if (data.artistName) setArtistName(data.artistName as string);
+    if (data.siteSlug) setSiteSlug(data.siteSlug as string);
+    if (data.email) setEmail(data.email as string);
+    if (data.siteTitle) setSiteTitle(data.siteTitle as string);
+    if (data.catchcopy) setCatchcopy(data.catchcopy as string);
+    if (data.subtitle) setSubtitle(data.subtitle as string);
+    if (data.moodTone) setMoodTone(data.moodTone as string);
+    if (data.moodFont) setMoodFont(data.moodFont as string);
+    if (data.moodAnimation) setMoodAnimation(data.moodAnimation as string);
+    if (data.colorMode) setColorMode(data.colorMode as "preset" | "custom");
+    if (data.selectedPresetIdx !== undefined) setSelectedPresetIdx(data.selectedPresetIdx as number | null);
+    if (data.enabledSections) setEnabledSections(data.enabledSections as Record<string, boolean>);
+    if (data.plan) setPlan(data.plan as "template" | "omakase" | "");
+    if (data.step) setStep(data.step as number);
+    if (data.fieldValues) setFieldValues(data.fieldValues as Record<string, string>);
+    if (data.uniqueTags) setUniqueTags(data.uniqueTags as Record<string, string[]>);
+  };
+
+  // Debounced save effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const formData = {
+        artistName, siteSlug, email, siteTitle, catchcopy, subtitle,
+        moodTone, moodFont, moodAnimation, colorMode, selectedPresetIdx,
+        enabledSections, plan, step, fieldValues, uniqueTags,
+      };
+      try {
+        localStorage.setItem(`order-form-${templateId}`, JSON.stringify(formData));
+      } catch { /* localStorage full — ignore */ }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [artistName, siteSlug, email, siteTitle, catchcopy, subtitle, moodTone, moodFont, moodAnimation, colorMode, selectedPresetIdx, enabledSections, plan, step, fieldValues, uniqueTags, templateId]);
+
+  // beforeunload warning
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (artistName || works.length > 0) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [artistName, works.length]);
+
   // Derived
   const activeColors =
     colorMode === "preset" && selectedPresetIdx !== null && colorPresets[selectedPresetIdx]
@@ -447,7 +524,8 @@ export default function OrderTemplatePage({
           setError(`${file.name} はJPG/PNG/WebP形式ではありません`);
           continue;
         }
-        const data = await fileToBase64(file);
+        const compressed = await compressImage(file);
+        const data = await fileToBase64(compressed);
         newWorks.push({
           data,
           name: file.name,
@@ -499,7 +577,8 @@ export default function OrderTemplatePage({
         setError("JPG/PNG/WebP形式の画像を選択してください");
         return;
       }
-      const data = await fileToBase64(file);
+      const compressed = await compressImage(file);
+      const data = await fileToBase64(compressed);
       setHeroImage({ data, name: file.name });
 
       try {
@@ -533,7 +612,8 @@ export default function OrderTemplatePage({
         setError("JPG/PNG/WebP形式の画像を選択してください");
         return;
       }
-      const data = await fileToBase64(file);
+      const compressed = await compressImage(file);
+      const data = await fileToBase64(compressed);
       setProfileImage({ data, name: file.name });
 
       try {
@@ -645,6 +725,7 @@ export default function OrderTemplatePage({
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "エラーが発生しました");
+      localStorage.removeItem(`order-form-${templateId}`);
       window.location.href = data.url;
     } catch (err) {
       setError(err instanceof Error ? err.message : "エラーが発生しました");
@@ -1147,6 +1228,42 @@ export default function OrderTemplatePage({
               exit={{ opacity: 0, y: -10 }}
             >
               {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Restore banner */}
+        <AnimatePresence>
+          {showRestore && (
+            <motion.div
+              className="mb-6 p-4 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-between gap-4"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              <p className="text-sm text-white">前回の入力内容が残っています</p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (savedData) restoreData(savedData);
+                    setShowRestore(false);
+                  }}
+                  className="px-4 py-1.5 rounded-lg bg-primary text-[#0a0a0f] text-xs font-bold"
+                >
+                  復元する
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    localStorage.removeItem(`order-form-${templateId}`);
+                    setShowRestore(false);
+                  }}
+                  className="px-4 py-1.5 rounded-lg bg-white/10 text-text-secondary text-xs"
+                >
+                  新しく始める
+                </button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -1805,7 +1922,7 @@ export default function OrderTemplatePage({
                   {heroImage && (
                     <div>
                       <span className="text-text-muted text-xs block mb-2">トップ画像</span>
-                      <div className="w-24 h-16 rounded-lg overflow-hidden border border-white/[0.08]">
+                      <div className="h-32 rounded-lg overflow-hidden bg-white/5 border border-white/[0.08]">
                         <img
                           src={heroImage.data}
                           alt="Hero"
@@ -1820,11 +1937,11 @@ export default function OrderTemplatePage({
                       <span className="text-text-muted text-xs block mb-2">
                         作品画像（{works.length}枚）
                       </span>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
                         {works.map((w, i) => (
                           <div
                             key={i}
-                            className="w-16 h-16 rounded-lg overflow-hidden border border-white/[0.08]"
+                            className="aspect-square rounded-lg overflow-hidden bg-white/5 border border-white/[0.08]"
                           >
                             <img
                               src={w.data}
@@ -2028,10 +2145,21 @@ export default function OrderTemplatePage({
                     "お支払いへ進む"
                   )}
                 </button>
-                <p className="text-center text-text-muted text-[11px] tracking-wide flex items-center justify-center gap-1">
-                  <Shield className="w-3 h-3" />
-                  Stripeの安全な決済ページに移動します
+                <div className="flex items-center justify-center gap-4 text-text-muted text-[10px]">
+                  <span className="flex items-center gap-1"><Shield className="w-3 h-3" /> SSL暗号化通信</span>
+                  <span className="flex items-center gap-1"><CreditCard className="w-3 h-3" /> Stripe安全決済</span>
+                </div>
+                <p className="text-center text-text-muted text-[10px] mt-2">
+                  完成後に無料で1回修正できます
                 </p>
+                <div className="mt-6 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                  <p className="text-text-secondary text-xs leading-relaxed">
+                    ※ このプレビューは、入力いただいた文字・画像・色をそのまま表示しています。
+                    「ご要望・備考」欄でお伝えいただいた内容（雰囲気の調整、色味の変更など）は、
+                    制作時にスタッフが一つひとつ確認して反映いたします。
+                    そのため、完成したサイトはこのプレビューとは見た目が異なる場合があります。
+                  </p>
+                </div>
               </div>
             </motion.div>
           )}
