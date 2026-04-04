@@ -95,8 +95,8 @@ async function processOrder(order) {
     const promptFile = join(orderDir, ".claude-prompt.md");
     writeFileSync(promptFile, prompt);
 
-    // Claude Code CLI を実行（git-bash経由、プロンプトはファイルから読ませる）
-    const claude = spawn("bash", ["-c", `cat "${promptFile.replace(/\\/g, "/")}" | claude --print`], {
+    // Claude Code CLI を実行（権限チェックスキップ + print mode）
+    const claude = spawn("bash", ["-c", `cat "${promptFile.replace(/\\/g, "/")}" | claude -p --dangerously-skip-permissions`], {
       cwd: orderDir,
       stdio: ["pipe", "pipe", "pipe"],
       env: { ...process.env, CLAUDE_CODE_GIT_BASH_PATH: "E:\\Git\\bin\\bash.exe" },
