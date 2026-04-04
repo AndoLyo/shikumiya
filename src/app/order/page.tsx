@@ -2,47 +2,63 @@
 
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import {
-  User,
-  Mail,
-  Palette,
-  Wrench,
-  Layout,
-  Type,
-  FileText,
-  Quote,
-  ImagePlus,
-  UserCircle,
-  Share2,
-  MessageSquare,
-  CreditCard,
+  getTemplateForm,
+  getImageSpec,
+  getColorPresets,
+  templateForms,
+} from "@/lib/template-forms";
+// Types used internally from the library
+import {
   Check,
   ChevronRight,
   ChevronLeft,
   Upload,
   X,
   ExternalLink,
-  Sparkles,
   Shield,
+  Sparkles,
+  CreditCard,
+  RectangleHorizontal,
+  RectangleVertical,
+  Square,
 } from "lucide-react";
 
-// ─── Template Data ──────────────────────────────────────────
-const templates = [
-  { id: "cinematic-dark", name: "Cinematic Dark", desc: "没入感のあるフルスクリーン", colors: ["#0a0a1a", "#00bbdd", "#d42d83"] },
-  { id: "minimal-grid", name: "Minimal Grid", desc: "作品を主役にするグリッド", colors: ["#f5f3ef", "#A28D69", "#2a2a2a"] },
-  { id: "warm-natural", name: "Warm Natural", desc: "温かみのあるカード型", colors: ["#f2eee7", "#fffe3e", "#333333"] },
-  { id: "horizontal-scroll", name: "Horizontal Scroll", desc: "横に流れるエディトリアル", colors: ["#0a0a0a", "#e63946", "#EFE8D7"] },
-  { id: "elegant-mono", name: "Elegant Mono", desc: "ギャラリーのような空間", colors: ["#1a1a1a", "#00bbdd", "#d42d83"] },
-  { id: "ai-art-portfolio", name: "AI Art Portfolio", desc: "AIアート特化の世界観", colors: ["#0a0a0f", "#6366f1", "#f59e0b"] },
-  { id: "split-showcase", name: "Split Showcase", desc: "左右分割の構図美", colors: ["#111111", "#ff6b6b", "#4ecdc4"] },
-  { id: "stack-cards", name: "Stack Cards", desc: "カードが重なるスクロール", colors: ["#0d0d0d", "#a855f7", "#ec4899"] },
-  { id: "neo-brutalist", name: "Neo Brutalist", desc: "太字と原色のインパクト", colors: ["#fffbe6", "#ff5722", "#222222"] },
-  { id: "glass-morphism", name: "Glass Morphism", desc: "透過グラスの近未来感", colors: ["#0f172a", "#38bdf8", "#818cf8"] },
-];
+// ─── Shared Styles ──────────────────────────────────────────
+const inputClass =
+  "w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-white text-sm placeholder:text-text-muted focus:border-primary/50 focus:outline-none transition-colors";
+const labelClass = "block text-sm font-medium text-white mb-1";
+const helpClass = "text-text-muted text-[10px] mt-1";
 
-const genreOptions = ["AIアート", "イラスト", "写真", "デザイン", "3D"];
-const toolOptions = ["Midjourney", "Stable Diffusion", "DALL-E", "Flux", "ComfyUI", "NovelAI"];
+// ─── HelpTooltip ────────────────────────────────────────────
+function HelpTooltip({ text }: { text: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <span className="relative inline-block ml-1">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-4 h-4 rounded-full bg-white/10 text-text-muted text-[10px] inline-flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-colors"
+      >
+        ?
+      </button>
+      {open && (
+        <div className="absolute bottom-6 left-0 z-50 w-64 p-3 rounded-lg bg-[#1a1a2e] border border-white/10 text-xs text-text-secondary shadow-xl">
+          {text}
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="block mt-2 text-primary text-[10px]"
+          >
+            閉じる
+          </button>
+        </div>
+      )}
+    </span>
+  );
+}
 
 // ─── Types ──────────────────────────────────────────────────
 interface WorkImage {
@@ -56,7 +72,7 @@ interface ProfileImage {
   name: string;
 }
 
-// ─── Utility: file to base64 ────────────────────────────────
+// ─── Utility ────────────────────────────────────────────────
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -66,30 +82,58 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-// ─── Shared Styles ──────────────────────────────────────────
-const inputClass =
-  "w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-white text-sm placeholder:text-text-muted focus:border-primary/50 focus:outline-none transition-colors";
-const labelClass = "block text-sm font-medium text-white mb-1";
-const helpClass = "text-text-muted text-xs mt-1";
+// ─── Ratio icon helper ─────────────────────────────────────
+function RatioIcon({ ratio }: { ratio: string }) {
+  if (ratio.includes("16:9") || ratio.includes("4:3") || ratio === "横長")
+    return <RectangleHorizontal className="w-4 h-4" />;
+  if (ratio.includes("9:16") || ratio.includes("3:4") || ratio === "縦長")
+    return <RectangleVertical className="w-4 h-4" />;
+  return <Square className="w-4 h-4" />;
+}
+
+// ─── Mood option icons ──────────────────────────────────────
+const moodToneIcons: Record<string, string> = {
+  dark: "🌑",
+  light: "☀️",
+  warm: "🔥",
+  cool: "❄️",
+  pop: "🎨",
+  elegant: "💎",
+};
+
+const moodFontIcons: Record<string, string> = {
+  serif: "明",
+  sans: "Aa",
+  mono: "</>",
+  handwritten: "✎",
+};
+
+const moodAnimIcons: Record<string, string> = {
+  none: "—",
+  subtle: "~",
+  moderate: "≈",
+  dynamic: "⚡",
+};
 
 // ─── Step Indicator ─────────────────────────────────────────
 function StepIndicator({ current }: { current: number }) {
   const steps = [
-    { num: 1, label: "基本情報" },
-    { num: 2, label: "サイト内容" },
-    { num: 3, label: "確認・お支払い" },
+    { num: 1, label: "テンプレ選択" },
+    { num: 2, label: "基本情報" },
+    { num: 3, label: "サイト内容" },
+    { num: 4, label: "確認・お支払い" },
   ];
 
   return (
-    <div className="flex items-center justify-center gap-2 sm:gap-3">
+    <div className="flex items-center justify-center gap-1.5 sm:gap-2">
       {steps.map((step, i) => {
         const isCompleted = step.num < current;
         const isActive = step.num === current;
         return (
-          <div key={step.num} className="flex items-center gap-2 sm:gap-3">
-            <div className="flex items-center gap-1.5">
+          <div key={step.num} className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center gap-1">
               <span
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold transition-colors ${
+                className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[10px] sm:text-[11px] font-bold transition-colors ${
                   isActive
                     ? "bg-primary text-[#0a0a0f]"
                     : isCompleted
@@ -97,10 +141,10 @@ function StepIndicator({ current }: { current: number }) {
                     : "bg-white/[0.06] text-text-muted"
                 }`}
               >
-                {isCompleted ? <Check className="w-3.5 h-3.5" /> : step.num}
+                {isCompleted ? <Check className="w-3 h-3" /> : step.num}
               </span>
               <span
-                className={`text-xs tracking-wider hidden sm:inline ${
+                className={`text-[10px] sm:text-xs tracking-wider hidden sm:inline ${
                   isActive ? "text-primary" : isCompleted ? "text-primary/60" : "text-text-muted"
                 }`}
               >
@@ -108,7 +152,7 @@ function StepIndicator({ current }: { current: number }) {
               </span>
             </div>
             {i < steps.length - 1 && (
-              <span className="text-text-muted/30 text-xs">→</span>
+              <span className="text-text-muted/30 text-[10px]">→</span>
             )}
           </div>
         );
@@ -133,6 +177,27 @@ const slideVariants = {
   }),
 };
 
+// ─── Section Divider ────────────────────────────────────────
+function SectionDivider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-3 pt-2">
+      <span className="h-px flex-1 bg-white/[0.06]" />
+      <span className="text-text-muted text-[10px] tracking-widest uppercase">{label}</span>
+      <span className="h-px flex-1 bg-white/[0.06]" />
+    </div>
+  );
+}
+
+// ─── Summary Row ────────────────────────────────────────────
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
+      <span className="text-text-muted text-xs shrink-0 sm:w-32 sm:text-right">{label}</span>
+      <span className="text-text-secondary text-sm break-all">{value}</span>
+    </div>
+  );
+}
+
 // ═════════════════════════════════════════════════════════════
 // Main Component
 // ═════════════════════════════════════════════════════════════
@@ -141,63 +206,106 @@ export default function OrderPage() {
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
 
-  // Step 1 fields
+  // Step 1: Template
+  const [template, setTemplate] = useState("");
+
+  // Step 2: Basic Info
   const [artistName, setArtistName] = useState("");
   const [siteTitle, setSiteTitle] = useState("");
-  const [email, setEmail] = useState("");
-  const [genres, setGenres] = useState<string[]>([]);
-  const [genreOther, setGenreOther] = useState("");
-  const [genreOtherChecked, setGenreOtherChecked] = useState(false);
-  const [tools, setTools] = useState<string[]>([]);
-  const [toolOther, setToolOther] = useState("");
-  const [toolOtherChecked, setToolOtherChecked] = useState(false);
-
-  // Step 2 fields
-  const [template, setTemplate] = useState("");
   const [catchcopy, setCatchcopy] = useState("");
-  const [bio, setBio] = useState("");
-  const [motto, setMotto] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [email, setEmail] = useState("");
+
+  // Mood
+  const [moodTone, setMoodTone] = useState("");
+  const [moodFont, setMoodFont] = useState("");
+  const [moodAnimation, setMoodAnimation] = useState("");
+
+  // Colors
+  const [colorMode, setColorMode] = useState<"preset" | "custom">("preset");
+  const [selectedPresetIdx, setSelectedPresetIdx] = useState<number | null>(null);
+  const [customPrimary, setCustomPrimary] = useState("#00e5ff");
+  const [customAccent, setCustomAccent] = useState("#d4a853");
+  const [customBackground, setCustomBackground] = useState("#0a0a0f");
+
+  // Step 3: Content
+  const [heroImage, setHeroImage] = useState<{ data: string; name: string } | null>(null);
   const [works, setWorks] = useState<WorkImage[]>([]);
   const [profileImage, setProfileImage] = useState<ProfileImage | null>(null);
+  const [bio, setBio] = useState("");
+  const [motto, setMotto] = useState("");
   const [snsX, setSnsX] = useState("");
   const [snsInstagram, setSnsInstagram] = useState("");
   const [snsPixiv, setSnsPixiv] = useState("");
   const [snsNote, setSnsNote] = useState("");
   const [snsOther, setSnsOther] = useState("");
+  const [referenceUrl, setReferenceUrl] = useState("");
   const [requests, setRequests] = useState("");
 
-  // Step 3 fields
+  // Unique fields (tags)
+  const [uniqueTags, setUniqueTags] = useState<Record<string, string[]>>({});
+  const [tagInput, setTagInput] = useState<Record<string, string>>({});
+
+  // Step 4
   const [plan, setPlan] = useState<"template" | "omakase" | "">("");
 
   // UI state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-
-  // Background upload state
   const [imageGistId, setImageGistId] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadedCount, setUploadedCount] = useState(0);
 
   const worksInputRef = useRef<HTMLInputElement>(null);
   const profileInputRef = useRef<HTMLInputElement>(null);
+  const heroInputRef = useRef<HTMLInputElement>(null);
+
+  // Derived
+  const templateForm = template ? getTemplateForm(template) : null;
+  const imageSpec = template ? getImageSpec(template) : null;
+  const colorPresets = template ? getColorPresets(template) : [];
+
+  const activeColors =
+    colorMode === "preset" && selectedPresetIdx !== null && colorPresets[selectedPresetIdx]
+      ? {
+          primary: colorPresets[selectedPresetIdx].primary,
+          accent: colorPresets[selectedPresetIdx].accent,
+          background: colorPresets[selectedPresetIdx].background,
+        }
+      : { primary: customPrimary, accent: customAccent, background: customBackground };
 
   // ─── Navigation ─────────────────────────────────────────
   const goNext = () => {
     setError("");
     if (step === 1) {
-      if (!artistName.trim()) { setError("アーティスト名を入力してください"); return; }
-      if (!email.trim()) { setError("メールアドレスを入力してください"); return; }
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email.trim())) { setError("メールアドレスの形式が正しくありません"); return; }
-      const allGenres = [...genres, ...(genreOtherChecked && genreOther.trim() ? [genreOther.trim()] : [])];
-      if (allGenres.length === 0) { setError("ジャンルを1つ以上選んでください"); return; }
+      if (!template) {
+        setError("デザインを選んでください");
+        return;
+      }
     }
     if (step === 2) {
-      if (!template) { setError("テンプレートを選んでください"); return; }
-      if (works.length < 3) { setError("作品画像を3枚以上アップロードしてください"); return; }
+      if (!artistName.trim()) {
+        setError("アーティスト名を入力してください");
+        return;
+      }
+      if (!email.trim()) {
+        setError("メールアドレスを入力してください");
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        setError("メールアドレスの形式が正しくありません");
+        return;
+      }
+    }
+    if (step === 3) {
+      if (works.length < (imageSpec?.recommendedCount.min || 3)) {
+        setError(`作品画像を${imageSpec?.recommendedCount.min || 3}枚以上アップロードしてください`);
+        return;
+      }
     }
     setDirection(1);
-    setStep((s) => Math.min(s + 1, 3));
+    setStep((s) => Math.min(s + 1, 4));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -208,65 +316,139 @@ export default function OrderPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // ─── Genre toggle ───────────────────────────────────────
-  const toggleGenre = (g: string) => {
-    setGenres((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
-  };
-
-  const toggleTool = (t: string) => {
-    setTools((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
+  const goToStep = (target: number) => {
+    setError("");
+    setDirection(target > step ? 1 : -1);
+    setStep(target);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // ─── Image handling ─────────────────────────────────────
-  const handleWorkFiles = useCallback(async (files: FileList | null) => {
-    if (!files) return;
-    const remaining = 10 - works.length;
-    const toProcess = Array.from(files).slice(0, remaining);
-    const maxSize = 5 * 1024 * 1024;
+  const handleWorkFiles = useCallback(
+    async (files: FileList | null) => {
+      if (!files) return;
+      const maxCount = imageSpec?.recommendedCount.max || 10;
+      const remaining = maxCount - works.length;
+      const toProcess = Array.from(files).slice(0, remaining);
+      const maxSize = 5 * 1024 * 1024;
 
-    const newWorks: WorkImage[] = [];
-    for (const file of toProcess) {
-      if (file.size > maxSize) {
-        setError(`${file.name} は5MBを超えています`);
-        continue;
+      const newWorks: WorkImage[] = [];
+      for (const file of toProcess) {
+        if (file.size > maxSize) {
+          setError(`${file.name} は5MBを超えています`);
+          continue;
+        }
+        if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
+          setError(`${file.name} はJPG/PNG/WebP形式ではありません`);
+          continue;
+        }
+        const data = await fileToBase64(file);
+        newWorks.push({
+          data,
+          name: file.name,
+          title: `作品 ${String(works.length + newWorks.length + 1).padStart(2, "0")}`,
+        });
+      }
+
+      if (newWorks.length === 0) return;
+      setWorks((prev) => [...prev, ...newWorks]);
+
+      // Background upload
+      setUploading(true);
+      let gistId = imageGistId;
+      for (const w of newWorks) {
+        try {
+          const res = await fetch("/api/upload-images", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              gistId: gistId || undefined,
+              fileName: `work_${String(works.length + newWorks.indexOf(w) + 1).padStart(2, "0")}`,
+              imageData: w.data,
+            }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            gistId = data.gistId;
+            setImageGistId(gistId);
+            setUploadedCount((c) => c + 1);
+          }
+        } catch {
+          // Silent fail
+        }
+      }
+      setUploading(false);
+    },
+    [works.length, imageGistId, imageSpec]
+  );
+
+  const handleHeroFile = useCallback(
+    async (files: FileList | null) => {
+      if (!files || !files[0]) return;
+      const file = files[0];
+      if (file.size > 5 * 1024 * 1024) {
+        setError("画像は5MBまでです");
+        return;
       }
       if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
-        setError(`${file.name} はJPG/PNG/WebP形式ではありません`);
-        continue;
+        setError("JPG/PNG/WebP形式の画像を選択してください");
+        return;
       }
       const data = await fileToBase64(file);
-      newWorks.push({ data, name: file.name, title: `作品 ${String(works.length + newWorks.length + 1).padStart(2, "0")}` });
-    }
+      setHeroImage({ data, name: file.name });
 
-    if (newWorks.length === 0) return;
-    setWorks((prev) => [...prev, ...newWorks]);
-
-    // Background upload immediately
-    setUploading(true);
-    let gistId = imageGistId;
-    for (const w of newWorks) {
       try {
         const res = await fetch("/api/upload-images", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            gistId: gistId || undefined,
-            fileName: `work_${String(works.length + newWorks.indexOf(w) + 1).padStart(2, "0")}`,
-            imageData: w.data,
+            gistId: imageGistId || undefined,
+            fileName: "hero",
+            imageData: data,
           }),
         });
-        const data = await res.json();
-        if (res.ok) {
-          gistId = data.gistId;
-          setImageGistId(gistId);
-          setUploadedCount((c) => c + 1);
-        }
+        const result = await res.json();
+        if (res.ok) setImageGistId(result.gistId);
       } catch {
-        // Silent fail — will retry on submit if needed
+        // Will retry
       }
-    }
-    setUploading(false);
-  }, [works.length, imageGistId]);
+    },
+    [imageGistId]
+  );
+
+  const handleProfileFile = useCallback(
+    async (files: FileList | null) => {
+      if (!files || !files[0]) return;
+      const file = files[0];
+      if (file.size > 5 * 1024 * 1024) {
+        setError("プロフィール画像は5MBまでです");
+        return;
+      }
+      if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
+        setError("JPG/PNG/WebP形式の画像を選択してください");
+        return;
+      }
+      const data = await fileToBase64(file);
+      setProfileImage({ data, name: file.name });
+
+      try {
+        const res = await fetch("/api/upload-images", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gistId: imageGistId || undefined,
+            fileName: "profile",
+            imageData: data,
+          }),
+        });
+        const result = await res.json();
+        if (res.ok) setImageGistId(result.gistId);
+      } catch {
+        // Will retry
+      }
+    },
+    [imageGistId]
+  );
 
   const removeWork = (idx: number) => {
     setWorks((prev) => prev.filter((_, i) => i !== idx));
@@ -276,52 +458,43 @@ export default function OrderPage() {
     setWorks((prev) => prev.map((w, i) => (i === idx ? { ...w, title } : w)));
   };
 
-  const handleProfileFile = useCallback(async (files: FileList | null) => {
-    if (!files || !files[0]) return;
-    const file = files[0];
-    if (file.size > 5 * 1024 * 1024) { setError("プロフィール画像は5MBまでです"); return; }
-    if (!file.type.match(/^image\/(jpeg|png|webp)$/)) { setError("JPG/PNG/WebP形式の画像を選択してください"); return; }
-    const data = await fileToBase64(file);
-    setProfileImage({ data, name: file.name });
-
-    // Background upload
-    try {
-      const res = await fetch("/api/upload-images", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          gistId: imageGistId || undefined,
-          fileName: "profile",
-          imageData: data,
-        }),
-      });
-      const result = await res.json();
-      if (res.ok) setImageGistId(result.gistId);
-    } catch {
-      // Will retry on submit
-    }
-  }, [imageGistId]);
-
   // ─── Drop handler factory ──────────────────────────────
-  const onDrop = (handler: (files: FileList | null) => void) => (e: React.DragEvent) => {
-    e.preventDefault();
-    handler(e.dataTransfer.files);
-  };
-
+  const onDrop =
+    (handler: (files: FileList | null) => void) => (e: React.DragEvent) => {
+      e.preventDefault();
+      handler(e.dataTransfer.files);
+    };
   const preventDefault = (e: React.DragEvent) => e.preventDefault();
 
-  // ─── Submit ─────────────────────────────────────────────
+  // ─── Tag helpers ───────────────────────────────────────
+  const addTag = (fieldId: string, maxCount: number) => {
+    const input = (tagInput[fieldId] || "").trim();
+    if (!input) return;
+    const current = uniqueTags[fieldId] || [];
+    if (current.length >= maxCount) return;
+    if (current.includes(input)) return;
+    setUniqueTags((prev) => ({ ...prev, [fieldId]: [...current, input] }));
+    setTagInput((prev) => ({ ...prev, [fieldId]: "" }));
+  };
+
+  const removeTag = (fieldId: string, idx: number) => {
+    setUniqueTags((prev) => ({
+      ...prev,
+      [fieldId]: (prev[fieldId] || []).filter((_, i) => i !== idx),
+    }));
+  };
+
+  // ─── Submit ────────────────────────────────────────────
   const handleSubmit = async () => {
     setError("");
-    if (!plan) { setError("プランを選んでください"); return; }
+    if (!plan) {
+      setError("プランを選んでください");
+      return;
+    }
 
     setIsSubmitting(true);
 
-    const allGenres = [...genres, ...(genreOtherChecked && genreOther.trim() ? [genreOther.trim()] : [])];
-    const allTools = [...tools, ...(toolOtherChecked && toolOther.trim() ? [toolOther.trim()] : [])];
-
     try {
-      // Images are already uploaded in background. Just send metadata.
       if (uploading) {
         setError("画像のアップロードが完了するまでお待ちください...");
         setIsSubmitting(false);
@@ -335,21 +508,30 @@ export default function OrderPage() {
           artistName: artistName.trim(),
           siteTitle: siteTitle.trim(),
           email: email.trim(),
-          genres: allGenres,
-          tools: allTools,
           template,
           catchcopy: catchcopy.trim(),
+          subtitle: subtitle.trim(),
           bio: bio.trim(),
           motto: motto.trim(),
-          worksMeta: works.map((w, i) => ({ name: `work_${String(i + 1).padStart(2, "0")}`, title: w.title })),
+          moodTone,
+          moodFont,
+          moodAnimation,
+          colors: activeColors,
+          worksMeta: works.map((w, i) => ({
+            name: `work_${String(i + 1).padStart(2, "0")}`,
+            title: w.title,
+          })),
           hasProfileImage: !!profileImage,
+          hasHeroImage: !!heroImage,
           imageGistId,
           snsX: snsX.trim(),
           snsInstagram: snsInstagram.trim(),
           snsPixiv: snsPixiv.trim(),
           snsNote: snsNote.trim(),
           snsOther: snsOther.trim(),
+          referenceUrl: referenceUrl.trim(),
           requests: requests.trim(),
+          uniqueFields: uniqueTags,
           plan,
         }),
       });
@@ -389,7 +571,7 @@ export default function OrderPage() {
 
         {/* Page title */}
         <motion.div
-          className="mt-8 mb-8 text-center"
+          className="mt-8 mb-6 text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -397,7 +579,21 @@ export default function OrderPage() {
           <h1 className="font-serif text-white text-2xl sm:text-3xl font-bold tracking-wide">
             サイトを作る
           </h1>
-          <div className="mt-6">
+        </motion.div>
+
+        {/* ─── Guide Banner ─────────────────────────────────── */}
+        <motion.div
+          className="mb-6 rounded-2xl border border-primary/20 bg-primary/[0.03] px-5 py-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <p className="text-text-secondary text-sm leading-relaxed text-center">
+            サイト作成は <span className="text-primary font-bold">4ステップ</span>。
+            まずデザインを選んで、情報を入力するだけ。
+            <span className="text-text-muted text-xs ml-1">5〜10分で完了します。</span>
+          </p>
+          <div className="mt-3">
             <StepIndicator current={step} />
           </div>
         </motion.div>
@@ -416,10 +612,10 @@ export default function OrderPage() {
           )}
         </AnimatePresence>
 
-        {/* Step content with slide animation */}
+        {/* Step content */}
         <AnimatePresence mode="wait" custom={direction}>
           {/* ═══════════════════════════════════════════ */}
-          {/* STEP 1: 基本情報                           */}
+          {/* STEP 1: テンプレートを選ぶ                  */}
           {/* ═══════════════════════════════════════════ */}
           {step === 1 && (
             <motion.div
@@ -430,202 +626,19 @@ export default function OrderPage() {
               animate="center"
               exit="exit"
               transition={{ duration: 0.35, ease: "easeInOut" }}
-              className="space-y-8"
+              className="space-y-6"
             >
-              {/* Artist Name */}
               <section className="glass-card p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-5">
-                  <User className="w-4 h-4 text-primary" />
-                  <h2 className="text-white text-sm font-bold tracking-wider">アーティスト名</h2>
-                  <span className="text-red-400 text-xs">*必須</span>
-                </div>
-                <input
-                  type="text"
-                  value={artistName}
-                  onChange={(e) => setArtistName(e.target.value)}
-                  placeholder="例: Lyo"
-                  className={inputClass}
-                />
-                <p className={helpClass}>サイトに表示される名前です（本名でもペンネームでもOK）</p>
-              </section>
+                <h2 className="text-white text-lg font-bold tracking-wide mb-1">
+                  まず、デザインを選びましょう
+                </h2>
+                <p className="text-text-muted text-xs mb-6">
+                  あなたの作品に合うデザインを選んでください。あとから変更もできます。
+                </p>
 
-              {/* Site Title */}
-              <section className="glass-card p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-5">
-                  <Layout className="w-4 h-4 text-primary" />
-                  <h2 className="text-white text-sm font-bold tracking-wider">サイトタイトル</h2>
-                </div>
-                <input
-                  type="text"
-                  value={siteTitle}
-                  onChange={(e) => setSiteTitle(e.target.value)}
-                  placeholder="例: Lyo — AI Art Gallery"
-                  className={inputClass}
-                />
-                <p className={helpClass}>ブラウザのタブに表示されます。空欄なら「アーティスト名 — Gallery」になります</p>
-              </section>
-
-              {/* Email */}
-              <section className="glass-card p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-5">
-                  <Mail className="w-4 h-4 text-primary" />
-                  <h2 className="text-white text-sm font-bold tracking-wider">メールアドレス</h2>
-                  <span className="text-red-400 text-xs">*必須</span>
-                </div>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="例: your-email@example.com"
-                  className={inputClass}
-                />
-                <p className={helpClass}>完成通知をお送りします</p>
-              </section>
-
-              {/* Genres */}
-              <section className="glass-card p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-5">
-                  <Palette className="w-4 h-4 text-primary" />
-                  <h2 className="text-white text-sm font-bold tracking-wider">ジャンル（複数選択可）</h2>
-                  <span className="text-red-400 text-xs">*1つ以上</span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {genreOptions.map((g) => (
-                    <button
-                      key={g}
-                      type="button"
-                      onClick={() => toggleGenre(g)}
-                      className={`px-4 py-2 rounded-lg text-sm border transition-all duration-200 ${
-                        genres.includes(g)
-                          ? "bg-primary/10 border-primary/50 text-primary"
-                          : "bg-white/[0.03] border-white/[0.08] text-text-secondary hover:border-white/20"
-                      }`}
-                    >
-                      {genres.includes(g) && <Check className="w-3 h-3 inline mr-1" />}
-                      {g}
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => setGenreOtherChecked(!genreOtherChecked)}
-                    className={`px-4 py-2 rounded-lg text-sm border transition-all duration-200 ${
-                      genreOtherChecked
-                        ? "bg-primary/10 border-primary/50 text-primary"
-                        : "bg-white/[0.03] border-white/[0.08] text-text-secondary hover:border-white/20"
-                    }`}
-                  >
-                    {genreOtherChecked && <Check className="w-3 h-3 inline mr-1" />}
-                    その他
-                  </button>
-                </div>
-                {genreOtherChecked && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    className="mt-3"
-                  >
-                    <input
-                      type="text"
-                      value={genreOther}
-                      onChange={(e) => setGenreOther(e.target.value)}
-                      placeholder="ジャンル名を入力"
-                      className={inputClass}
-                    />
-                  </motion.div>
-                )}
-              </section>
-
-              {/* Tools */}
-              <section className="glass-card p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-5">
-                  <Wrench className="w-4 h-4 text-primary" />
-                  <h2 className="text-white text-sm font-bold tracking-wider">使用ツール（複数選択可）</h2>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {toolOptions.map((t) => (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => toggleTool(t)}
-                      className={`px-4 py-2 rounded-lg text-sm border transition-all duration-200 ${
-                        tools.includes(t)
-                          ? "bg-primary/10 border-primary/50 text-primary"
-                          : "bg-white/[0.03] border-white/[0.08] text-text-secondary hover:border-white/20"
-                      }`}
-                    >
-                      {tools.includes(t) && <Check className="w-3 h-3 inline mr-1" />}
-                      {t}
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => setToolOtherChecked(!toolOtherChecked)}
-                    className={`px-4 py-2 rounded-lg text-sm border transition-all duration-200 ${
-                      toolOtherChecked
-                        ? "bg-primary/10 border-primary/50 text-primary"
-                        : "bg-white/[0.03] border-white/[0.08] text-text-secondary hover:border-white/20"
-                    }`}
-                  >
-                    {toolOtherChecked && <Check className="w-3 h-3 inline mr-1" />}
-                    その他
-                  </button>
-                </div>
-                {toolOtherChecked && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    className="mt-3"
-                  >
-                    <input
-                      type="text"
-                      value={toolOther}
-                      onChange={(e) => setToolOther(e.target.value)}
-                      placeholder="ツール名を入力"
-                      className={inputClass}
-                    />
-                  </motion.div>
-                )}
-              </section>
-
-              {/* Next button */}
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={goNext}
-                  className="flex items-center gap-2 px-8 py-3.5 rounded-xl bg-primary text-[#0a0a0f] font-bold text-sm tracking-wider hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20"
-                >
-                  次へ：サイト内容を入力
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* ═══════════════════════════════════════════ */}
-          {/* STEP 2: サイト内容                          */}
-          {/* ═══════════════════════════════════════════ */}
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.35, ease: "easeInOut" }}
-              className="space-y-8"
-            >
-              {/* Template Selection */}
-              <section className="glass-card p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-2">
-                  <Layout className="w-4 h-4 text-primary" />
-                  <h2 className="text-white text-sm font-bold tracking-wider">テンプレートを選んでください</h2>
-                  <span className="text-red-400 text-xs">*必須</span>
-                </div>
-                <p className={`${helpClass} mb-5`}>クリックで選択、「デモを見る」で別タブでプレビューできます</p>
-
+                {/* Template Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {templates.map((tpl) => (
+                  {templateForms.map((tpl) => (
                     <div key={tpl.id} className="flex flex-col">
                       <button
                         type="button"
@@ -636,37 +649,56 @@ export default function OrderPage() {
                             : "border-white/[0.06] hover:border-white/[0.15]"
                         }`}
                       >
-                        {/* Live iframe preview */}
+                        {/* Preview */}
                         <div
                           className="h-24 sm:h-28 relative overflow-hidden"
-                          style={{ background: tpl.colors[0] }}
+                          style={{ background: tpl.defaultColors.background }}
                         >
-                          <iframe
-                            src={`/templates/${tpl.id}`}
-                            className="absolute top-0 left-0 border-none pointer-events-none"
-                            style={{
-                              width: "1280px",
-                              height: "800px",
-                              transform: "scale(0.12)",
-                              transformOrigin: "top left",
+                          <Image
+                            src={`/previews/${tpl.id}.webp`}
+                            alt={tpl.nameJa}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 640px) 50vw, 20vw"
+                            onError={(e) => {
+                              // Fallback: hide broken image
+                              (e.target as HTMLImageElement).style.display = "none";
                             }}
-                            tabIndex={-1}
-                            loading="lazy"
-                            title={tpl.name}
                           />
+                          {/* Color dots fallback */}
+                          <div className="absolute bottom-1.5 left-1.5 flex gap-1">
+                            <span
+                              className="w-3 h-3 rounded-full border border-white/20"
+                              style={{ background: tpl.defaultColors.primary }}
+                            />
+                            <span
+                              className="w-3 h-3 rounded-full border border-white/20"
+                              style={{ background: tpl.defaultColors.accent }}
+                            />
+                          </div>
                           {template === tpl.id && (
                             <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                               <Check className="w-3 h-3 text-[#0a0a0f]" />
                             </div>
                           )}
                         </div>
-                        <div className={`px-2.5 py-2 ${template === tpl.id ? "bg-primary/5" : "bg-[#0d0d15]"}`}>
-                          <p className={`text-[10px] tracking-wider font-medium transition-colors ${
-                            template === tpl.id ? "text-primary" : "text-text-secondary group-hover:text-white"
-                          }`}>
-                            {tpl.name}
+                        <div
+                          className={`px-2.5 py-2 ${
+                            template === tpl.id ? "bg-primary/5" : "bg-[#0d0d15]"
+                          }`}
+                        >
+                          <p
+                            className={`text-[10px] tracking-wider font-medium transition-colors ${
+                              template === tpl.id
+                                ? "text-primary"
+                                : "text-text-secondary group-hover:text-white"
+                            }`}
+                          >
+                            {tpl.nameJa}
                           </p>
-                          <p className="text-[9px] text-text-muted mt-0.5 leading-tight">{tpl.desc}</p>
+                          <p className="text-[9px] text-text-muted mt-0.5 leading-tight">
+                            {tpl.description}
+                          </p>
                         </div>
                       </button>
                       <a
@@ -680,216 +712,918 @@ export default function OrderPage() {
                     </div>
                   ))}
                 </div>
+
+                {/* Selected template info */}
+                <AnimatePresence>
+                  {template && imageSpec && templateForm && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-6 rounded-xl border border-primary/20 bg-primary/[0.03] p-4"
+                    >
+                      <p className="text-sm text-white font-medium mb-2">
+                        「{templateForm.nameJa}」を選択中
+                      </p>
+                      <div className="space-y-1.5">
+                        <p className="text-xs text-text-secondary flex items-start gap-2">
+                          <span className="text-primary shrink-0">推奨画像:</span>
+                          <span>
+                            このテンプレートは
+                            <span className="text-white font-medium">
+                              {imageSpec.recommendedRatio}
+                            </span>
+                            の画像が映えます。{imageSpec.ratioNote}
+                          </span>
+                        </p>
+                        <p className="text-xs text-text-secondary flex items-center gap-2">
+                          <span className="text-primary shrink-0">推奨枚数:</span>
+                          <span className="text-white font-medium">
+                            {imageSpec.recommendedCount.min}〜{imageSpec.recommendedCount.max}枚
+                          </span>
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </section>
 
-              {/* Catchcopy */}
-              <section className="glass-card p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-5">
-                  <Type className="w-4 h-4 text-primary" />
-                  <h2 className="text-white text-sm font-bold tracking-wider">キャッチコピー</h2>
-                </div>
-                <input
-                  type="text"
-                  value={catchcopy}
-                  onChange={(e) => setCatchcopy(e.target.value)}
-                  placeholder="例: 光と影で紡ぐ幻想世界"
-                  className={inputClass}
-                />
-                <p className={helpClass}>サイトのトップに大きく表示されます。空欄なら「アーティスト名の作品」になります</p>
-              </section>
+              {/* Next */}
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={goNext}
+                  className="flex items-center gap-2 px-8 py-3.5 rounded-xl bg-primary text-[#0a0a0f] font-bold text-sm tracking-wider hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20"
+                >
+                  次へ：基本情報を入力
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+          )}
 
-              {/* Bio */}
+          {/* ═══════════════════════════════════════════ */}
+          {/* STEP 2: 基本情報                            */}
+          {/* ═══════════════════════════════════════════ */}
+          {step === 2 && (
+            <motion.div
+              key="step2"
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.35, ease: "easeInOut" }}
+              className="space-y-6"
+            >
+              {/* --- あなたのこと --- */}
               <section className="glass-card p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-5">
-                  <FileText className="w-4 h-4 text-primary" />
-                  <h2 className="text-white text-sm font-bold tracking-wider">自己紹介文</h2>
-                </div>
-                <textarea
-                  value={bio}
-                  onChange={(e) => {
-                    if (e.target.value.length <= 400) setBio(e.target.value);
-                  }}
-                  placeholder="例: AI画像生成を始めて3年。ファンタジーとサイバーパンクの世界観を中心に作品を制作しています。光の表現にこだわりがあります。"
-                  rows={5}
-                  className={`${inputClass} resize-none`}
-                />
-                <div className="flex justify-between mt-1">
-                  <p className={helpClass}>あなたのことを教えてください。活動のきっかけ、こだわり、好きなテーマなど</p>
-                  <span className={`text-xs ${bio.length > 380 ? "text-red-400" : "text-text-muted"}`}>
-                    {bio.length}/400
-                  </span>
-                </div>
-              </section>
+                <h2 className="text-white text-lg font-bold tracking-wide mb-1">
+                  あなたのことを教えてください
+                </h2>
+                <p className="text-text-muted text-xs mb-6">
+                  サイトに表示される基本的な情報です
+                </p>
 
-              {/* Motto */}
-              <section className="glass-card p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-5">
-                  <Quote className="w-4 h-4 text-primary" />
-                  <h2 className="text-white text-sm font-bold tracking-wider">好きな言葉・モットー</h2>
-                </div>
-                <input
-                  type="text"
-                  value={motto}
-                  onChange={(e) => setMotto(e.target.value)}
-                  placeholder="例: 想像の先にある世界を描く"
-                  className={inputClass}
-                />
-                <p className={helpClass}>About欄に引用として表示されます</p>
-              </section>
-
-              {/* Works Upload */}
-              <section className="glass-card p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-2">
-                  <ImagePlus className="w-4 h-4 text-primary" />
-                  <h2 className="text-white text-sm font-bold tracking-wider">作品画像（3〜10枚）</h2>
-                  <span className="text-red-400 text-xs">*必須</span>
-                </div>
-                <p className={`${helpClass} mb-5`}>ギャラリーに表示されます。JPG / PNG / WebP、1枚5MBまで</p>
-
-                {/* Drop zone */}
-                {works.length < 10 && (
-                  <div
-                    onDrop={onDrop(handleWorkFiles)}
-                    onDragOver={preventDefault}
-                    onClick={() => worksInputRef.current?.click()}
-                    className="border-2 border-dashed border-white/[0.1] rounded-xl p-8 text-center hover:border-primary/30 transition-colors cursor-pointer"
-                  >
-                    <Upload className="w-8 h-8 text-text-muted mx-auto mb-3" />
-                    <p className="text-text-secondary text-sm">ドラッグ&ドロップ、またはクリックして選択</p>
-                    <p className="text-text-muted text-xs mt-1">
-                      {works.length}/10枚
-                      {uploading && <span className="text-primary ml-2">アップロード中...</span>}
-                      {!uploading && uploadedCount > 0 && <span className="text-emerald-400 ml-2">✓ {uploadedCount}枚アップ済み</span>}
-                    </p>
+                <div className="space-y-5">
+                  {/* Artist Name */}
+                  <div>
+                    <label className={labelClass}>
+                      アーティスト名 <span className="text-red-400">*</span>
+                      <HelpTooltip text="サイトのトップに大きく表示されるあなたの名前です。本名でもペンネームでもOKです。" />
+                    </label>
                     <input
-                      ref={worksInputRef}
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp"
-                      multiple
-                      onChange={(e) => { handleWorkFiles(e.target.files); e.target.value = ""; }}
-                      className="hidden"
+                      type="text"
+                      value={artistName}
+                      onChange={(e) => setArtistName(e.target.value)}
+                      placeholder="例: Lyo"
+                      className={inputClass}
                     />
+                    <p className={helpClass}>
+                      サイトに表示される名前です（本名でもペンネームでもOK）
+                    </p>
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label className={labelClass}>
+                      メールアドレス <span className="text-red-400">*</span>
+                      <HelpTooltip text="サイトの問い合わせ先として表示されます。完成通知もこのアドレスに届きます。" />
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="例: your-email@example.com"
+                      className={inputClass}
+                    />
+                    <p className={helpClass}>サイトの問い合わせ先 & 完成通知の送信先</p>
+                  </div>
+
+                  {/* Site Title */}
+                  <div>
+                    <label className={labelClass}>
+                      サイトタイトル
+                      <HelpTooltip text="ブラウザのタブ（上の方の小さいところ）に表示される名前です。空欄でも大丈夫です。" />
+                    </label>
+                    <input
+                      type="text"
+                      value={siteTitle}
+                      onChange={(e) => setSiteTitle(e.target.value)}
+                      placeholder="例: Lyo — AI Art Gallery"
+                      className={inputClass}
+                    />
+                    <p className={helpClass}>
+                      ブラウザのタブに表示されます。空欄なら「アーティスト名 — Gallery」になります
+                    </p>
+                  </div>
+
+                  {/* Catchcopy */}
+                  <div>
+                    <label className={labelClass}>
+                      キャッチコピー
+                      <HelpTooltip text="サイトを開いた時に一番最初に目に入る、大きなテキストです。あなたの世界観を一言で表してみてください。" />
+                    </label>
+                    <input
+                      type="text"
+                      value={catchcopy}
+                      onChange={(e) => setCatchcopy(e.target.value)}
+                      placeholder="例: 光と影で紡ぐ幻想世界"
+                      className={inputClass}
+                    />
+                    <p className={helpClass}>
+                      サイトのトップに大きく表示されます。あなたの世界観を一言で
+                    </p>
+                  </div>
+
+                  {/* Subtitle */}
+                  <div>
+                    <label className={labelClass}>
+                      肩書き・サブタイトル
+                      <HelpTooltip text="名前の近くに小さく表示されます。「何をしている人か」がわかるとベストです。" />
+                    </label>
+                    <input
+                      type="text"
+                      value={subtitle}
+                      onChange={(e) => setSubtitle(e.target.value)}
+                      placeholder="例: AI Art Creator / Digital Artist"
+                      className={inputClass}
+                    />
+                    <p className={helpClass}>名前の下に小さく表示されます</p>
+                  </div>
+                </div>
+              </section>
+
+              {/* --- 雰囲気 --- */}
+              <section className="glass-card p-6 sm:p-8">
+                <SectionDivider label="雰囲気" />
+                <p className="text-text-muted text-xs mt-3 mb-5 text-center">
+                  あなたの作品に合う雰囲気を選んでください
+                </p>
+
+                {/* Mood Tone */}
+                <div className="mb-6">
+                  <label className={labelClass}>
+                    サイト全体の雰囲気
+                    <HelpTooltip text="サイト全体の見た目の印象です。作品の世界観に近いものを選んでください。" />
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                    {[
+                      { value: "dark", label: "ダーク", sub: "重厚感・没入感" },
+                      { value: "light", label: "ライト", sub: "明るく・爽やか" },
+                      { value: "warm", label: "ウォーム", sub: "温かみ・親しみやすさ" },
+                      { value: "cool", label: "クール", sub: "シャープ・洗練" },
+                      { value: "pop", label: "ポップ", sub: "元気・カラフル" },
+                      { value: "elegant", label: "エレガント", sub: "上品・高級感" },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setMoodTone(opt.value)}
+                        className={`border rounded-xl p-3 text-left transition-all duration-200 ${
+                          moodTone === opt.value
+                            ? "border-primary bg-primary/5"
+                            : "border-white/[0.08] hover:border-white/20"
+                        }`}
+                      >
+                        <span className="text-lg block mb-1">
+                          {moodToneIcons[opt.value]}
+                        </span>
+                        <span
+                          className={`text-xs font-medium block ${
+                            moodTone === opt.value ? "text-primary" : "text-white"
+                          }`}
+                        >
+                          {opt.label}
+                        </span>
+                        <span className="text-[10px] text-text-muted">{opt.sub}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Mood Font */}
+                <div className="mb-6">
+                  <label className={labelClass}>
+                    文字の雰囲気
+                    <HelpTooltip text="タイトルや見出しに使われるフォントの雰囲気です。" />
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
+                    {[
+                      { value: "serif", label: "上品・伝統的", sub: "明朝体系" },
+                      { value: "sans", label: "モダン・すっきり", sub: "ゴシック体系" },
+                      { value: "mono", label: "テック・デジタル", sub: "等幅フォント" },
+                      { value: "handwritten", label: "手書き・温かみ", sub: "手書き風" },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setMoodFont(opt.value)}
+                        className={`border rounded-xl p-3 text-left transition-all duration-200 ${
+                          moodFont === opt.value
+                            ? "border-primary bg-primary/5"
+                            : "border-white/[0.08] hover:border-white/20"
+                        }`}
+                      >
+                        <span
+                          className={`text-base block mb-1 ${
+                            opt.value === "serif"
+                              ? "font-serif"
+                              : opt.value === "mono"
+                              ? "font-mono"
+                              : ""
+                          }`}
+                        >
+                          {moodFontIcons[opt.value]}
+                        </span>
+                        <span
+                          className={`text-xs font-medium block ${
+                            moodFont === opt.value ? "text-primary" : "text-white"
+                          }`}
+                        >
+                          {opt.label}
+                        </span>
+                        <span className="text-[10px] text-text-muted">{opt.sub}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Mood Animation */}
+                <div>
+                  <label className={labelClass}>
+                    アニメーションの強さ
+                    <HelpTooltip text="スクロールした時の動きの強さです。「なし」なら静的なサイトになります。" />
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
+                    {[
+                      { value: "none", label: "なし", sub: "シンプルに" },
+                      { value: "subtle", label: "控えめ", sub: "ふわっと表示" },
+                      { value: "moderate", label: "普通", sub: "スクロールで動く" },
+                      { value: "dynamic", label: "しっかり", sub: "印象に残る演出" },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setMoodAnimation(opt.value)}
+                        className={`border rounded-xl p-3 text-left transition-all duration-200 ${
+                          moodAnimation === opt.value
+                            ? "border-primary bg-primary/5"
+                            : "border-white/[0.08] hover:border-white/20"
+                        }`}
+                      >
+                        <span className="text-base block mb-1">
+                          {moodAnimIcons[opt.value]}
+                        </span>
+                        <span
+                          className={`text-xs font-medium block ${
+                            moodAnimation === opt.value ? "text-primary" : "text-white"
+                          }`}
+                        >
+                          {opt.label}
+                        </span>
+                        <span className="text-[10px] text-text-muted">{opt.sub}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              {/* --- カラー --- */}
+              <section className="glass-card p-6 sm:p-8">
+                <SectionDivider label="カラー" />
+                <p className="text-text-muted text-xs mt-3 mb-5 text-center">
+                  サイトの色を選んでください
+                </p>
+
+                {/* Preset swatches */}
+                <div className="mb-4">
+                  <label className={labelClass}>
+                    カラープリセット
+                    <HelpTooltip text="あらかじめ用意された配色セットです。クリックするだけで色が決まります。" />
+                  </label>
+                  <div className="flex flex-wrap gap-3 mt-2">
+                    {colorPresets.map((preset, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setColorMode("preset");
+                          setSelectedPresetIdx(idx);
+                        }}
+                        className="group flex flex-col items-center gap-1"
+                        title={preset.name}
+                      >
+                        <div className="relative">
+                          <div
+                            className={`w-8 h-8 rounded-full border-2 transition-all ${
+                              colorMode === "preset" && selectedPresetIdx === idx
+                                ? "ring-2 ring-primary ring-offset-2 ring-offset-[#0a0a0f] border-primary"
+                                : "border-white/20 group-hover:border-white/40"
+                            }`}
+                            style={{
+                              background: `linear-gradient(135deg, ${preset.primary} 50%, ${preset.accent} 50%)`,
+                            }}
+                          />
+                          {colorMode === "preset" && selectedPresetIdx === idx && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <Check className="w-3.5 h-3.5 text-white drop-shadow-md" />
+                            </div>
+                          )}
+                        </div>
+                        <span className="text-[9px] text-text-muted group-hover:text-text-secondary transition-colors">
+                          {preset.name}
+                        </span>
+                      </button>
+                    ))}
+
+                    {/* Custom option */}
+                    <button
+                      type="button"
+                      onClick={() => setColorMode("custom")}
+                      className="flex flex-col items-center gap-1 group"
+                    >
+                      <div
+                        className={`w-8 h-8 rounded-full border-2 border-dashed flex items-center justify-center transition-all ${
+                          colorMode === "custom"
+                            ? "border-primary text-primary"
+                            : "border-white/20 text-text-muted group-hover:border-white/40"
+                        }`}
+                      >
+                        <span className="text-xs">+</span>
+                      </div>
+                      <span className="text-[9px] text-text-muted">自分で選ぶ</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Custom color pickers */}
+                <AnimatePresence>
+                  {colorMode === "custom" && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="space-y-3 mb-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        <label className="text-xs text-text-secondary w-20 shrink-0">メインカラー</label>
+                        <input
+                          type="color"
+                          value={customPrimary}
+                          onChange={(e) => setCustomPrimary(e.target.value)}
+                          className="w-8 h-8 rounded cursor-pointer bg-transparent border-0"
+                        />
+                        <span className="text-text-muted text-xs font-mono">{customPrimary}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <label className="text-xs text-text-secondary w-20 shrink-0">アクセント</label>
+                        <input
+                          type="color"
+                          value={customAccent}
+                          onChange={(e) => setCustomAccent(e.target.value)}
+                          className="w-8 h-8 rounded cursor-pointer bg-transparent border-0"
+                        />
+                        <span className="text-text-muted text-xs font-mono">{customAccent}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <label className="text-xs text-text-secondary w-20 shrink-0">背景色</label>
+                        <input
+                          type="color"
+                          value={customBackground}
+                          onChange={(e) => setCustomBackground(e.target.value)}
+                          className="w-8 h-8 rounded cursor-pointer bg-transparent border-0"
+                        />
+                        <span className="text-text-muted text-xs font-mono">{customBackground}</span>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Live color preview */}
+                {(selectedPresetIdx !== null || colorMode === "custom") && (
+                  <div
+                    className="rounded-xl p-4 border border-white/[0.06] flex items-center gap-4"
+                    style={{ backgroundColor: activeColors.background }}
+                  >
+                    <span className="text-xs" style={{ color: activeColors.primary }}>
+                      メインカラー
+                    </span>
+                    <span className="text-xs font-bold" style={{ color: activeColors.accent }}>
+                      Sample
+                    </span>
+                    <span className="text-[10px] text-text-muted ml-auto">プレビュー</span>
+                  </div>
+                )}
+              </section>
+
+              {/* Nav */}
+              <div className="flex justify-between">
+                <button
+                  type="button"
+                  onClick={goBack}
+                  className="flex items-center gap-2 px-6 py-3.5 rounded-xl border border-white/[0.08] text-text-secondary text-sm tracking-wider hover:border-white/20 hover:text-white transition-all duration-300"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  戻る
+                </button>
+                <button
+                  type="button"
+                  onClick={goNext}
+                  className="flex items-center gap-2 px-8 py-3.5 rounded-xl bg-primary text-[#0a0a0f] font-bold text-sm tracking-wider hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20"
+                >
+                  次へ：サイト内容を入力
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ═══════════════════════════════════════════ */}
+          {/* STEP 3: サイト内容                           */}
+          {/* ═══════════════════════════════════════════ */}
+          {step === 3 && (
+            <motion.div
+              key="step3"
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.35, ease: "easeInOut" }}
+              className="space-y-6"
+            >
+              <section className="glass-card p-6 sm:p-8">
+                <h2 className="text-white text-lg font-bold tracking-wide mb-1">
+                  サイトに載せる情報を入力してください
+                </h2>
+                <p className="text-text-muted text-xs mb-6">
+                  画像と文章をアップロードするだけで、サイトが完成します
+                </p>
+
+                {/* ── 作品画像 ─────────────────────── */}
+                <SectionDivider label="作品画像" />
+
+                {/* Template recommendation */}
+                {imageSpec && templateForm && (
+                  <div className="mt-4 mb-4 rounded-xl border border-primary/20 bg-primary/[0.03] p-3">
+                    <p className="text-xs text-text-secondary">
+                      「<span className="text-white font-medium">{templateForm.nameJa}</span>
+                      」には
+                      <span className="text-primary font-medium">
+                        {imageSpec.recommendedRatio}
+                      </span>
+                      の画像が
+                      <span className="text-primary font-medium">
+                        {imageSpec.recommendedCount.min}〜{imageSpec.recommendedCount.max}枚
+                      </span>
+                      おすすめです
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-[10px] text-text-muted">対応サイズ:</span>
+                      {imageSpec.acceptRatios.map((r) => (
+                        <span
+                          key={r}
+                          className="flex items-center gap-0.5 text-[10px] text-text-secondary"
+                        >
+                          <RatioIcon ratio={r} />
+                          {r}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
 
-                {/* Thumbnails */}
-                {works.length > 0 && (
-                  <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {works.map((w, i) => (
-                      <div key={i} className="relative group">
-                        <div className="aspect-square rounded-lg overflow-hidden bg-white/[0.03] border border-white/[0.08]">
-                          <img src={w.data} alt={w.title} className="w-full h-full object-cover" />
+                {/* Hero image */}
+                <div className="mt-5 mb-6">
+                  <label className={labelClass}>
+                    トップ画像（サイトの一番上に表示）
+                    <HelpTooltip text="サイトを開いた時に最初に見える大きな画像です。インパクトのある1枚を選んでください。" />
+                  </label>
+                  <p className={helpClass + " mb-3"}>
+                    サイトを開いた時に最初に見える大きな画像です
+                  </p>
+
+                  {!heroImage ? (
+                    <div
+                      onDrop={onDrop(handleHeroFile)}
+                      onDragOver={preventDefault}
+                      onClick={() => heroInputRef.current?.click()}
+                      className="border-2 border-dashed border-white/[0.1] rounded-xl p-6 text-center hover:border-primary/30 transition-colors cursor-pointer"
+                    >
+                      <Upload className="w-6 h-6 text-text-muted mx-auto mb-2" />
+                      <p className="text-text-secondary text-xs">
+                        クリックまたはドラッグ&ドロップ
+                      </p>
+                      <p className="text-text-muted text-[10px] mt-1">JPG / PNG / WebP、5MBまで</p>
+                      <input
+                        ref={heroInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        onChange={(e) => {
+                          handleHeroFile(e.target.files);
+                          e.target.value = "";
+                        }}
+                        className="hidden"
+                      />
+                    </div>
+                  ) : (
+                    <div className="relative group inline-block">
+                      <div className="h-32 rounded-xl overflow-hidden border border-white/[0.08]">
+                        <img
+                          src={heroImage.data}
+                          alt="トップ画像"
+                          className="h-full object-cover"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setHeroImage(null)}
+                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Works images */}
+                <div className="mb-6">
+                  <label className={labelClass}>
+                    作品画像（{imageSpec?.recommendedCount.min || 3}〜
+                    {imageSpec?.recommendedCount.max || 10}枚）
+                    <span className="text-red-400 ml-1">*</span>
+                    <HelpTooltip text="サイトのギャラリー部分に表示される作品画像です。あなたの自信作を選んでください。" />
+                  </label>
+                  <p className={helpClass + " mb-3"}>
+                    ギャラリーに表示されます。JPG / PNG / WebP、1枚5MBまで
+                  </p>
+
+                  {works.length < (imageSpec?.recommendedCount.max || 10) && (
+                    <div
+                      onDrop={onDrop(handleWorkFiles)}
+                      onDragOver={preventDefault}
+                      onClick={() => worksInputRef.current?.click()}
+                      className="border-2 border-dashed border-white/[0.1] rounded-xl p-8 text-center hover:border-primary/30 transition-colors cursor-pointer"
+                    >
+                      <Upload className="w-8 h-8 text-text-muted mx-auto mb-3" />
+                      <p className="text-text-secondary text-sm">
+                        ドラッグ&ドロップ、またはクリックして選択
+                      </p>
+                      <p className="text-text-muted text-xs mt-1">
+                        {works.length}/{imageSpec?.recommendedCount.max || 10}枚
+                        {uploading && (
+                          <span className="text-primary ml-2">アップロード中...</span>
+                        )}
+                        {!uploading && uploadedCount > 0 && (
+                          <span className="text-emerald-400 ml-2">
+                            ✓ {uploadedCount}枚アップ済み
+                          </span>
+                        )}
+                      </p>
+                      <input
+                        ref={worksInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        multiple
+                        onChange={(e) => {
+                          handleWorkFiles(e.target.files);
+                          e.target.value = "";
+                        }}
+                        className="hidden"
+                      />
+                    </div>
+                  )}
+
+                  {/* Thumbnails */}
+                  {works.length > 0 && (
+                    <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {works.map((w, i) => (
+                        <div key={i} className="relative group">
+                          <div className="aspect-square rounded-lg overflow-hidden bg-white/[0.03] border border-white/[0.08]">
+                            <img
+                              src={w.data}
+                              alt={w.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeWork(i)}
+                            className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                          <input
+                            type="text"
+                            value={w.title}
+                            onChange={(e) => updateWorkTitle(i, e.target.value)}
+                            placeholder={`作品 ${String(i + 1).padStart(2, "0")}`}
+                            className="mt-1.5 w-full bg-transparent border-b border-white/[0.08] text-white text-xs py-1 focus:border-primary/50 focus:outline-none transition-colors placeholder:text-text-muted"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* ── プロフィール ─────────────────── */}
+                <SectionDivider label="プロフィール" />
+
+                <div className="mt-5 space-y-5">
+                  {/* Profile Image */}
+                  <div>
+                    <label className={labelClass}>
+                      プロフィール画像
+                      <HelpTooltip text="「自己紹介」セクションに表示される画像です。顔写真やアイコンなど何でもOKです。" />
+                    </label>
+                    <p className={helpClass + " mb-3"}>
+                      About欄に表示されます。未設定でもOK
+                    </p>
+
+                    {!profileImage ? (
+                      <div
+                        onDrop={onDrop(handleProfileFile)}
+                        onDragOver={preventDefault}
+                        onClick={() => profileInputRef.current?.click()}
+                        className="border-2 border-dashed border-white/[0.1] rounded-xl p-6 text-center hover:border-primary/30 transition-colors cursor-pointer max-w-[240px]"
+                      >
+                        <Upload className="w-6 h-6 text-text-muted mx-auto mb-2" />
+                        <p className="text-text-secondary text-xs">クリックまたはドロップ</p>
+                        <input
+                          ref={profileInputRef}
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          onChange={(e) => {
+                            handleProfileFile(e.target.files);
+                            e.target.value = "";
+                          }}
+                          className="hidden"
+                        />
+                      </div>
+                    ) : (
+                      <div className="relative group inline-block">
+                        <div className="w-24 h-24 rounded-full overflow-hidden border border-white/[0.08]">
+                          <img
+                            src={profileImage.data}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                         <button
                           type="button"
-                          onClick={() => removeWork(i)}
-                          className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => setProfileImage(null)}
+                          className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <X className="w-3 h-3" />
                         </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bio */}
+                  <div>
+                    <label className={labelClass}>
+                      自己紹介文
+                      <HelpTooltip text="あなたのことを教えてください。活動のきっかけ、こだわり、好きなテーマなど。" />
+                    </label>
+                    <textarea
+                      value={bio}
+                      onChange={(e) => {
+                        if (e.target.value.length <= 500) setBio(e.target.value);
+                      }}
+                      placeholder="例: AI画像生成を始めて3年。ファンタジーの世界観を中心に制作しています。光の表現にこだわりがあります。"
+                      rows={5}
+                      className={`${inputClass} resize-none`}
+                    />
+                    <div className="flex justify-between mt-1">
+                      <p className={helpClass}>活動のきっかけ、こだわり、好きなテーマなど</p>
+                      <span
+                        className={`text-xs ${
+                          bio.length > 480 ? "text-red-400" : "text-text-muted"
+                        }`}
+                      >
+                        {bio.length}/500
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Motto */}
+                  <div>
+                    <label className={labelClass}>
+                      好きな言葉・モットー
+                      <HelpTooltip text="自己紹介エリアに引用として表示されます。" />
+                    </label>
+                    <input
+                      type="text"
+                      value={motto}
+                      onChange={(e) => setMotto(e.target.value)}
+                      placeholder="例: 想像の先にある世界を描く"
+                      className={inputClass}
+                    />
+                    <p className={helpClass}>About欄に引用として表示されます</p>
+                  </div>
+                </div>
+
+                {/* ── SNSリンク ────────────────────── */}
+                <div className="mt-8">
+                  <SectionDivider label="SNSリンク" />
+                  <p className="text-text-muted text-[10px] mt-3 mb-4 text-center">
+                    サイトの「お問い合わせ」セクションにリンクが表示されます
+                  </p>
+
+                  <div className="space-y-3">
+                    {[
+                      {
+                        label: "X (Twitter)",
+                        value: snsX,
+                        set: setSnsX,
+                        placeholder: "https://x.com/your_handle",
+                      },
+                      {
+                        label: "Instagram",
+                        value: snsInstagram,
+                        set: setSnsInstagram,
+                        placeholder: "https://instagram.com/your_handle",
+                      },
+                      {
+                        label: "Pixiv",
+                        value: snsPixiv,
+                        set: setSnsPixiv,
+                        placeholder: "https://pixiv.net/users/your_id",
+                      },
+                      {
+                        label: "note",
+                        value: snsNote,
+                        set: setSnsNote,
+                        placeholder: "https://note.com/your_id",
+                      },
+                      {
+                        label: "その他",
+                        value: snsOther,
+                        set: setSnsOther,
+                        placeholder: "https://...",
+                      },
+                    ].map((sns) => (
+                      <div key={sns.label} className="flex items-center gap-3">
+                        <span className="text-text-muted text-xs w-20 shrink-0 text-right tracking-wider">
+                          {sns.label}
+                        </span>
                         <input
                           type="text"
-                          value={w.title}
-                          onChange={(e) => updateWorkTitle(i, e.target.value)}
-                          placeholder={`作品 ${String(i + 1).padStart(2, "0")}`}
-                          className="mt-1.5 w-full bg-transparent border-b border-white/[0.08] text-white text-xs py-1 focus:border-primary/50 focus:outline-none transition-colors placeholder:text-text-muted"
+                          value={sns.value}
+                          onChange={(e) => sns.set(e.target.value)}
+                          placeholder={sns.placeholder}
+                          className={inputClass}
                         />
                       </div>
                     ))}
                   </div>
-                )}
-              </section>
-
-              {/* Profile Image */}
-              <section className="glass-card p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-2">
-                  <UserCircle className="w-4 h-4 text-primary" />
-                  <h2 className="text-white text-sm font-bold tracking-wider">プロフィール画像</h2>
                 </div>
-                <p className={`${helpClass} mb-5`}>About欄に表示されます。未設定でもOK</p>
 
-                {!profileImage ? (
-                  <div
-                    onDrop={onDrop(handleProfileFile)}
-                    onDragOver={preventDefault}
-                    onClick={() => profileInputRef.current?.click()}
-                    className="border-2 border-dashed border-white/[0.1] rounded-xl p-6 text-center hover:border-primary/30 transition-colors cursor-pointer max-w-[240px]"
-                  >
-                    <Upload className="w-6 h-6 text-text-muted mx-auto mb-2" />
-                    <p className="text-text-secondary text-xs">クリックまたはドロップ</p>
-                    <input
-                      ref={profileInputRef}
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp"
-                      onChange={(e) => handleProfileFile(e.target.files)}
-                      className="hidden"
-                    />
-                  </div>
-                ) : (
-                  <div className="relative group inline-block">
-                    <div className="w-24 h-24 rounded-full overflow-hidden border border-white/[0.08]">
-                      <img src={profileImage.data} alt="Profile" className="w-full h-full object-cover" />
+                {/* ── テンプレート固有項目 ─────────── */}
+                {templateForm && templateForm.uniqueFields.length > 0 && (
+                  <div className="mt-8">
+                    <SectionDivider label="テンプレート固有の項目" />
+                    <div className="mt-4 space-y-5">
+                      {templateForm.uniqueFields.map((field) => (
+                        <div key={field.id}>
+                          <label className={labelClass}>
+                            {field.label}
+                            {field.help && <HelpTooltip text={field.help} />}
+                          </label>
+                          {field.help && <p className={helpClass + " mb-2"}>{field.help}</p>}
+
+                          {/* Tag input */}
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={tagInput[field.id] || ""}
+                              onChange={(e) =>
+                                setTagInput((prev) => ({
+                                  ...prev,
+                                  [field.id]: e.target.value,
+                                }))
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === ",") {
+                                  e.preventDefault();
+                                  addTag(field.id, field.max || 10);
+                                }
+                              }}
+                              placeholder={field.placeholder}
+                              className={inputClass}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => addTag(field.id, field.max || 10)}
+                              className="px-3 py-2 rounded-xl border border-white/[0.08] text-text-secondary text-xs hover:border-primary/50 hover:text-primary transition-colors shrink-0"
+                            >
+                              追加
+                            </button>
+                          </div>
+
+                          {/* Tags display */}
+                          {(uniqueTags[field.id] || []).length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {(uniqueTags[field.id] || []).map((tag, idx) => (
+                                <span
+                                  key={idx}
+                                  className="flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs"
+                                >
+                                  {tag}
+                                  <button
+                                    type="button"
+                                    onClick={() => removeTag(field.id, idx)}
+                                    className="hover:text-red-400 transition-colors"
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          <p className="text-text-muted text-[10px] mt-1">
+                            {(uniqueTags[field.id] || []).length}/{field.max || 10}個
+                            （Enterキーまたはカンマで追加）
+                          </p>
+                        </div>
+                      ))}
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setProfileImage(null)}
-                      className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
                   </div>
                 )}
-              </section>
 
-              {/* SNS Links */}
-              <section className="glass-card p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-2">
-                  <Share2 className="w-4 h-4 text-primary" />
-                  <h2 className="text-white text-sm font-bold tracking-wider">SNSリンク</h2>
-                </div>
-                <p className={`${helpClass} mb-5`}>サイトのContactセクションに表示されます</p>
-
-                <div className="space-y-4">
-                  {[
-                    { label: "X (Twitter)", value: snsX, set: setSnsX, placeholder: "https://x.com/your_handle" },
-                    { label: "Instagram", value: snsInstagram, set: setSnsInstagram, placeholder: "https://instagram.com/your_handle" },
-                    { label: "Pixiv", value: snsPixiv, set: setSnsPixiv, placeholder: "https://pixiv.net/users/your_id" },
-                    { label: "note", value: snsNote, set: setSnsNote, placeholder: "https://note.com/your_id" },
-                    { label: "その他", value: snsOther, set: setSnsOther, placeholder: "https://..." },
-                  ].map((sns) => (
-                    <div key={sns.label} className="flex items-center gap-3">
-                      <span className="text-text-muted text-xs w-20 shrink-0 text-right tracking-wider">
-                        {sns.label}
-                      </span>
+                {/* ── 参考・要望 ───────────────────── */}
+                <div className="mt-8">
+                  <SectionDivider label="参考・要望" />
+                  <div className="mt-4 space-y-5">
+                    <div>
+                      <label className={labelClass}>
+                        参考サイトURL
+                        <HelpTooltip text="「こんな感じにしたい」というサイトがあれば教えてください。参考にします。" />
+                      </label>
                       <input
                         type="text"
-                        value={sns.value}
-                        onChange={(e) => sns.set(e.target.value)}
-                        placeholder={sns.placeholder}
+                        value={referenceUrl}
+                        onChange={(e) => setReferenceUrl(e.target.value)}
+                        placeholder="https://example.com"
                         className={inputClass}
                       />
+                      <p className={helpClass}>
+                        「こんな感じにしたい」というサイトがあれば教えてください
+                      </p>
                     </div>
-                  ))}
+
+                    <div>
+                      <label className={labelClass}>
+                        その他のご要望
+                        <HelpTooltip text="色の好み、レイアウトの希望、特別なリクエストなど何でも自由にお書きください。" />
+                      </label>
+                      <textarea
+                        value={requests}
+                        onChange={(e) => {
+                          if (e.target.value.length <= 500) setRequests(e.target.value);
+                        }}
+                        placeholder="例: 青と紫を基調にしてほしい、背景を白にしたい、等"
+                        rows={4}
+                        className={`${inputClass} resize-none`}
+                      />
+                      <div className="flex justify-between mt-1">
+                        <p className={helpClass}>色の好み、レイアウトの希望など自由にお書きください</p>
+                        <span
+                          className={`text-xs ${
+                            requests.length > 480 ? "text-red-400" : "text-text-muted"
+                          }`}
+                        >
+                          {requests.length}/500
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </section>
 
-              {/* Requests */}
-              <section className="glass-card p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-5">
-                  <MessageSquare className="w-4 h-4 text-primary" />
-                  <h2 className="text-white text-sm font-bold tracking-wider">ご要望・備考</h2>
-                </div>
-                <textarea
-                  value={requests}
-                  onChange={(e) => setRequests(e.target.value)}
-                  placeholder="例: 青と紫を基調にしてほしい、参考にしたいサイトがある、等"
-                  rows={4}
-                  className={`${inputClass} resize-none`}
-                />
-                <p className={helpClass}>色の好み、参考サイト、特別なリクエストなど自由にお書きください</p>
-              </section>
-
-              {/* Navigation buttons */}
+              {/* Nav */}
               <div className="flex justify-between">
                 <button
                   type="button"
@@ -912,18 +1646,18 @@ export default function OrderPage() {
           )}
 
           {/* ═══════════════════════════════════════════ */}
-          {/* STEP 3: 確認・お支払い                       */}
+          {/* STEP 4: 確認・お支払い                       */}
           {/* ═══════════════════════════════════════════ */}
-          {step === 3 && (
+          {step === 4 && (
             <motion.div
-              key="step3"
+              key="step4"
               custom={direction}
               variants={slideVariants}
               initial="enter"
               animate="center"
               exit="exit"
               transition={{ duration: 0.35, ease: "easeInOut" }}
-              className="space-y-8"
+              className="space-y-6"
             >
               {/* Summary */}
               <section className="glass-card p-6 sm:p-8">
@@ -933,39 +1667,107 @@ export default function OrderPage() {
                 </h2>
 
                 <div className="space-y-4 text-sm">
-                  {/* Basic info summary */}
-                  <SummaryRow label="アーティスト名" value={artistName} />
-                  {siteTitle && <SummaryRow label="サイトタイトル" value={siteTitle} />}
-                  <SummaryRow label="メールアドレス" value={email} />
+                  {/* Template */}
                   <SummaryRow
-                    label="ジャンル"
-                    value={[...genres, ...(genreOtherChecked && genreOther.trim() ? [genreOther.trim()] : [])].join("、")}
+                    label="テンプレート"
+                    value={templateForm?.nameJa || template}
                   />
-                  {(tools.length > 0 || (toolOtherChecked && toolOther.trim())) && (
+
+                  <div className="border-t border-white/[0.06] my-4" />
+
+                  {/* Basic info */}
+                  <SummaryRow label="アーティスト名" value={artistName} />
+                  <SummaryRow label="メールアドレス" value={email} />
+                  {siteTitle && <SummaryRow label="サイトタイトル" value={siteTitle} />}
+                  {catchcopy && <SummaryRow label="キャッチコピー" value={catchcopy} />}
+                  {subtitle && <SummaryRow label="肩書き" value={subtitle} />}
+
+                  {/* Mood */}
+                  {moodTone && (
                     <SummaryRow
-                      label="使用ツール"
-                      value={[...tools, ...(toolOtherChecked && toolOther.trim() ? [toolOther.trim()] : [])].join("、")}
+                      label="雰囲気"
+                      value={
+                        { dark: "ダーク", light: "ライト", warm: "ウォーム", cool: "クール", pop: "ポップ", elegant: "エレガント" }[
+                          moodTone
+                        ] || moodTone
+                      }
                     />
+                  )}
+                  {moodFont && (
+                    <SummaryRow
+                      label="文字"
+                      value={
+                        { serif: "上品・伝統的", sans: "モダン・すっきり", mono: "テック・デジタル", handwritten: "手書き・温かみ" }[
+                          moodFont
+                        ] || moodFont
+                      }
+                    />
+                  )}
+                  {moodAnimation && (
+                    <SummaryRow
+                      label="アニメーション"
+                      value={
+                        { none: "なし", subtle: "控えめ", moderate: "普通", dynamic: "しっかり" }[
+                          moodAnimation
+                        ] || moodAnimation
+                      }
+                    />
+                  )}
+
+                  {/* Colors */}
+                  {(selectedPresetIdx !== null || colorMode === "custom") && (
+                    <div className="flex items-center gap-3">
+                      <span className="text-text-muted text-xs shrink-0 sm:w-32 sm:text-right">
+                        カラー
+                      </span>
+                      <div className="flex gap-2">
+                        <span
+                          className="w-5 h-5 rounded-full border border-white/20"
+                          style={{ background: activeColors.primary }}
+                        />
+                        <span
+                          className="w-5 h-5 rounded-full border border-white/20"
+                          style={{ background: activeColors.accent }}
+                        />
+                        <span
+                          className="w-5 h-5 rounded-full border border-white/20"
+                          style={{ background: activeColors.background }}
+                        />
+                      </div>
+                    </div>
                   )}
 
                   <div className="border-t border-white/[0.06] my-4" />
 
-                  {/* Site content summary */}
-                  <SummaryRow
-                    label="テンプレート"
-                    value={templates.find((t) => t.id === template)?.name || template}
-                  />
-                  {catchcopy && <SummaryRow label="キャッチコピー" value={catchcopy} />}
-                  {bio && <SummaryRow label="自己紹介文" value={bio} />}
-                  {motto && <SummaryRow label="モットー" value={motto} />}
+                  {/* Images */}
+                  {heroImage && (
+                    <div>
+                      <span className="text-text-muted text-xs block mb-2">トップ画像</span>
+                      <div className="w-24 h-16 rounded-lg overflow-hidden border border-white/[0.08]">
+                        <img
+                          src={heroImage.data}
+                          alt="Hero"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  )}
 
-                  {/* Works thumbnails */}
                   <div>
-                    <span className="text-text-muted text-xs block mb-2">作品画像（{works.length}枚）</span>
+                    <span className="text-text-muted text-xs block mb-2">
+                      作品画像（{works.length}枚）
+                    </span>
                     <div className="flex flex-wrap gap-2">
                       {works.map((w, i) => (
-                        <div key={i} className="w-16 h-16 rounded-lg overflow-hidden border border-white/[0.08]">
-                          <img src={w.data} alt={w.title} className="w-full h-full object-cover" />
+                        <div
+                          key={i}
+                          className="w-16 h-16 rounded-lg overflow-hidden border border-white/[0.08]"
+                        >
+                          <img
+                            src={w.data}
+                            alt={w.title}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                       ))}
                     </div>
@@ -973,12 +1775,27 @@ export default function OrderPage() {
 
                   {profileImage && (
                     <div>
-                      <span className="text-text-muted text-xs block mb-2">プロフィール画像</span>
+                      <span className="text-text-muted text-xs block mb-2">
+                        プロフィール画像
+                      </span>
                       <div className="w-12 h-12 rounded-full overflow-hidden border border-white/[0.08]">
-                        <img src={profileImage.data} alt="Profile" className="w-full h-full object-cover" />
+                        <img
+                          src={profileImage.data}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     </div>
                   )}
+
+                  {/* Profile text */}
+                  {bio && (
+                    <>
+                      <div className="border-t border-white/[0.06] my-4" />
+                      <SummaryRow label="自己紹介文" value={bio} />
+                    </>
+                  )}
+                  {motto && <SummaryRow label="モットー" value={motto} />}
 
                   {/* SNS */}
                   {(snsX || snsInstagram || snsPixiv || snsNote || snsOther) && (
@@ -992,17 +1809,44 @@ export default function OrderPage() {
                     </>
                   )}
 
-                  {requests && (
+                  {/* Unique fields */}
+                  {Object.entries(uniqueTags).some(([, tags]) => tags.length > 0) && (
                     <>
                       <div className="border-t border-white/[0.06] my-4" />
-                      <SummaryRow label="ご要望・備考" value={requests} />
+                      {Object.entries(uniqueTags)
+                        .filter(([, tags]) => tags.length > 0)
+                        .map(([fieldId, tags]) => {
+                          const field = templateForm?.uniqueFields.find(
+                            (f) => f.id === fieldId
+                          );
+                          return (
+                            <SummaryRow
+                              key={fieldId}
+                              label={field?.label || fieldId}
+                              value={tags.join("、")}
+                            />
+                          );
+                        })}
+                    </>
+                  )}
+
+                  {/* Requests */}
+                  {(referenceUrl || requests) && (
+                    <>
+                      <div className="border-t border-white/[0.06] my-4" />
+                      {referenceUrl && (
+                        <SummaryRow label="参考サイト" value={referenceUrl} />
+                      )}
+                      {requests && (
+                        <SummaryRow label="ご要望・備考" value={requests} />
+                      )}
                     </>
                   )}
                 </div>
 
                 <button
                   type="button"
-                  onClick={goBack}
+                  onClick={() => goToStep(1)}
                   className="mt-6 flex items-center gap-2 text-text-muted text-xs hover:text-primary transition-colors"
                 >
                   <ChevronLeft className="w-3.5 h-3.5" />
@@ -1016,6 +1860,7 @@ export default function OrderPage() {
                   <CreditCard className="w-4 h-4 text-primary" />
                   <h2 className="text-white text-sm font-bold tracking-wider">プラン選択</h2>
                   <span className="text-red-400 text-xs">*必須</span>
+                  <HelpTooltip text="テンプレートプランは買い切りで初回1回編集可能。おまかせプランは月額で月3回カスタマイズ可能です。" />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1030,18 +1875,26 @@ export default function OrderPage() {
                     }`}
                   >
                     <div className="flex items-start justify-between mb-3">
-                      <span className="text-white text-sm font-bold tracking-wide">テンプレートプラン</span>
+                      <span className="text-white text-sm font-bold tracking-wide">
+                        テンプレートプラン
+                      </span>
                       <span
                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                          plan === "template" ? "border-primary bg-primary" : "border-white/20"
+                          plan === "template"
+                            ? "border-primary bg-primary"
+                            : "border-white/20"
                         }`}
                       >
-                        {plan === "template" && <Check className="w-3 h-3 text-[#0a0a0f]" />}
+                        {plan === "template" && (
+                          <Check className="w-3 h-3 text-[#0a0a0f]" />
+                        )}
                       </span>
                     </div>
                     <p className="text-primary text-2xl font-bold">
                       ¥980
-                      <span className="text-text-muted text-xs font-normal ml-1">買い切り</span>
+                      <span className="text-text-muted text-xs font-normal ml-1">
+                        買い切り
+                      </span>
                     </p>
                     <p className="mt-3 text-text-muted text-xs leading-relaxed">
                       テンプレートから選んでサイトを作成。初回1回のみ編集可能
@@ -1063,13 +1916,19 @@ export default function OrderPage() {
                       おすすめ
                     </span>
                     <div className="flex items-start justify-between mb-3">
-                      <span className="text-white text-sm font-bold tracking-wide">おまかせプラン</span>
+                      <span className="text-white text-sm font-bold tracking-wide">
+                        おまかせプラン
+                      </span>
                       <span
                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                          plan === "omakase" ? "border-primary bg-primary" : "border-white/20"
+                          plan === "omakase"
+                            ? "border-primary bg-primary"
+                            : "border-white/20"
                         }`}
                       >
-                        {plan === "omakase" && <Check className="w-3 h-3 text-[#0a0a0f]" />}
+                        {plan === "omakase" && (
+                          <Check className="w-3 h-3 text-[#0a0a0f]" />
+                        )}
                       </span>
                     </div>
                     <p className="text-primary text-2xl font-bold">
@@ -1113,15 +1972,5 @@ export default function OrderPage() {
         </AnimatePresence>
       </div>
     </main>
-  );
-}
-
-// ─── Summary Row Component ──────────────────────────────────
-function SummaryRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
-      <span className="text-text-muted text-xs shrink-0 sm:w-32 sm:text-right">{label}</span>
-      <span className="text-text-secondary text-sm break-all">{value}</span>
-    </div>
   );
 }
