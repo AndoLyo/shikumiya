@@ -430,7 +430,7 @@ X: https://x.com/ando_lyo
   GmailApp.sendEmail(
     "ando.lyo.ai@gmail.com",
     `【しくみや】新規注文: ${artistName}様 (${plan})`,
-    `新規注文が入りました。\n\nアーティスト名: ${artistName}\nプラン: ${plan}\nテンプレート: ${data.template}\nサイトURL: ${siteUrl}\nメール: ${email}\n要望: ${data.requests || "なし"}`,
+    `新規注文が入りました。\n\nアーティスト名: ${artistName}\nプラン: ${plan}\nテンプレート: ${data.template || "未選択"}\nメール: ${email}\n要望: ${data.requests || "なし"}\n\n※サイトURLは完成後に別メールで送信されます`,
     { name: "しくみや自動通知" },
   );
 }
