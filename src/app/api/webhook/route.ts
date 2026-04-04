@@ -13,6 +13,7 @@ interface OrderWork {
 interface OrderData {
   orderId: string;
   artistName: string;
+  siteSlug?: string;
   email: string;
   template: string;
   plan: string;
@@ -172,12 +173,9 @@ async function createSite(orderMeta: OrderData, imageFiles: Record<string, strin
   const templateRepo =
     process.env.GITHUB_TEMPLATE_REPO || "shikumiya-template";
 
-  // Generate repo name from artist name (sanitize for GitHub)
-  const repoName = `site-${orderMeta.artistName
-    ?.toLowerCase()
-    .replace(/[^a-z0-9-]/g, "-")
-    .replace(/-+/g, "-")
-    .slice(0, 30) || "user"}-${Date.now().toString(36)}`;
+  // Generate repo name from siteSlug (user-provided, already validated as a-z0-9-)
+  const slug = orderMeta.siteSlug?.replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "").slice(0, 30) || "user";
+  const repoName = `site-${slug}-${Date.now().toString(36)}`;
 
   // Step 1: Create repo from template
   const createRes = await fetch(

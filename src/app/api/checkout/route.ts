@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
     const orderMeta = {
       orderId,
       artistName: body.artistName,
+      siteSlug: body.siteSlug || "",
       siteTitle: body.siteTitle || "",
       email: body.email,
       genres: body.genres || [],

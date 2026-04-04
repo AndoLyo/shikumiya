@@ -211,6 +211,8 @@ export default function OrderPage() {
 
   // Step 2: Basic Info
   const [artistName, setArtistName] = useState("");
+  const [siteSlug, setSiteSlug] = useState("");
+  const [siteSlugError, setSiteSlugError] = useState("");
   const [siteTitle, setSiteTitle] = useState("");
   const [catchcopy, setCatchcopy] = useState("");
   const [subtitle, setSubtitle] = useState("");
@@ -286,6 +288,22 @@ export default function OrderPage() {
     if (step === 2) {
       if (!artistName.trim()) {
         setError("アーティスト名を入力してください");
+        return;
+      }
+      if (!siteSlug.trim()) {
+        setError("サイトURLを入力してください");
+        return;
+      }
+      if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(siteSlug) && siteSlug.length > 1) {
+        setError("サイトURLの形式が正しくありません");
+        return;
+      }
+      if (siteSlug.length === 1 && !/^[a-z0-9]$/.test(siteSlug)) {
+        setError("サイトURLの形式が正しくありません");
+        return;
+      }
+      if (siteSlug.length < 2) {
+        setError("サイトURLは2文字以上で入力してください");
         return;
       }
       if (!email.trim()) {
@@ -506,6 +524,7 @@ export default function OrderPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           artistName: artistName.trim(),
+          siteSlug: siteSlug.trim(),
           siteTitle: siteTitle.trim(),
           email: email.trim(),
           template,
@@ -801,6 +820,51 @@ export default function OrderPage() {
                     />
                     <p className={helpClass}>
                       サイトに表示される名前です（本名でもペンネームでもOK）
+                    </p>
+                  </div>
+
+                  {/* Site URL Slug */}
+                  <div>
+                    <label className={labelClass}>
+                      サイトURL <span className="text-red-400">*</span>
+                      <HelpTooltip text="あなたのサイトのアドレス（URL）になります。英語の小文字・数字・ハイフンだけ使えます。" />
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={siteSlug}
+                        onChange={(e) => {
+                          const v = e.target.value.toLowerCase();
+                          if (v === "" || /^[a-z0-9-]*$/.test(v)) {
+                            setSiteSlug(v);
+                            if (v.length > 0 && !/^[a-z0-9]/.test(v)) {
+                              setSiteSlugError("最初の文字は英語の小文字か数字にしてください");
+                            } else if (v.includes("--")) {
+                              setSiteSlugError("ハイフンは連続で使えません");
+                            } else {
+                              setSiteSlugError("");
+                            }
+                          } else {
+                            setSiteSlugError("使えるのは英語の小文字(a-z)・数字(0-9)・ハイフン(-)だけです");
+                          }
+                        }}
+                        placeholder="例: hana-art"
+                        className={inputClass}
+                        maxLength={30}
+                      />
+                    </div>
+                    {siteSlugError && (
+                      <p className="text-red-400 text-xs mt-1.5">{siteSlugError}</p>
+                    )}
+                    {/* URL プレビュー */}
+                    <div className="mt-2 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                      <p className="text-text-muted text-[10px] tracking-wider mb-1">あなたのサイトURLはこうなります</p>
+                      <p className="text-white text-sm font-mono">
+                        https://<span className="text-primary">{siteSlug || "ここに入力した文字"}</span>.vercel.app
+                      </p>
+                    </div>
+                    <p className={helpClass}>
+                      英語の小文字・数字・ハイフン(-)だけ使えます（例: hana, yuki-art, taro-illustration）
                     </p>
                   </div>
 
@@ -1677,6 +1741,7 @@ export default function OrderPage() {
 
                   {/* Basic info */}
                   <SummaryRow label="アーティスト名" value={artistName} />
+                  <SummaryRow label="サイトURL" value={`https://${siteSlug}.vercel.app`} />
                   <SummaryRow label="メールアドレス" value={email} />
                   {siteTitle && <SummaryRow label="サイトタイトル" value={siteTitle} />}
                   {catchcopy && <SummaryRow label="キャッチコピー" value={catchcopy} />}
