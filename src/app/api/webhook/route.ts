@@ -203,6 +203,10 @@ async function createSite(orderMeta: OrderData, imageFiles: Record<string, strin
   // Wait for repo to be ready
   await new Promise((r) => setTimeout(r, 3000));
 
+  // Step 1.5: Copy selected template's files from main repo
+  const selectedTemplate = orderMeta.template || "comic-panel";
+  await copyTemplateFiles(githubToken, templateOwner, repoName, selectedTemplate);
+
   // Step 2: Push images from imageFiles Gist to the repo
   const workFilenames: { src: string; title: string; description: string }[] = [];
   const worksMeta = (orderMeta as unknown as Record<string, unknown>).worksMeta as Array<{name: string; title?: string}> || [];
@@ -389,6 +393,78 @@ async function createSite(orderMeta: OrderData, imageFiles: Record<string, strin
   }
 
   return siteUrl;
+}
+
+async function copyTemplateFiles(
+  githubToken: string,
+  owner: string,
+  targetRepo: string,
+  templateId: string,
+): Promise<void> {
+  const sourceRepo = "lyo-vision-site";
+
+  // 1. Get page.tsx from portfolio-templates
+  const pagePath = `src/app/portfolio-templates/${templateId}/page.tsx`;
+  const pageContent = await fetchFileFromRepo(githubToken, owner, sourceRepo, pagePath);
+  if (pageContent) {
+    // Rewrite imports: @/components/portfolio-templates/{id}/ → @/components/
+    const rewritten = pageContent
+      .replace(new RegExp(`@/components/portfolio-templates/${templateId}/`, "g"), "@/components/");
+    await pushFileToRepo(githubToken, owner, targetRepo, "src/app/page.tsx", rewritten, "Setup: page.tsx from template");
+  }
+
+  // 2. Get all component files for this template
+  const componentsPath = `src/components/portfolio-templates/${templateId}`;
+  const files = await listFilesInRepo(githubToken, owner, sourceRepo, componentsPath);
+  for (const file of files) {
+    if (!file.name.endsWith(".tsx")) continue;
+    const content = await fetchFileFromRepo(githubToken, owner, sourceRepo, file.path);
+    if (content) {
+      // Push to src/components/ (flat, not in subdirectory)
+      await pushFileToRepo(githubToken, owner, targetRepo, `src/components/${file.name}`, content, `Setup: ${file.name}`);
+    }
+  }
+}
+
+async function fetchFileFromRepo(token: string, owner: string, repo: string, path: string): Promise<string | null> {
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+    headers: { Authorization: `token ${token}`, Accept: "application/vnd.github.v3+json" },
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return Buffer.from(data.content, "base64").toString("utf-8");
+}
+
+async function listFilesInRepo(token: string, owner: string, repo: string, path: string): Promise<Array<{ name: string; path: string }>> {
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+    headers: { Authorization: `token ${token}`, Accept: "application/vnd.github.v3+json" },
+  });
+  if (!res.ok) return [];
+  const data = await res.json();
+  if (!Array.isArray(data)) return [];
+  return data.filter((f: { type: string }) => f.type === "file").map((f: { name: string; path: string }) => ({ name: f.name, path: f.path }));
+}
+
+async function pushFileToRepo(token: string, owner: string, repo: string, path: string, content: string, message: string): Promise<void> {
+  // Check if file exists (need SHA for update)
+  const existRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+    headers: { Authorization: `token ${token}`, Accept: "application/vnd.github.v3+json" },
+  });
+  let sha: string | undefined;
+  if (existRes.ok) {
+    const existData = await existRes.json();
+    sha = existData.sha;
+  }
+
+  await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+    method: "PUT",
+    headers: { Authorization: `token ${token}`, Accept: "application/vnd.github.v3+json" },
+    body: JSON.stringify({
+      message,
+      content: Buffer.from(content).toString("base64"),
+      ...(sha ? { sha } : {}),
+    }),
+  });
 }
 
 function detectColorTheme(requests: string): { primary: string; accent: string; background: string } {
