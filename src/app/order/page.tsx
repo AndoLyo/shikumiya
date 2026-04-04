@@ -702,7 +702,7 @@ export default function OrderPage() {
                         </div>
                       </button>
                       <a
-                        href={`/templates/${tpl.id}`}
+                        href={`/portfolio-templates/${tpl.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-1 flex items-center justify-center gap-1 text-[10px] text-text-muted hover:text-primary transition-colors"
