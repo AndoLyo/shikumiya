@@ -285,7 +285,8 @@ ${requests ? `顧客の要望:「${requests}」
 - 存在しない画像パスを参照しない
 - npx next build や npm run build は実行しない（ビルドはVercelが自動で行う）
 - .next/ フォルダは触らない
-- src/ 配下の .tsx ファイルだけを編集する`;
+- 編集対象: src/ 配下のすべてのファイル（.tsx, .ts, .css, .config等すべて）
+- page.tsx のCSS変数、globals.css、tailwind設定、site.config.ts 等も積極的に編集する`;
 }
 
 // ━━━━━━━━━━━━━━━━━━━━
