@@ -325,53 +325,89 @@ function logToSheet(data) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   let sheet = ss.getSheetByName(SHEET_NAME);
 
+  // 固定フィールド（必ず先頭に来る列。順序固定）
+  const fixedFields = [
+    { key: "_timestamp", label: "日時" },
+    { key: "order_id", label: "注文ID" },
+    { key: "artist_name", label: "アーティスト名" },
+    { key: "email", label: "メールアドレス" },
+    { key: "plan", label: "プラン" },
+    { key: "template", label: "テンプレート" },
+    { key: "siteUrl", label: "サイトURL" },
+    { key: "_status", label: "ステータス" },
+  ];
+  const fixedKeys = fixedFields.map(f => f.key);
+
+  // シートが無い場合は固定列だけで作成
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
-    sheet.appendRow([
-      "日時",
-      "アーティスト名",
-      "メールアドレス",
-      "プラン",
-      "テンプレート",
-      "自己紹介",
-      "X",
-      "Instagram",
-      "Pixiv",
-      "その他SNS",
-      "サイトURL",
-      "Stripe Session ID",
-      "金額",
-      "ステータス",
-      "要望",
-      "キャッチコピー",
-      "モットー",
-      "GistID",
-      "注文ID",
-    ]);
-    sheet.getRange(1, 1, 1, 19).setFontWeight("bold");
+    sheet.appendRow(fixedFields.map(f => f.label));
+    sheet.getRange(1, 1, 1, fixedFields.length).setFontWeight("bold");
   }
 
-  sheet.appendRow([
-    new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }),
-    data.artist_name || "",
-    data.customerEmail || data.email || "",
-    data.plan || "",
-    data.template || "",
-    data.bio || "",
-    data.sns_x || "",
-    data.sns_instagram || "",
-    data.sns_pixiv || "",
-    data.sns_other || "",
-    data.siteUrl || "",
-    data.stripeSessionId || "",
-    data.amountTotal || "",
-    "制作中",
-    data.requests || "",
-    data.catchcopy || "",
-    data.motto || "",
-    data.image_gist_id || data.imageGistId || "",
-    data.order_id || "",
-  ]);
+  // 現在のヘッダーを取得
+  const lastCol = Math.max(sheet.getLastColumn(), 1);
+  const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(String);
+
+  // dataの全キーを取得（固定キー・内部キー以外）
+  const skipKeys = ["_timestamp", "_status", "customerEmail", "stripeSessionId", "amountTotal", "image_gist_id", "imageGistId"];
+  const allDataKeys = Object.keys(data).filter(k => !skipKeys.includes(k));
+
+  // ヘッダーにないキーがあれば列を追加
+  const keyToLabel = {
+    artist_name: "アーティスト名", email: "メールアドレス", plan: "プラン",
+    template: "テンプレート", siteUrl: "サイトURL", order_id: "注文ID",
+    bio: "自己紹介", catchcopy: "キャッチコピー", motto: "モットー",
+    subtitle: "肩書き", siteTitle: "サイトタイトル", siteSlug: "サイトスラッグ",
+    sns_x: "X", sns_instagram: "Instagram", sns_pixiv: "Pixiv",
+    sns_note: "note", sns_other: "その他SNS",
+    requests: "要望", referenceUrl: "参考サイトURL",
+    moodTone: "雰囲気", moodFont: "フォント", moodAnimation: "アニメーション",
+    colorPrimary: "カラー（メイン）", colorBackground: "カラー（背景）",
+    skills: "スキル", stats: "実績数字", workCategories: "作品カテゴリ", tools: "使用ツール",
+    genres: "ジャンル",
+  };
+
+  for (const key of allDataKeys) {
+    if (fixedKeys.includes(key)) continue; // 固定列にあるキーはスキップ
+    const label = keyToLabel[key] || key;
+    if (!headers.includes(label)) {
+      // 新しい列をヘッダーに追加
+      const newCol = headers.length + 1;
+      sheet.getRange(1, newCol).setValue(label).setFontWeight("bold");
+      headers.push(label);
+    }
+  }
+
+  // データ行を構築
+  const row = [];
+  for (let i = 0; i < headers.length; i++) {
+    const header = headers[i];
+    if (header === "日時") {
+      row.push(new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }));
+    } else if (header === "ステータス") {
+      row.push("制作中");
+    } else if (header === "メールアドレス") {
+      row.push(data.customerEmail || data.email || "");
+    } else {
+      // ヘッダーラベルからキーを逆引き
+      const key = Object.entries(keyToLabel).find(([k, v]) => v === header)?.[0];
+      if (key) {
+        const val = data[key];
+        row.push(Array.isArray(val) ? val.join(", ") : (val || ""));
+      } else {
+        // 固定フィールドのキーで直接マッチ
+        const fixedField = fixedFields.find(f => f.label === header);
+        if (fixedField && fixedField.key !== "_timestamp" && fixedField.key !== "_status") {
+          row.push(data[fixedField.key] || "");
+        } else {
+          row.push("");
+        }
+      }
+    }
+  }
+
+  sheet.appendRow(row);
 }
 
 // ━━━━━━━━━━━━━━━━━━━━

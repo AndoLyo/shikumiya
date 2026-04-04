@@ -89,25 +89,42 @@ export async function POST(req: NextRequest) {
       if (imageGistId) await deleteGist(imageGistId);
 
       // 4. Notify GAS for spreadsheet logging + email
+      // 全フィールドをGASに送信（動的ヘッダーで自動追加される）
+      const orderRecord = orderMeta as unknown as Record<string, unknown>;
       await notifyGAS({
         order_id: orderMeta.orderId,
         artist_name: orderMeta.artistName,
         email: orderMeta.email,
         template: orderMeta.template,
         plan: orderMeta.plan,
-        bio: orderMeta.bio || "",
-        sns_x: orderMeta.snsX || "",
-        sns_instagram: orderMeta.snsInstagram || "",
-        sns_pixiv: orderMeta.snsPixiv || "",
-        sns_other: orderMeta.snsOther || "",
         siteUrl,
         stripeSessionId: session.id,
         amountTotal: session.amount_total,
         customerEmail: session.customer_email || orderMeta.email,
-        requests: (orderMeta as unknown as Record<string, string>).requests || "",
+        // 全フィールドをそのまま展開
+        bio: orderMeta.bio || "",
         catchcopy: orderMeta.catchcopy || "",
         motto: orderMeta.motto || "",
-        imageGistId: orderMeta.imageGistId || "",
+        subtitle: orderRecord.subtitle || "",
+        siteTitle: orderMeta.siteTitle || "",
+        siteSlug: orderMeta.siteSlug || "",
+        sns_x: orderMeta.snsX || "",
+        sns_instagram: orderMeta.snsInstagram || "",
+        sns_pixiv: orderMeta.snsPixiv || "",
+        sns_note: orderRecord.snsNote || "",
+        sns_other: orderMeta.snsOther || "",
+        requests: orderMeta.requests || "",
+        referenceUrl: orderMeta.referenceUrl || "",
+        moodTone: orderMeta.moodTone || "",
+        moodFont: orderMeta.moodFont || "",
+        moodAnimation: orderMeta.moodAnimation || "",
+        colorPrimary: orderRecord.colorPrimary || "",
+        colorBackground: orderRecord.colorBackground || "",
+        skills: orderRecord.skills || "",
+        stats: orderRecord.stats || "",
+        workCategories: orderRecord.workCategories || "",
+        tools: orderRecord.tools || "",
+        genres: orderRecord.genres || "",
       });
 
       console.log(`Site created for ${orderMeta.artistName}: ${siteUrl}`);
