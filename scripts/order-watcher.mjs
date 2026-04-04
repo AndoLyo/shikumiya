@@ -91,16 +91,20 @@ async function processOrder(order) {
 
     console.log(`   🤖 Claude Code CLI 実行中...`);
 
-    // プロンプトをファイルに保存
+    // プロンプトをファイルに保存してファイルから読ませる
     const promptFile = join(orderDir, ".claude-prompt.md");
     writeFileSync(promptFile, prompt);
 
-    // Claude Code CLI を実行（--print モードで非対話的に）
-    const claude = spawn("claude", ["--print", "-p", prompt], {
+    // Claude Code CLI を実行（プロンプトをstdinから渡す）
+    const claude = spawn("claude", ["--print"], {
       cwd: orderDir,
       stdio: ["pipe", "pipe", "pipe"],
       shell: true,
     });
+
+    // stdinにプロンプトを書き込んで閉じる
+    claude.stdin.write(prompt);
+    claude.stdin.end();
 
     let output = "";
     claude.stdout.on("data", (d) => {
@@ -151,7 +155,12 @@ async function processOrder(order) {
     console.log(`   ✅ 完了: ${artistName}`);
   } catch (err) {
     console.error(`   ❌ 処理失敗: ${err.message}`);
-    // 失敗してもステータスは更新しない（次回リトライされる）
+    // リポが見つからない場合はスキップ（古いテスト注文等）
+    if (err.message.includes("Repository not found") || err.message.includes("not found")) {
+      await fetch(`${GAS_URL}?action=complete&row=${row}`);
+      console.log(`   ⏭️ リポ不在のためスキップ（ステータスを完了に変更）`);
+    }
+    // Claude CLIエラーは次回リトライ
   }
 }
 
