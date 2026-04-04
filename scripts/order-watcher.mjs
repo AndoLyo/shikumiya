@@ -16,6 +16,7 @@
 import { execSync, spawn } from "child_process";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
+import { applyOrder } from "./apply-order.mjs";
 
 const GAS_URL = process.env.GAS_URL || "";
 const CHECK_INTERVAL = parseInt(process.env.CHECK_INTERVAL || "60000");
@@ -86,37 +87,36 @@ async function processOrder(order) {
       );
     }
 
-    // 2. Claude Code CLIで要望を反映
-    const prompt = buildPrompt(order);
+    // 2. テキスト・色・画像を機械的に反映（AIなし・即時完了）
+    applyOrder(orderDir, order);
 
-    console.log(`   🤖 Claude Code CLI 実行中...`);
+    // 3. ¥2,980プランの場合のみ、AIで追加カスタマイズ
+    const plan = order["プラン"] || "template";
+    const requests = order["要望"] || "";
+    if (plan === "omakase" && requests) {
+      console.log(`   🤖 おまかせプラン: AIで要望を反映中...`);
+      const prompt = buildPrompt(order);
+      const promptFile = join(orderDir, ".claude-prompt.md");
+      writeFileSync(promptFile, prompt);
 
-    // プロンプトをファイルに保存してファイルから読ませる
-    const promptFile = join(orderDir, ".claude-prompt.md");
-    writeFileSync(promptFile, prompt);
-
-    // Claude Code CLI を実行（権限チェックスキップ + print mode）
-    const claude = spawn("bash", ["-c", `cat "${promptFile.replace(/\\/g, "/")}" | claude -p --dangerously-skip-permissions`], {
-      cwd: orderDir,
-      stdio: ["pipe", "pipe", "pipe"],
-      env: { ...process.env, CLAUDE_CODE_GIT_BASH_PATH: "E:\\Git\\bin\\bash.exe" },
-    });
-
-    let output = "";
-    claude.stdout.on("data", (d) => {
-      output += d.toString();
-    });
-    claude.stderr.on("data", (d) => {
-      // stderrは無視（進捗表示等）
-    });
-
-    await new Promise((resolve, reject) => {
-      claude.on("close", (code) => {
-        if (code === 0) resolve();
-        else reject(new Error(`Claude Code exited with code ${code}`));
+      const claude = spawn("bash", ["-c", `cat "${promptFile.replace(/\\/g, "/")}" | claude -p --dangerously-skip-permissions`], {
+        cwd: orderDir,
+        stdio: ["pipe", "pipe", "pipe"],
+        env: { ...process.env, CLAUDE_CODE_GIT_BASH_PATH: "E:\\Git\\bin\\bash.exe" },
       });
-      claude.on("error", reject);
-    });
+
+      let output = "";
+      claude.stdout.on("data", (d) => { output += d.toString(); });
+      claude.stderr.on("data", () => {});
+
+      await new Promise((resolve, reject) => {
+        claude.on("close", (code) => {
+          if (code === 0) resolve();
+          else reject(new Error(`Claude Code exited with code ${code}`));
+        });
+        claude.on("error", reject);
+      });
+    }
 
     // 3. コミット & プッシュ
     try {
