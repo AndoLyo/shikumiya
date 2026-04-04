@@ -90,33 +90,29 @@ async function processOrder(order) {
     // 2. テキスト・色・画像を機械的に反映（AIなし・即時完了）
     applyOrder(orderDir, order);
 
-    // 3. ¥2,980プランの場合のみ、AIで追加カスタマイズ
-    const plan = order["プラン"] || "template";
-    const requests = order["要望"] || "";
-    if (plan === "omakase" && requests) {
-      console.log(`   🤖 おまかせプラン: AIで要望を反映中...`);
-      const prompt = buildPrompt(order);
-      const promptFile = join(orderDir, ".claude-prompt.md");
-      writeFileSync(promptFile, prompt);
+    // 3. AIで画像調整・要望反映・最終仕上げ（全プラン共通で1回）
+    console.log(`   🤖 AIで画像調整・仕上げ中...`);
+    const prompt = buildPrompt(order);
+    const promptFile = join(orderDir, ".claude-prompt.md");
+    writeFileSync(promptFile, prompt);
 
-      const claude = spawn("bash", ["-c", `cat "${promptFile.replace(/\\/g, "/")}" | claude -p --dangerously-skip-permissions`], {
-        cwd: orderDir,
-        stdio: ["pipe", "pipe", "pipe"],
-        env: { ...process.env, CLAUDE_CODE_GIT_BASH_PATH: "E:\\Git\\bin\\bash.exe" },
+    const claude = spawn("bash", ["-c", `cat "${promptFile.replace(/\\/g, "/")}" | claude -p --dangerously-skip-permissions`], {
+      cwd: orderDir,
+      stdio: ["pipe", "pipe", "pipe"],
+      env: { ...process.env, CLAUDE_CODE_GIT_BASH_PATH: "E:\\Git\\bin\\bash.exe" },
+    });
+
+    let output = "";
+    claude.stdout.on("data", (d) => { output += d.toString(); });
+    claude.stderr.on("data", () => {});
+
+    await new Promise((resolve, reject) => {
+      claude.on("close", (code) => {
+        if (code === 0) resolve();
+        else reject(new Error(`Claude Code exited with code ${code}`));
       });
-
-      let output = "";
-      claude.stdout.on("data", (d) => { output += d.toString(); });
-      claude.stderr.on("data", () => {});
-
-      await new Promise((resolve, reject) => {
-        claude.on("close", (code) => {
-          if (code === 0) resolve();
-          else reject(new Error(`Claude Code exited with code ${code}`));
-        });
-        claude.on("error", reject);
-      });
-    }
+      claude.on("error", reject);
+    });
 
     // 3. コミット & プッシュ
     try {
@@ -192,17 +188,19 @@ function buildPrompt(order) {
   if (snsPixiv) snsEntries.push(`Pixiv: ${snsPixiv}`);
   if (snsOther) snsEntries.push(`その他: ${snsOther}`);
 
-  return `あなたはWebサイトの文言・色の調整担当です。
-このリポジトリは顧客用のポートフォリオサイトです。
-顧客データに合わせてテキストと色を差し替えてください。
+  return `あなたはWebサイトの仕上げ担当です。
 
-【最重要ルール】テンプレートの構造は絶対に壊さない
-- コンポーネントの追加・削除・構成変更は禁止
-- レイアウト・アニメーション・セクション順序はそのまま
-- importの変更禁止
-- 新しいファイルの作成禁止
-- 既存の機能を削除しない
-変えていいのは「テキストの中身」「CSS変数の色の値」「SNSリンクの表示/非表示」だけ。
+【前提】
+このリポジトリは既に機械的処理で以下が完了しています:
+- アーティスト名、メール、SNSリンク → テキスト置換済み
+- キャッチコピー、自己紹介、モットー → テキスト置換済み
+- copyright → 更新済み
+テキスト置換の結果は触らないでください。
+
+あなたの仕事は以下の3つだけです:
+1. 画像のアスペクト比に合わせたレイアウト調整（最重要）
+2. 残っているプレースホルダーの掃除
+3. 顧客の要望の反映（あれば）
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ 顧客データ
@@ -227,40 +225,23 @@ ${requests || "特になし"}
 ■ 作業手順
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-【STEP 1】全ファイルを読む
-src/app/page.tsx と src/components/ の全.tsxファイルを読み、
-現在ハードコードされている内容を把握する。
+【STEP 1】画像のアスペクト比調整（最重要）
+public/images/ にある画像ファイルを確認する。
+Works/Galleryコンポーネントで画像を表示している箇所を見つけ、
+実際の画像のアスペクト比に合うようにCSSを調整する。
 
-【STEP 2】テキストの置き換え
-全コンポーネント内のハードコードされたテキストを顧客データに置き換える。
-- アーティスト名（Hero、About、Footer、copyright等すべて）
-- キャッチコピー（Heroセクションの大見出し）
-- 自己紹介文（Aboutセクション）
-- モットー/引用文（Aboutセクション内の引用ブロック）
-- メールアドレス（Contactセクション）
-- copyright（Footer）→ 「© ${new Date().getFullYear()} ${artistName}」
+具体的には:
+- 画像の表示サイズ（width, height, aspect-ratio）を実画像に合わせる
+- object-fit: cover を使って崩れを防ぐ
+- Works配列の要素数を実際の画像ファイル数に合わせる（多ければ削除、少なければ追加）
+- グリッドのカラム数が画像枚数に合うか確認（3枚なら3列or1列、5枚なら適切に調整）
 
-【STEP 3】SNSリンクの処理
-顧客が入力したSNSだけを表示する。
-${snsEntries.length === 0 ? "→ 全SNS未入力のため、SNSリンクのUI要素をすべて削除する。" : `→ 以下のSNSのみ表示: ${snsEntries.map(s => s.split(":")[0]).join(", ")}
-→ 入力されていないSNS（アイコン・リンク・ラベル）はコードから完全に削除する。`}
+【STEP 2】プレースホルダーの掃除
+「Your Name」「hello@example.com」「Lorem ipsum」等のプレースホルダーが
+まだ残っていれば、顧客データに置き換える。
+機械的処理で漏れたものだけ対応する。
 
-【STEP 4】画像の調整
-public/images/ にある画像ファイルを確認し、Works/Gallery配列の要素数を合わせる。
-- 画像が${imageCount}枚ある → Works配列も${imageCount}個にする
-- 配列の要素が画像より多い場合 → 余分な要素を削除
-- 配列の要素が画像より少ない場合 → 画像ファイル名に合わせて追加
-- グリッドのカラム数やレイアウトが画像数に合うよう調整（崩れないように）
-
-【STEP 5】未入力項目の処理
-「（未入力）」と記載された項目は、そのUI要素をコードから削除する。
-- 自己紹介が未入力 → Aboutの本文段落を削除（セクション自体は残してもいい）
-- モットーが未入力 → 引用ブロックを削除
-- メールが未入力 → メールリンクを削除
-- SNSが全部未入力 → SNSセクション全体を削除
-ダミーテキスト・プレースホルダーは絶対に残さない。
-
-【STEP 6】要望の反映（色とテキストの範囲のみ）
+【STEP 3】要望の反映
 ${requests ? `顧客の要望:「${requests}」
 
 対応できること（これだけ）:
