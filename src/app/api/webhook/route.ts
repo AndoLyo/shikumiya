@@ -27,6 +27,12 @@ interface OrderData {
   snsInstagram?: string;
   snsPixiv?: string;
   snsOther?: string;
+  snsNote?: string;
+  requests?: string;
+  referenceUrl?: string;
+  moodTone?: string;
+  moodFont?: string;
+  moodAnimation?: string;
   profileImage?: { name: string; data: string };
   works: OrderWork[];
   imageGistId?: string;
@@ -89,10 +95,19 @@ export async function POST(req: NextRequest) {
         email: orderMeta.email,
         template: orderMeta.template,
         plan: orderMeta.plan,
+        bio: orderMeta.bio || "",
+        sns_x: orderMeta.snsX || "",
+        sns_instagram: orderMeta.snsInstagram || "",
+        sns_pixiv: orderMeta.snsPixiv || "",
+        sns_other: orderMeta.snsOther || "",
         siteUrl,
         stripeSessionId: session.id,
         amountTotal: session.amount_total,
         customerEmail: session.customer_email || orderMeta.email,
+        requests: (orderMeta as unknown as Record<string, string>).requests || "",
+        catchcopy: orderMeta.catchcopy || "",
+        motto: orderMeta.motto || "",
+        imageGistId: orderMeta.imageGistId || "",
       });
 
       console.log(`Site created for ${orderMeta.artistName}: ${siteUrl}`);
