@@ -160,7 +160,18 @@ async function fetchImageGist(gistId: string): Promise<Record<string, string>> {
   const gistData = await res.json();
   const files: Record<string, string> = {};
   for (const [name, file] of Object.entries(gistData.files || {})) {
-    files[name] = (file as { content: string }).content;
+    const fileData = file as { content: string | null; raw_url: string; truncated?: boolean };
+    // Large files have content=null and need to be fetched via raw_url
+    if (fileData.content) {
+      files[name] = fileData.content;
+    } else if (fileData.raw_url) {
+      const rawRes = await fetch(fileData.raw_url);
+      if (rawRes.ok) {
+        files[name] = await rawRes.text();
+      } else {
+        console.error(`Failed to fetch raw content for ${name}`);
+      }
+    }
   }
   return files;
 }
