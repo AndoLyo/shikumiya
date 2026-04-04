@@ -1,5 +1,5 @@
 /**
- * テンプレートごとの編集可能フィールド定義
+ * テンプレートごとのセクション・フィールド定義（v3 — セクションベース）
  *
  * 用途:
  * 1. 注文フォーム — テンプレ選択時に質問内容を切り替え
@@ -18,7 +18,7 @@ export interface FormField {
   options?: { value: string; label: string }[];
   max?: number;
   min?: number;
-  section: "hero" | "works" | "about" | "contact" | "style" | "unique" | "mood";
+  section: string;
 }
 
 export interface ImageSpec {
@@ -36,6 +36,15 @@ export interface ColorPreset {
   text: string;
 }
 
+export interface SectionDef {
+  id: string;
+  label: string;
+  description: string;
+  required: boolean;
+  fields: FormField[];
+  component: string;
+}
+
 export interface TemplateFormDef {
   id: string;
   name: string;
@@ -44,112 +53,241 @@ export interface TemplateFormDef {
   imageSpec: ImageSpec;
   colorPresets: ColorPreset[];
   defaultColors: { primary: string; accent: string; background: string };
-  sections: string[];
-  commonFields: FormField[];
-  uniqueFields: FormField[];
+  sectionDefs: SectionDef[];
   moodFields: FormField[];
 }
 
 // ━━━━━━━━━━━━━━━━━━━━
-// 共通フィールド（全テンプレートで使う）
+// 共通セクション定義
 // ━━━━━━━━━━━━━━━━━━━━
 
-const sharedCommonFields: FormField[] = [
-  {
-    id: "artistName",
-    label: "アーティスト名",
-    type: "text",
-    placeholder: "例: Lyo",
-    help: "サイトに表示される名前です（本名でもペンネームでもOK）",
-    required: true,
-    section: "hero",
-  },
-  {
-    id: "siteTitle",
-    label: "サイトタイトル",
-    type: "text",
-    placeholder: "例: Lyo — AI Art Gallery",
-    help: "ブラウザのタブに表示されます。空欄なら「アーティスト名 — Gallery」になります",
-    section: "hero",
-  },
-  {
-    id: "catchcopy",
-    label: "キャッチコピー",
-    type: "text",
-    placeholder: "例: 光と影で紡ぐ幻想世界",
-    help: "サイトのトップに大きく表示されます。あなたの世界観を一言で",
-    section: "hero",
-  },
-  {
-    id: "subtitle",
-    label: "肩書き・サブタイトル",
-    type: "text",
-    placeholder: "例: AI Art Creator / Digital Artist",
-    help: "名前の下に小さく表示されます",
-    section: "hero",
-  },
-  {
-    id: "bio",
-    label: "自己紹介文",
-    type: "textarea",
-    placeholder: "例: AI画像生成を始めて3年。ファンタジーの世界観を中心に制作しています。光の表現にこだわりがあります。",
-    help: "あなたのことを教えてください。活動のきっかけ、こだわり、好きなテーマなど",
-    maxLength: 500,
-    section: "about",
-  },
-  {
-    id: "motto",
-    label: "好きな言葉・モットー",
-    type: "text",
-    placeholder: "例: 想像の先にある世界を描く",
-    help: "About欄に引用として表示されます",
-    section: "about",
-  },
-  {
-    id: "email",
-    label: "メールアドレス",
-    type: "text",
-    placeholder: "例: your-email@example.com",
-    help: "サイトの問い合わせ先として表示されます",
-    required: true,
-    section: "contact",
-  },
-  {
-    id: "snsX",
-    label: "X (Twitter)",
-    type: "text",
-    placeholder: "https://x.com/your_handle",
-    section: "contact",
-  },
-  {
-    id: "snsInstagram",
-    label: "Instagram",
-    type: "text",
-    placeholder: "https://instagram.com/your_handle",
-    section: "contact",
-  },
-  {
-    id: "snsPixiv",
-    label: "Pixiv",
-    type: "text",
-    placeholder: "https://pixiv.net/users/your_id",
-    section: "contact",
-  },
-  {
-    id: "snsNote",
-    label: "note",
-    type: "text",
-    placeholder: "https://note.com/your_id",
-    section: "contact",
-  },
-  {
-    id: "snsOther",
-    label: "その他SNS",
-    type: "text",
-    placeholder: "https://...",
-    section: "contact",
-  },
-];
+const heroSection: SectionDef = {
+  id: "hero",
+  label: "トップ画面",
+  description: "サイトを開いた時に最初に表示される画面です",
+  required: true,
+  component: "HeroSection",
+  fields: [
+    {
+      id: "artistName",
+      label: "アーティスト名",
+      type: "text",
+      placeholder: "例: Lyo",
+      help: "サイトに表示される名前です（本名でもペンネームでもOK）",
+      required: true,
+      section: "hero",
+    },
+    {
+      id: "siteTitle",
+      label: "サイトタイトル",
+      type: "text",
+      placeholder: "例: Lyo — AI Art Gallery",
+      help: "ブラウザのタブに表示されます。空欄なら「アーティスト名 — Gallery」になります",
+      section: "hero",
+    },
+    {
+      id: "catchcopy",
+      label: "キャッチコピー",
+      type: "text",
+      placeholder: "例: 光と影で紡ぐ幻想世界",
+      help: "サイトのトップに大きく表示されます。あなたの世界観を一言で",
+      section: "hero",
+    },
+    {
+      id: "subtitle",
+      label: "肩書き・サブタイトル",
+      type: "text",
+      placeholder: "例: AI Art Creator / Digital Artist",
+      help: "名前の下に小さく表示されます",
+      section: "hero",
+    },
+  ],
+};
+
+const worksSection: SectionDef = {
+  id: "works",
+  label: "作品ギャラリー",
+  description: "あなたの作品を並べて表示するセクションです",
+  required: true,
+  component: "WorksSection",
+  fields: [
+    {
+      id: "works",
+      label: "作品画像",
+      type: "images",
+      help: "ギャラリーに表示する作品画像をアップロードしてください",
+      required: true,
+      section: "works",
+    },
+  ],
+};
+
+const aboutSection: SectionDef = {
+  id: "about",
+  label: "自己紹介",
+  description: "あなた自身について紹介するセクションです",
+  required: false,
+  component: "AboutSection",
+  fields: [
+    {
+      id: "bio",
+      label: "自己紹介文",
+      type: "textarea",
+      placeholder: "例: AI画像生成を始めて3年。ファンタジーの世界観を中心に制作しています。光の表現にこだわりがあります。",
+      help: "あなたのことを教えてください。活動のきっかけ、こだわり、好きなテーマなど",
+      maxLength: 500,
+      section: "about",
+    },
+    {
+      id: "profileImage",
+      label: "プロフィール画像",
+      type: "image",
+      help: "About欄に表示されるアイコン画像です",
+      section: "about",
+    },
+    {
+      id: "motto",
+      label: "好きな言葉・モットー",
+      type: "text",
+      placeholder: "例: 想像の先にある世界を描く",
+      help: "About欄に引用として表示されます",
+      section: "about",
+    },
+  ],
+};
+
+const contactSection: SectionDef = {
+  id: "contact",
+  label: "お問い合わせ・SNS",
+  description: "メールやSNSの連絡先を表示するセクションです",
+  required: false,
+  component: "ContactSection",
+  fields: [
+    {
+      id: "email",
+      label: "メールアドレス",
+      type: "text",
+      placeholder: "例: your-email@example.com",
+      help: "サイトの問い合わせ先として表示されます",
+      section: "contact",
+    },
+    {
+      id: "snsX",
+      label: "X (Twitter)",
+      type: "text",
+      placeholder: "https://x.com/your_handle",
+      section: "contact",
+    },
+    {
+      id: "snsInstagram",
+      label: "Instagram",
+      type: "text",
+      placeholder: "https://instagram.com/your_handle",
+      section: "contact",
+    },
+    {
+      id: "snsPixiv",
+      label: "Pixiv",
+      type: "text",
+      placeholder: "https://pixiv.net/users/your_id",
+      section: "contact",
+    },
+    {
+      id: "snsNote",
+      label: "note",
+      type: "text",
+      placeholder: "https://note.com/your_id",
+      section: "contact",
+    },
+    {
+      id: "snsOther",
+      label: "その他SNS",
+      type: "text",
+      placeholder: "https://...",
+      section: "contact",
+    },
+  ],
+};
+
+// ━━━━━━━━━━━━━━━━━━━━
+// テンプレート固有セクション
+// ━━━━━━━━━━━━━━━━━━━━
+
+const skillsSection: SectionDef = {
+  id: "skills",
+  label: "スキル・得意分野",
+  description: "あなたのスキルをビジュアルで表示します",
+  required: false,
+  component: "SkillsSection",
+  fields: [
+    {
+      id: "skills",
+      label: "スキル・得意ジャンル",
+      type: "tags",
+      placeholder: "例: 漫画, イラスト, キャラデザ",
+      help: "プロフィールに表示されます（最大6つ）",
+      max: 6,
+      section: "skills",
+    },
+  ],
+};
+
+const statsSection: SectionDef = {
+  id: "stats",
+  label: "実績・数字",
+  description: "作品数や活動年数などを数字で表示します",
+  required: false,
+  component: "StatsSection",
+  fields: [
+    {
+      id: "stats",
+      label: "実績・数字",
+      type: "tags",
+      placeholder: "例: 180+ Works, 6 Years, 40+ Awards",
+      help: "プロフィールに表示されます（最大3つ）",
+      max: 3,
+      section: "stats",
+    },
+  ],
+};
+
+const categoriesSection: SectionDef = {
+  id: "categories",
+  label: "作品カテゴリ",
+  description: "ギャラリーのフィルター用カテゴリです",
+  required: false,
+  component: "CategoriesSection",
+  fields: [
+    {
+      id: "workCategories",
+      label: "作品カテゴリ",
+      type: "tags",
+      placeholder: "例: Portrait, Landscape, Abstract",
+      help: "ライトボックスで作品情報として表示されます（最大5つ）",
+      max: 5,
+      section: "categories",
+    },
+  ],
+};
+
+const toolsSection: SectionDef = {
+  id: "tools",
+  label: "使用ツール",
+  description: "使用しているツールをタグで表示します",
+  required: false,
+  component: "ToolsSection",
+  fields: [
+    {
+      id: "tools",
+      label: "使用ツール",
+      type: "tags",
+      placeholder: "例: Midjourney, Stable Diffusion, ComfyUI",
+      help: "プロフィールにスキルバーとして表示されます（最大8つ）",
+      max: 8,
+      section: "tools",
+    },
+  ],
+};
 
 // ━━━━━━━━━━━━━━━━━━━━
 // 雰囲気・スタイル質問（AIが自動で反映する）
@@ -303,76 +441,20 @@ const lightPresets: ColorPreset[] = [
 ];
 
 // ━━━━━━━━━━━━━━━━━━━━
-// テンプレート固有フィールド
+// テンプレートごとのセクション割り当て
 // ━━━━━━━━━━━━━━━━━━━━
 
-const uniqueFieldsByTemplate: Record<string, FormField[]> = {
-  "comic-panel": [
-    {
-      id: "skills",
-      label: "スキル・得意ジャンル",
-      type: "tags",
-      placeholder: "例: 漫画, イラスト, キャラデザ",
-      help: "プロフィールに表示されます（最大6つ）",
-      max: 6,
-      section: "unique",
-    },
-  ],
-  "cyber-neon": [
-    {
-      id: "tools",
-      label: "使用ツール",
-      type: "tags",
-      placeholder: "例: Midjourney, Stable Diffusion, ComfyUI",
-      help: "プロフィールにスキルバーとして表示されます（最大6つ）",
-      max: 6,
-      section: "about",
-    },
-  ],
-  "dark-elegance": [
-    {
-      id: "stats",
-      label: "実績・数字",
-      type: "tags",
-      placeholder: "例: 180+ Works, 6 Years, 40+ Awards",
-      help: "プロフィールに表示されます（最大3つ。後から追加可能）",
-      max: 3,
-      section: "about",
-    },
-  ],
-  "mosaic-bold": [
-    {
-      id: "stats",
-      label: "実績・数字",
-      type: "tags",
-      placeholder: "例: 250+ Works, 8K Followers, 12年",
-      help: "ヒーローに表示されます（最大3つ）",
-      max: 3,
-      section: "about",
-    },
-  ],
-  "ink-wash": [
-    {
-      id: "stats",
-      label: "実績・数字",
-      type: "tags",
-      placeholder: "例: 7年以上, 200+ Works",
-      help: "プロフィールに表示されます（最大3つ）",
-      max: 3,
-      section: "about",
-    },
-  ],
-  "studio-white": [
-    {
-      id: "workCategories",
-      label: "作品カテゴリ",
-      type: "tags",
-      placeholder: "例: Portrait, Landscape, Abstract",
-      help: "ライトボックスで作品情報として表示されます（最大5つ）",
-      max: 5,
-      section: "works",
-    },
-  ],
+const sectionAssignments: Record<string, SectionDef[]> = {
+  "comic-panel":      [heroSection, worksSection, aboutSection, skillsSection, contactSection],
+  "cyber-neon":       [heroSection, worksSection, aboutSection, toolsSection, contactSection],
+  "dark-elegance":    [heroSection, worksSection, aboutSection, statsSection, contactSection],
+  "floating-gallery": [heroSection, worksSection, aboutSection, contactSection],
+  "ink-wash":         [heroSection, worksSection, aboutSection, statsSection, contactSection],
+  "mosaic-bold":      [heroSection, worksSection, aboutSection, statsSection, contactSection],
+  "pastel-pop":       [heroSection, worksSection, aboutSection, contactSection],
+  "retro-pop":        [heroSection, worksSection, aboutSection, contactSection],
+  "studio-white":     [heroSection, worksSection, aboutSection, categoriesSection, contactSection],
+  "watercolor-soft":  [heroSection, worksSection, aboutSection, contactSection],
 };
 
 // ━━━━━━━━━━━━━━━━━━━━
@@ -408,12 +490,10 @@ export const templateForms: TemplateFormDef[] = templateMeta.map((meta) => ({
   name: meta.name,
   nameJa: meta.nameJa,
   description: meta.description,
-  imageSpec: imageSpecs[meta.id] || imageSpecs["ai-art-portfolio"],
+  imageSpec: imageSpecs[meta.id],
   colorPresets: meta.isDark ? darkPresets : lightPresets,
   defaultColors: meta.defaultColors,
-  sections: ["hero", "works", "about", "contact", "style", "mood", ...(uniqueFieldsByTemplate[meta.id] ? ["unique"] : [])],
-  commonFields: sharedCommonFields,
-  uniqueFields: uniqueFieldsByTemplate[meta.id] || [],
+  sectionDefs: sectionAssignments[meta.id] || [],
   moodFields: sharedMoodFields,
 }));
 
@@ -428,13 +508,27 @@ export function getTemplateForm(templateId: string): TemplateFormDef | undefined
 export function getEditableFields(templateId: string, section?: string): FormField[] {
   const form = getTemplateForm(templateId);
   if (!form) return [];
-  const allFields = [...form.commonFields, ...form.uniqueFields, ...form.moodFields];
+  const sectionFields = form.sectionDefs.flatMap((s) => s.fields);
+  const allFields = [...sectionFields, ...form.moodFields];
   if (section) return allFields.filter((f) => f.section === section);
   return allFields;
 }
 
+export function getSectionDefs(templateId: string): SectionDef[] {
+  const form = getTemplateForm(templateId);
+  return form?.sectionDefs || [];
+}
+
+export function getRequiredSections(templateId: string): SectionDef[] {
+  return getSectionDefs(templateId).filter((s) => s.required);
+}
+
+export function getOptionalSections(templateId: string): SectionDef[] {
+  return getSectionDefs(templateId).filter((s) => !s.required);
+}
+
 export function getImageSpec(templateId: string): ImageSpec {
-  return imageSpecs[templateId] || imageSpecs["ai-art-portfolio"];
+  return imageSpecs[templateId] || imageSpecs["studio-white"];
 }
 
 export function getColorPresets(templateId: string): ColorPreset[] {

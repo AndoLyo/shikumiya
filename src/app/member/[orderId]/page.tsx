@@ -99,8 +99,8 @@ export default function MemberDashboardPage() {
 
         // Open the first section by default
         const form = getTemplateForm(data.template);
-        if (form && form.sections.length > 0) {
-          setOpenSections({ [form.sections[0]]: true });
+        if (form && form.sectionDefs.length > 0) {
+          setOpenSections({ [form.sectionDefs[0].id]: true });
         }
       } catch {
         setError("通信エラーが発生しました");
@@ -220,12 +220,11 @@ export default function MemberDashboardPage() {
   }
 
   // ─── Sections to render ──────────────────────────────────────
-  const sections = templateForm?.sections || [
+  const sections = templateForm?.sectionDefs.map((s) => s.id) || [
     "hero",
     "works",
     "about",
     "contact",
-    "style",
   ];
 
   return (

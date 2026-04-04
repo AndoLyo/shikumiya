@@ -9,6 +9,7 @@ import {
   getImageSpec,
   getColorPresets,
   templateForms,
+  type FormField,
 } from "@/lib/template-forms";
 // Types used internally from the library
 import {
@@ -1566,11 +1567,11 @@ export default function OrderPage() {
                 </div>
 
                 {/* ── テンプレート固有項目 ─────────── */}
-                {templateForm && templateForm.uniqueFields.length > 0 && (
+                {templateForm && templateForm.sectionDefs.filter((s) => !["hero", "works", "about", "contact"].includes(s.id)).flatMap((s) => s.fields).length > 0 && (
                   <div className="mt-8">
                     <SectionDivider label="テンプレート固有の項目" />
                     <div className="mt-4 space-y-5">
-                      {templateForm.uniqueFields.map((field) => (
+                      {templateForm.sectionDefs.filter((s) => !["hero", "works", "about", "contact"].includes(s.id)).flatMap((s) => s.fields).map((field: FormField) => (
                         <div key={field.id}>
                           <label className={labelClass}>
                             {field.label}
@@ -1881,7 +1882,7 @@ export default function OrderPage() {
                       {Object.entries(uniqueTags)
                         .filter(([, tags]) => tags.length > 0)
                         .map(([fieldId, tags]) => {
-                          const field = templateForm?.uniqueFields.find(
+                          const field = templateForm?.sectionDefs.filter((s) => !["hero", "works", "about", "contact"].includes(s.id)).flatMap((s) => s.fields).find(
                             (f) => f.id === fieldId
                           );
                           return (
