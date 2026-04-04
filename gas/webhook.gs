@@ -77,6 +77,16 @@ function doGet(e) {
       );
     }
 
+    if (action === "send_completion") {
+      return sendSiteCompletionEmail(
+        e.parameter.orderId,
+        e.parameter.email,
+        e.parameter.artistName,
+        e.parameter.siteUrl,
+        e.parameter.plan
+      );
+    }
+
     return jsonResponse({ success: false, error: "Unknown action" });
   } catch (error) {
     console.error("Error:", error);
@@ -240,6 +250,73 @@ function saveEditRequest(orderId, email, artistName, changesJson, requests) {
   return jsonResponse({ success: true });
 }
 
+// メール②: サイト完成後（URLと会員ページ情報を送る）
+function sendSiteCompletionEmail(orderId, email, artistName, siteUrl, plan) {
+  if (!email) return jsonResponse({ success: false, error: "email required" });
+
+  artistName = artistName || "お客様";
+  const planName = plan === "omakase" ? "おまかせプラン" : "テンプレートプラン";
+
+  const subject = `【しくみや】サイトが完成しました！ — ${artistName}様`;
+
+  const body = `${artistName} 様
+
+お待たせいたしました！
+あなたのギャラリーサイトが完成しました。
+
+━━━━━━━━━━━━━━━━━━━━
+■ あなたのサイト
+━━━━━━━━━━━━━━━━━━━━
+${siteUrl}
+
+上記URLをクリックして、ぜひご確認ください。
+SNSのプロフィールに貼れば、あなたの名刺代わりになります。
+
+━━━━━━━━━━━━━━━━━━━━
+■ 会員ページ（サイトの編集用）
+━━━━━━━━━━━━━━━━━━━━
+サイトの内容を変更したい場合は、下記からログインしてください。
+https://lyo-vision.com/member
+
+ログイン情報:
+- 注文ID: ${orderId}
+- メールアドレス: ${email}
+
+${planName === "おまかせプラン" ? "おまかせプランでは月3回まで編集リクエストを送れます。" : "テンプレートプランでは初回1回のみ無料で編集できます。"}
+
+━━━━━━━━━━━━━━━━━━━━
+■ おすすめの使い方
+━━━━━━━━━━━━━━━━━━━━
+1. SNS（X、Instagram等）のプロフィールにURLを設置
+2. 作品を追加したくなったら会員ページから編集リクエスト
+3. 名刺やDMにURLを記載して、ポートフォリオとして活用
+
+ご不明な点がございましたら、お気軽にご連絡ください。
+今後ともよろしくお願いいたします。
+
+━━━━━━━━━━━━━━━━━━━━
+しくみや by Lyo Vision
+https://lyo-vision.com
+メール: ando.lyo.ai@gmail.com
+X: https://x.com/ando_lyo
+━━━━━━━━━━━━━━━━━━━━`;
+
+  GmailApp.sendEmail(email, subject, body, {
+    name: "しくみや by Lyo Vision",
+    replyTo: "ando.lyo.ai@gmail.com",
+  });
+
+  // Lyoにも通知
+  GmailApp.sendEmail(
+    "ando.lyo.ai@gmail.com",
+    `【しくみや】サイト完成: ${artistName}様`,
+    `サイトが完成しました。\n\nアーティスト名: ${artistName}\nサイトURL: ${siteUrl}\nプラン: ${planName}\nメール: ${email}`,
+    { name: "しくみや自動通知" },
+  );
+
+  return jsonResponse({ success: true });
+}
+
 // ━━━━━━━━━━━━━━━━━━━━
 // スプレッドシート記録
 // ━━━━━━━━━━━━━━━━━━━━
@@ -301,22 +378,25 @@ function logToSheet(data) {
 // メール送信
 // ━━━━━━━━━━━━━━━━━━━━
 
+// メール①: 決済直後（制作開始のお知らせ。サイトURLはまだ送らない）
 function sendCompletionEmail(data) {
   const email = data.customerEmail || data.email;
   if (!email) return;
 
   const artistName = data.artist_name || "お客様";
-  const siteUrl = data.siteUrl || "（準備中）";
   const orderId = data.order_id || "";
   const plan =
     data.plan === "omakase" ? "おまかせプラン" : "テンプレートプラン";
 
-  const subject = `【しくみや】サイト制作を開始しました — ${artistName}様`;
+  const subject = `【しくみや】ご注文ありがとうございます — ${artistName}様`;
 
   const body = `${artistName} 様
 
 この度は「しくみや」をご利用いただき、ありがとうございます。
-お支払いを確認いたしました。サイトの制作を開始します。
+お支払いを確認いたしました。
+
+ただいまより、あなただけのギャラリーサイトの制作を開始します。
+ご入力いただいた内容をもとに、デザインの調整を行っております。
 
 ━━━━━━━━━━━━━━━━━━━━
 ■ ご注文内容
@@ -324,25 +404,15 @@ function sendCompletionEmail(data) {
 注文ID: ${orderId}
 プラン: ${plan}
 テンプレート: ${data.template || "未選択"}
-サイトURL: ${siteUrl}
-
-━━━━━━━━━━━━━━━━━━━━
-■ 会員ページ（サイト編集用）
-━━━━━━━━━━━━━━━━━━━━
-下記のURLからログインして、サイトの内容を編集できます。
-https://lyo-vision.com/member
-ログインに必要な情報:
-- 注文ID: ${orderId}
-- メールアドレス: ${email}
 
 ━━━━━━━━━━━━━━━━━━━━
 ■ 今後の流れ
 ━━━━━━━━━━━━━━━━━━━━
-1. サイトが完成次第、改めてメールでお知らせします
-2. 完成後、SNSのプロフィールにURLを設置してください
-${data.plan === "omakase" ? "3. 会員ページから月3回まで編集リクエストを送れます" : "3. 会員ページから初回1回のみ無料で編集できます"}
+1. 現在、サイトを制作中です（通常1時間〜数時間で完成します）
+2. 完成次第、サイトURLを記載した完成メールをお届けします
+3. それまでしばらくお待ちください
 
-ご不明な点がございましたら、お気軽にご連絡ください。
+※ サイトの完成をお急ぎの場合は、お気軽にご連絡ください。
 
 ━━━━━━━━━━━━━━━━━━━━
 しくみや by Lyo Vision

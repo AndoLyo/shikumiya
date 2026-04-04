@@ -131,6 +131,23 @@ async function processOrder(order) {
 
     // 4. GASのステータスを「完了」に更新
     await fetch(`${GAS_URL}?action=complete&row=${row}`);
+
+    // 5. 完成メールを顧客に送信
+    const customerEmail = order["メールアドレス"] || "";
+    const plan = order["プラン"] || "template";
+    if (customerEmail && siteUrl) {
+      const params = new URLSearchParams({
+        action: "send_completion",
+        orderId: order["注文ID"] || "",
+        email: customerEmail,
+        artistName,
+        siteUrl: `https://${siteUrl}.vercel.app`,
+        plan,
+      });
+      await fetch(`${GAS_URL}?${params.toString()}`);
+      console.log(`   📧 完成メール送信: ${customerEmail}`);
+    }
+
     console.log(`   ✅ 完了: ${artistName}`);
   } catch (err) {
     console.error(`   ❌ 処理失敗: ${err.message}`);
