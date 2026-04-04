@@ -220,65 +220,65 @@ const sharedMoodFields: FormField[] = [
 // ━━━━━━━━━━━━━━━━━━━━
 
 const imageSpecs: Record<string, ImageSpec> = {
-  "cinematic-dark": {
-    recommendedCount: { min: 3, max: 6 },
-    recommendedRatio: "16:9",
-    ratioNote: "横長画像が映えるテンプレートです。正方形や縦長も使えます",
-    acceptRatios: ["16:9", "4:3", "1:1", "3:4"],
-  },
-  "minimal-grid": {
-    recommendedCount: { min: 6, max: 12 },
+  "comic-panel": {
+    recommendedCount: { min: 6, max: 9 },
     recommendedRatio: "自由",
-    ratioNote: "グリッド表示のため、どんなアスペクト比でもOK。枚数が多いほど見栄えがします",
+    ratioNote: "マンガパネル風グリッド。正方形・縦長・横長、どれでも映えます",
     acceptRatios: ["1:1", "4:3", "3:4", "16:9", "9:16"],
   },
-  "warm-natural": {
-    recommendedCount: { min: 3, max: 6 },
-    recommendedRatio: "4:3 or 16:9",
-    ratioNote: "カード型レイアウト。横長画像が推奨です",
-    acceptRatios: ["4:3", "16:9", "1:1"],
+  "cyber-neon": {
+    recommendedCount: { min: 4, max: 6 },
+    recommendedRatio: "16:9 or 1:1",
+    ratioNote: "カルーセル表示。横長か正方形が推奨です",
+    acceptRatios: ["16:9", "1:1", "4:3"],
   },
-  "horizontal-scroll": {
+  "dark-elegance": {
     recommendedCount: { min: 5, max: 8 },
     recommendedRatio: "3:4（縦長）",
-    ratioNote: "縦長画像が最も映えます。横スクロールで大きく表示されます",
+    ratioNote: "フルスクリーンスライダー。縦長画像が最も美しく表示されます",
     acceptRatios: ["3:4", "9:16", "1:1", "4:3"],
   },
-  "elegant-mono": {
-    recommendedCount: { min: 6, max: 9 },
-    recommendedRatio: "1:1 or 4:3",
-    ratioNote: "ギャラリー風。正方形か横長が推奨です",
-    acceptRatios: ["1:1", "4:3", "3:4", "16:9"],
-  },
-  "ai-art-portfolio": {
+  "floating-gallery": {
     recommendedCount: { min: 4, max: 8 },
     recommendedRatio: "自由",
-    ratioNote: "どんなアスペクト比でもOK。ライトボックスで拡大表示されます",
+    ratioNote: "フローティングカード。どんなアスペクト比でもOK",
     acceptRatios: ["1:1", "4:3", "3:4", "16:9", "9:16"],
   },
-  "split-showcase": {
-    recommendedCount: { min: 3, max: 6 },
-    recommendedRatio: "3:4（縦長）",
-    ratioNote: "左右分割画面で大きく表示。縦長画像が映えます",
-    acceptRatios: ["3:4", "9:16", "1:1"],
+  "ink-wash": {
+    recommendedCount: { min: 4, max: 8 },
+    recommendedRatio: "4:3 or 1:1",
+    ratioNote: "水墨画風レイアウト。正方形か横長が推奨です",
+    acceptRatios: ["4:3", "1:1", "3:4", "16:9"],
   },
-  "stack-cards": {
-    recommendedCount: { min: 3, max: 5 },
-    recommendedRatio: "16:9",
-    ratioNote: "カード内に横長で表示。少数精鋭がベスト",
-    acceptRatios: ["16:9", "4:3", "1:1"],
-  },
-  "neo-brutalist": {
-    recommendedCount: { min: 4, max: 6 },
+  "mosaic-bold": {
+    recommendedCount: { min: 6, max: 8 },
     recommendedRatio: "自由",
-    ratioNote: "非対称グリッド。どんなサイズでもダイナミックに配置されます",
+    ratioNote: "モザイクグリッド。どんなサイズでも大胆に配置されます",
     acceptRatios: ["1:1", "4:3", "3:4", "16:9"],
   },
-  "glass-morphism": {
+  "pastel-pop": {
     recommendedCount: { min: 4, max: 6 },
-    recommendedRatio: "16:10 or 4:3",
-    ratioNote: "ガラスカード上に表示。やや横長が推奨",
-    acceptRatios: ["16:9", "4:3", "1:1"],
+    recommendedRatio: "1:1 or 4:3",
+    ratioNote: "丸みのあるカード型。正方形か横長が推奨",
+    acceptRatios: ["1:1", "4:3", "16:9"],
+  },
+  "retro-pop": {
+    recommendedCount: { min: 4, max: 6 },
+    recommendedRatio: "1:1 or 4:3",
+    ratioNote: "レトロカード。正方形か横長が映えます",
+    acceptRatios: ["1:1", "4:3", "16:9"],
+  },
+  "studio-white": {
+    recommendedCount: { min: 6, max: 12 },
+    recommendedRatio: "自由（混在OK）",
+    ratioNote: "マソンリーギャラリー。正方形・縦長・横長を混ぜるとリズムが出ます",
+    acceptRatios: ["1:1", "3:4", "16:9", "4:3", "9:16"],
+  },
+  "watercolor-soft": {
+    recommendedCount: { min: 4, max: 8 },
+    recommendedRatio: "4:3 or 1:1",
+    ratioNote: "水彩画風。優しい雰囲気の横長か正方形が推奨",
+    acceptRatios: ["4:3", "1:1", "3:4", "16:9"],
   },
 };
 
@@ -307,70 +307,70 @@ const lightPresets: ColorPreset[] = [
 // ━━━━━━━━━━━━━━━━━━━━
 
 const uniqueFieldsByTemplate: Record<string, FormField[]> = {
-  "warm-natural": [
-    {
-      id: "services",
-      label: "提供しているサービス",
-      type: "tags",
-      placeholder: "例: イラスト制作, キャラデザ, 背景アート",
-      help: "提供しているサービスをカンマ区切りで（最大3つ）",
-      max: 3,
-      section: "unique",
-    },
-  ],
-  "stack-cards": [
+  "comic-panel": [
     {
       id: "skills",
-      label: "スキル・得意分野",
+      label: "スキル・得意ジャンル",
       type: "tags",
-      placeholder: "例: キャラクター, 背景, コンセプトアート",
-      help: "スキルセクションに表示されます（最大6つ）",
+      placeholder: "例: 漫画, イラスト, キャラデザ",
+      help: "プロフィールに表示されます（最大6つ）",
       max: 6,
       section: "unique",
     },
   ],
-  "minimal-grid": [
-    {
-      id: "workCategories",
-      label: "作品カテゴリ",
-      type: "tags",
-      placeholder: "例: Fantasy, Portrait, Landscape",
-      help: "ギャラリーのフィルター用。英語推奨（最大5つ）",
-      max: 5,
-      section: "works",
-    },
-  ],
-  "horizontal-scroll": [
-    {
-      id: "stats",
-      label: "実績・数字",
-      type: "tags",
-      placeholder: "例: 60+ Works, 3 Years, 5 Awards",
-      help: "Aboutセクションに表示されます（最大3つ。後から追加可能）",
-      max: 3,
-      section: "about",
-    },
-  ],
-  "elegant-mono": [
-    {
-      id: "stats",
-      label: "実績・数字",
-      type: "tags",
-      placeholder: "例: 150+ Works, 8 Years, 40+ Clients",
-      help: "Aboutセクションに表示されます（最大3つ。後から追加可能）",
-      max: 3,
-      section: "about",
-    },
-  ],
-  "ai-art-portfolio": [
+  "cyber-neon": [
     {
       id: "tools",
       label: "使用ツール",
       type: "tags",
-      placeholder: "例: Midjourney, Stable Diffusion, Flux",
-      help: "About欄に表示されます（最大8つ）",
-      max: 8,
+      placeholder: "例: Midjourney, Stable Diffusion, ComfyUI",
+      help: "プロフィールにスキルバーとして表示されます（最大6つ）",
+      max: 6,
       section: "about",
+    },
+  ],
+  "dark-elegance": [
+    {
+      id: "stats",
+      label: "実績・数字",
+      type: "tags",
+      placeholder: "例: 180+ Works, 6 Years, 40+ Awards",
+      help: "プロフィールに表示されます（最大3つ。後から追加可能）",
+      max: 3,
+      section: "about",
+    },
+  ],
+  "mosaic-bold": [
+    {
+      id: "stats",
+      label: "実績・数字",
+      type: "tags",
+      placeholder: "例: 250+ Works, 8K Followers, 12年",
+      help: "ヒーローに表示されます（最大3つ）",
+      max: 3,
+      section: "about",
+    },
+  ],
+  "ink-wash": [
+    {
+      id: "stats",
+      label: "実績・数字",
+      type: "tags",
+      placeholder: "例: 7年以上, 200+ Works",
+      help: "プロフィールに表示されます（最大3つ）",
+      max: 3,
+      section: "about",
+    },
+  ],
+  "studio-white": [
+    {
+      id: "workCategories",
+      label: "作品カテゴリ",
+      type: "tags",
+      placeholder: "例: Portrait, Landscape, Abstract",
+      help: "ライトボックスで作品情報として表示されます（最大5つ）",
+      max: 5,
+      section: "works",
     },
   ],
 };
@@ -387,16 +387,16 @@ const templateMeta: Array<{
   defaultColors: { primary: string; accent: string; background: string };
   isDark: boolean;
 }> = [
-  { id: "cinematic-dark", name: "Cinematic Dark", nameJa: "シネマティック・ダーク", description: "没入感のあるフルスクリーン", defaultColors: { primary: "#00bbdd", accent: "#d42d83", background: "#0a0a1a" }, isDark: true },
-  { id: "minimal-grid", name: "Minimal Grid", nameJa: "ミニマル・グリッド", description: "作品を主役にするグリッド", defaultColors: { primary: "#A28D69", accent: "#A28D69", background: "#f5f3ef" }, isDark: false },
-  { id: "warm-natural", name: "Warm Natural", nameJa: "ウォーム・ナチュラル", description: "温かみのあるカード型", defaultColors: { primary: "#fffe3e", accent: "#a28d69", background: "#f2eee7" }, isDark: false },
-  { id: "horizontal-scroll", name: "Horizontal Scroll", nameJa: "ホリゾンタル・スクロール", description: "横に流れるエディトリアル", defaultColors: { primary: "#e63946", accent: "#EFE8D7", background: "#0a0a0a" }, isDark: true },
-  { id: "elegant-mono", name: "Elegant Mono", nameJa: "エレガント・モノ", description: "ギャラリーのような空間", defaultColors: { primary: "#00bbdd", accent: "#d42d83", background: "#1a1a1a" }, isDark: true },
-  { id: "ai-art-portfolio", name: "AI Art Portfolio", nameJa: "AIアート・ポートフォリオ", description: "AIアート特化の世界観", defaultColors: { primary: "#00e5ff", accent: "#d4a853", background: "#0a0a0f" }, isDark: true },
-  { id: "split-showcase", name: "Split Showcase", nameJa: "スプリット・ショーケース", description: "左右分割の構図美", defaultColors: { primary: "#c9a96e", accent: "#f0ede6", background: "#111111" }, isDark: true },
-  { id: "stack-cards", name: "Stack Cards", nameJa: "スタック・カード", description: "カードが重なるスクロール", defaultColors: { primary: "#6366f1", accent: "#a78bfa", background: "#0c0c0c" }, isDark: true },
-  { id: "neo-brutalist", name: "Neo Brutalist", nameJa: "ネオ・ブルータリスト", description: "太字と原色のインパクト", defaultColors: { primary: "#ff5722", accent: "#2563eb", background: "#fffdf5" }, isDark: false },
-  { id: "glass-morphism", name: "Glass Morphism", nameJa: "グラス・モーフィズム", description: "透過グラスの近未来感", defaultColors: { primary: "#8b5cf6", accent: "#06b6d4", background: "#0f0f1a" }, isDark: true },
+  { id: "comic-panel", name: "Comic Panel", nameJa: "コミック・パネル", description: "マンガ風パネルレイアウト", defaultColors: { primary: "#E63946", accent: "#2563EB", background: "#FFFEF5" }, isDark: false },
+  { id: "cyber-neon", name: "Cyber Neon", nameJa: "サイバー・ネオン", description: "ネオンが光るサイバー空間", defaultColors: { primary: "#00F0FF", accent: "#FF00E5", background: "#0A0A14" }, isDark: true },
+  { id: "dark-elegance", name: "Dark Elegance", nameJa: "ダーク・エレガンス", description: "ゴールドが映える高級感", defaultColors: { primary: "#C9A96E", accent: "#E4D5B7", background: "#0D0D0D" }, isDark: true },
+  { id: "floating-gallery", name: "Floating Gallery", nameJa: "フローティング・ギャラリー", description: "浮遊する3Dカード", defaultColors: { primary: "#6C63FF", accent: "#A5A0FF", background: "#111118" }, isDark: true },
+  { id: "ink-wash", name: "Ink Wash", nameJa: "水墨画", description: "和風水墨画の世界観", defaultColors: { primary: "#C73E3A", accent: "#3D6B5E", background: "#F5F0E8" }, isDark: false },
+  { id: "mosaic-bold", name: "Mosaic Bold", nameJa: "モザイク・ボールド", description: "大胆なモザイクグリッド", defaultColors: { primary: "#FF3D00", accent: "#0A0A0A", background: "#F5F5F5" }, isDark: false },
+  { id: "pastel-pop", name: "Pastel Pop", nameJa: "パステル・ポップ", description: "やわらかいパステルカラー", defaultColors: { primary: "#FF7EB3", accent: "#7EC8E3", background: "#FFF5F9" }, isDark: false },
+  { id: "retro-pop", name: "Retro Pop", nameJa: "レトロ・ポップ", description: "レトロでカラフルなデザイン", defaultColors: { primary: "#FF6B35", accent: "#00B4D8", background: "#FFFDF0" }, isDark: false },
+  { id: "studio-white", name: "Studio White", nameJa: "スタジオ・ホワイト", description: "ミニマルな白基調ギャラリー", defaultColors: { primary: "#000000", accent: "#999999", background: "#FAFAFA" }, isDark: false },
+  { id: "watercolor-soft", name: "Watercolor Soft", nameJa: "ウォーターカラー・ソフト", description: "水彩画のようなやさしさ", defaultColors: { primary: "#7FB5D5", accent: "#8FBFA0", background: "#F8F5F0" }, isDark: false },
 ];
 
 // ━━━━━━━━━━━━━━━━━━━━
