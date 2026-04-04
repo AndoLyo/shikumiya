@@ -282,7 +282,10 @@ ${requests ? `顧客の要望:「${requests}」
 - レスポンシブ対応を壊さない
 - 画像ファイル自体を変更・削除しない
 - node_modules, package-lock.json, .gitignore を変更しない
-- 存在しない画像パスを参照しない`;
+- 存在しない画像パスを参照しない
+- npx next build や npm run build は実行しない（ビルドはVercelが自動で行う）
+- .next/ フォルダは触らない
+- src/ 配下の .tsx ファイルだけを編集する`;
 }
 
 // ━━━━━━━━━━━━━━━━━━━━
