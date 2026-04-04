@@ -173,9 +173,9 @@ async function createSite(orderMeta: OrderData, imageFiles: Record<string, strin
   const templateRepo =
     process.env.GITHUB_TEMPLATE_REPO || "shikumiya-template";
 
-  // Generate repo name from siteSlug (user-provided, already validated as a-z0-9-)
+  // Generate clean repo name from siteSlug
   const slug = orderMeta.siteSlug?.replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "").slice(0, 30) || "user";
-  const repoName = `site-${slug}-${Date.now().toString(36)}`;
+  const repoName = `shikumiya-${slug}`;
 
   // Step 1: Create repo from template
   const createRes = await fetch(

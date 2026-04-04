@@ -15,11 +15,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Check if site URL is already taken
+    const githubToken = process.env.GITHUB_TOKEN!;
+    const githubOwner = process.env.GITHUB_OWNER || "AndoLyo";
+    if (body.siteSlug) {
+      const slug = body.siteSlug.replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "").slice(0, 30);
+      const repoName = `shikumiya-${slug}`;
+      const checkRes = await fetch(`https://api.github.com/repos/${githubOwner}/${repoName}`, {
+        headers: { Authorization: `token ${githubToken}`, Accept: "application/vnd.github.v3+json" },
+      });
+      if (checkRes.ok) {
+        return NextResponse.json(
+          { error: `「${slug}」はすでに使用されています。別のサイトURLを入力してください。` },
+          { status: 400 },
+        );
+      }
+    }
+
     // Generate unique order ID
     const orderId = `order_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-
-    // Store order metadata (WITHOUT images — images are already in a separate Gist)
-    const githubToken = process.env.GITHUB_TOKEN!;
 
     const orderMeta = {
       orderId,
