@@ -153,6 +153,31 @@ const aboutSection: SectionDef = {
       help: "About欄に引用として表示されます",
       section: "about",
     },
+    {
+      id: "location",
+      label: "拠点",
+      type: "text",
+      placeholder: "例: 東京",
+      help: "活動拠点が表示されます",
+      section: "about",
+    },
+    {
+      id: "artStyle",
+      label: "作風・スタイル",
+      type: "text",
+      placeholder: "例: ファンタジー、SF、少年マンガ",
+      help: "あなたの作品のジャンルやスタイル",
+      section: "about",
+    },
+    {
+      id: "tools",
+      label: "使用ツール",
+      type: "tags",
+      placeholder: "例: Midjourney, Stable Diffusion, CLIP STUDIO",
+      help: "制作に使っているツール（最大8つ）",
+      max: 8,
+      section: "about",
+    },
   ],
 };
 
