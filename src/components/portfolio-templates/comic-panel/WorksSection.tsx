@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "./SiteDataContext";
 
 type WorkItem = {
   id: number;
@@ -192,7 +193,80 @@ function PanelCard({ work, delay }: { work: WorkItem; delay: number }) {
   );
 }
 
+function DataWorkCard({
+  work,
+  index,
+}: {
+  work: { src: string; title: string };
+  index: number;
+}) {
+  return (
+    <motion.div
+      className="relative overflow-hidden group"
+      style={{
+        border: "3px solid var(--cp-border)",
+        borderRadius: "0px",
+        backgroundColor: "var(--cp-surface)",
+      }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.4, delay: index * 0.08 }}
+      whileHover={{
+        scale: 1.03,
+        zIndex: 10,
+        boxShadow: "8px 8px 0 var(--cp-border)",
+        transition: { duration: 0.15 },
+      }}
+    >
+      {/* Panel number label */}
+      <div
+        className="absolute top-2 left-2 z-10 px-1.5 py-0.5 text-[10px] font-black"
+        style={{
+          backgroundColor: "rgba(255,255,255,0.9)",
+          border: "1.5px solid var(--cp-border)",
+          color: "var(--cp-text)",
+          lineHeight: 1.2,
+        }}
+      >
+        P.{String(index + 1).padStart(2, "0")}
+      </div>
+
+      {/* Image — full display, no cropping */}
+      <img
+        src={work.src}
+        alt={work.title}
+        className="w-full h-auto block"
+        style={{ objectFit: "contain" }}
+      />
+
+      {/* Halftone dot overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-10"
+        style={{
+          backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px)`,
+          backgroundSize: "10px 10px",
+        }}
+      />
+
+      {/* Hover info overlay */}
+      <div
+        className="absolute inset-0 flex flex-col justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        style={{
+          background:
+            "linear-gradient(to top, rgba(26,26,26,0.9) 0%, rgba(26,26,26,0.4) 40%, transparent 100%)",
+        }}
+      >
+        <p className="text-sm font-black text-white leading-tight">{work.title}</p>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function WorksSection() {
+  const data = useSiteData();
+  const hasDataWorks = data?.works && data.works.length > 0;
+
   return (
     <section
       id="works"
@@ -237,61 +311,80 @@ export default function WorksSection() {
           />
         </motion.div>
 
-        {/* Manga panel grid — CSS Grid with manga-style layout */}
-        <motion.div
-          className="grid gap-[4px]"
-          style={{
-            gridTemplateColumns: "repeat(6, 1fr)",
-            gridTemplateRows: "repeat(10, 80px)",
-            border: "3px solid var(--cp-border)",
-            boxShadow: "8px 8px 0 var(--cp-border)",
-            backgroundColor: "var(--cp-border)", // gap color = black outline
-          }}
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.5 }}
-        >
-          {/* Row 1: two wide panels */}
-          <div
-            className="contents"
-            style={{ gridColumn: "span 3", gridRow: "span 2" }}
+        {/* Manga panel grid */}
+        {hasDataWorks ? (
+          /* Data-driven: masonry-like grid with natural aspect ratios */
+          <motion.div
+            className="grid grid-cols-2 md:grid-cols-3 gap-[4px]"
+            style={{
+              border: "3px solid var(--cp-border)",
+              boxShadow: "8px 8px 0 var(--cp-border)",
+              backgroundColor: "var(--cp-border)",
+            }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.5 }}
           >
-            {[0, 1].map((idx) => (
-              <div
-                key={idx}
-                style={{ gridColumn: "span 3", gridRow: "span 2" }}
-              >
-                <PanelCard work={works[idx]} delay={idx * 0.08} />
+            {data!.works.map((work, i) => (
+              <DataWorkCard key={i} work={work} index={i} />
+            ))}
+          </motion.div>
+        ) : (
+          /* Demo: original manga panel layout */
+          <motion.div
+            className="grid gap-[4px]"
+            style={{
+              gridTemplateColumns: "repeat(6, 1fr)",
+              gridTemplateRows: "repeat(10, 80px)",
+              border: "3px solid var(--cp-border)",
+              boxShadow: "8px 8px 0 var(--cp-border)",
+              backgroundColor: "var(--cp-border)",
+            }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.5 }}
+          >
+            {/* Row 1: two wide panels */}
+            <div
+              className="contents"
+              style={{ gridColumn: "span 3", gridRow: "span 2" }}
+            >
+              {[0, 1].map((idx) => (
+                <div
+                  key={idx}
+                  style={{ gridColumn: "span 3", gridRow: "span 2" }}
+                >
+                  <PanelCard work={works[idx]} delay={idx * 0.08} />
+                </div>
+              ))}
+            </div>
+
+            {/* Row 2-3: 1 tall left + 2 stacked right */}
+            <div style={{ gridColumn: "span 2", gridRow: "span 4" }}>
+              <PanelCard work={works[2]} delay={0.16} />
+            </div>
+            <div style={{ gridColumn: "span 2", gridRow: "span 2" }}>
+              <PanelCard work={works[3]} delay={0.22} />
+            </div>
+            <div style={{ gridColumn: "span 2", gridRow: "span 2" }}>
+              <PanelCard work={works[4]} delay={0.28} />
+            </div>
+
+            {/* Row 4: 3 equal panels */}
+            {[5, 6, 7].map((idx, i) => (
+              <div key={idx} style={{ gridColumn: "span 2", gridRow: "span 2" }}>
+                <PanelCard work={works[idx]} delay={0.34 + i * 0.07} />
               </div>
             ))}
-          </div>
 
-          {/* Row 2-3: 1 tall left + 2 stacked right */}
-          {/* Tall panel */}
-          <div style={{ gridColumn: "span 2", gridRow: "span 4" }}>
-            <PanelCard work={works[2]} delay={0.16} />
-          </div>
-          {/* 2 stacked panels */}
-          <div style={{ gridColumn: "span 2", gridRow: "span 2" }}>
-            <PanelCard work={works[3]} delay={0.22} />
-          </div>
-          <div style={{ gridColumn: "span 2", gridRow: "span 2" }}>
-            <PanelCard work={works[4]} delay={0.28} />
-          </div>
-
-          {/* Row 4: 3 equal panels */}
-          {[5, 6, 7].map((idx, i) => (
-            <div key={idx} style={{ gridColumn: "span 2", gridRow: "span 2" }}>
-              <PanelCard work={works[idx]} delay={0.34 + i * 0.07} />
+            {/* Row 5: Full-width wide panel */}
+            <div style={{ gridColumn: "span 6", gridRow: "span 2" }}>
+              <PanelCard work={works[8]} delay={0.55} />
             </div>
-          ))}
-
-          {/* Row 5: Full-width wide panel */}
-          <div style={{ gridColumn: "span 6", gridRow: "span 2" }}>
-            <PanelCard work={works[8]} delay={0.55} />
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
 
         {/* View more button */}
         <motion.div

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSiteData } from "./SiteDataContext";
 
 const navItems = [
   { label: "WORKS", href: "#works" },
@@ -11,6 +12,9 @@ const navItems = [
 ];
 
 export default function Header() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "MANGA";
+  const artistNameAccent = data ? "" : "PORT";
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -62,7 +66,7 @@ export default function Header() {
               className="text-lg font-black tracking-tight uppercase"
               style={{ color: "var(--cp-text)", letterSpacing: "-0.02em" }}
             >
-              MANGA<span style={{ color: "var(--cp-red)" }}>PORT</span>
+              {artistName}<span style={{ color: "var(--cp-red)" }}>{artistNameAccent}</span>
             </span>
             {/* Speech bubble tail */}
             <span

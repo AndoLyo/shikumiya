@@ -1,14 +1,18 @@
 "use client";
 
 import { AtSign, Camera, Globe } from "lucide-react";
+import { useSiteData } from "./SiteDataContext";
 
-const socialLinks = [
+const defaultSocialLinks = [
   { icon: AtSign, href: "#", label: "Twitter" },
   { icon: Camera, href: "#", label: "Instagram" },
   { icon: Globe, href: "#", label: "Website" },
 ];
 
 export default function Footer() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "YUKI";
+  const socialLinks = defaultSocialLinks;
   return (
     <footer
       className="relative overflow-hidden"
@@ -87,7 +91,7 @@ export default function Footer() {
               className="mt-2 text-xs font-black uppercase tracking-widest"
               style={{ color: "rgba(255,255,255,0.4)" }}
             >
-              — YUKI COMICS PORTFOLIO —
+              — {artistName} PORTFOLIO —
             </p>
           </div>
         </div>
@@ -132,7 +136,7 @@ export default function Footer() {
             className="text-sm font-black uppercase tracking-wider"
             style={{ color: "rgba(255,255,255,0.6)" }}
           >
-            YUKI<span style={{ color: "var(--cp-yellow)" }}>COMICS</span>
+            {artistName}<span style={{ color: "var(--cp-yellow)" }}>{data ? "" : "COMICS"}</span>
           </span>
 
           {/* Nav links */}
@@ -154,7 +158,7 @@ export default function Footer() {
             className="text-xs font-bold"
             style={{ color: "rgba(255,255,255,0.3)" }}
           >
-            © 2024 YUKI Comics. All rights reserved.
+            © {new Date().getFullYear()} {artistName}. All rights reserved.
           </p>
         </div>
 

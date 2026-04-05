@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "./SiteDataContext";
 
 const skills = [
   { label: "キャラクターデザイン", value: 95, color: "var(--cp-red)" },
@@ -88,6 +89,12 @@ function SkillBar({
 }
 
 export default function AboutSection() {
+  const data = useSiteData();
+  const profileImage = data?.profileImage;
+  const bioText = data?.bio || "";
+  const mottoText = data?.motto || "";
+  const artistName = data?.artistName || "YUKI";
+
   return (
     <section
       id="about"
@@ -185,12 +192,20 @@ export default function AboutSection() {
                   style={{
                     border: "4px solid var(--cp-border)",
                     boxShadow: "6px 6px 0 var(--cp-border)",
-                    background: "linear-gradient(135deg, #FFC107 0%, #E63946 100%)",
+                    background: profileImage ? "var(--cp-surface)" : "linear-gradient(135deg, #FFC107 0%, #E63946 100%)",
                   }}
                 >
-                  <span className="text-6xl" role="img" aria-label="作者">
-                    🎨
-                  </span>
+                  {profileImage ? (
+                    <img
+                      src={profileImage}
+                      alt={artistName}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-6xl" role="img" aria-label="作者">
+                      🎨
+                    </span>
+                  )}
                 </div>
                 {/* Status badge */}
                 <div
@@ -243,20 +258,24 @@ export default function AboutSection() {
                 }}
               >
                 <p
-                  className="text-sm font-bold leading-relaxed"
+                  className="text-sm font-bold leading-relaxed whitespace-pre-wrap"
                   style={{ color: "var(--cp-text)" }}
                 >
-                  はじめまして、YUKIです！
-                  <br />
-                  少年誌でのデビュー経験を持つプロの漫画家。
-                  <br />
-                  アクションから日常系まで幅広いジャンルを手掛け、
-                  <span style={{ color: "var(--cp-red)", fontWeight: 900 }}>
-                    AIとの協働
-                  </span>
-                  で制作スピードを3倍に！
-                  <br />
-                  あなたの物語を最高のビジュアルで表現します。
+                  {bioText || (
+                    <>
+                      はじめまして、YUKIです！
+                      <br />
+                      少年誌でのデビュー経験を持つプロの漫画家。
+                      <br />
+                      アクションから日常系まで幅広いジャンルを手掛け、
+                      <span style={{ color: "var(--cp-red)", fontWeight: 900 }}>
+                        AIとの協働
+                      </span>
+                      で制作スピードを3倍に！
+                      <br />
+                      あなたの物語を最高のビジュアルで表現します。
+                    </>
+                  )}
                 </p>
 
                 {/* Data panels within speech bubble */}

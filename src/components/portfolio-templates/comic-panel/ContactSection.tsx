@@ -2,13 +2,25 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Send, AtSign, Camera, Globe } from "lucide-react";
+import { Send, AtSign, Camera, Globe, BookOpen, Link2 } from "lucide-react";
+import { useSiteData } from "./SiteDataContext";
+import type { SiteData } from "@/lib/site-data";
 
-const socialLinks = [
+const defaultSocialLinks = [
   { icon: AtSign, label: "Twitter / X", handle: "@yuki_comics", color: "var(--cp-blue)" },
   { icon: Camera, label: "Instagram", handle: "@yuki.manga", color: "var(--cp-red)" },
   { icon: Globe, label: "Portfolio", handle: "yuki-comics.jp", color: "var(--cp-yellow)" },
 ];
+
+function buildSocialLinks(data: SiteData) {
+  const links: { icon: typeof AtSign; label: string; handle: string; color: string; href: string }[] = [];
+  if (data.snsX) links.push({ icon: AtSign, label: "X (Twitter)", handle: data.snsX, color: "var(--cp-blue)", href: data.snsX.startsWith("http") ? data.snsX : `https://x.com/${data.snsX.replace("@", "")}` });
+  if (data.snsInstagram) links.push({ icon: Camera, label: "Instagram", handle: data.snsInstagram, color: "var(--cp-red)", href: data.snsInstagram.startsWith("http") ? data.snsInstagram : `https://instagram.com/${data.snsInstagram.replace("@", "")}` });
+  if (data.snsPixiv) links.push({ icon: BookOpen, label: "Pixiv", handle: data.snsPixiv, color: "var(--cp-blue)", href: data.snsPixiv.startsWith("http") ? data.snsPixiv : `https://pixiv.net/users/${data.snsPixiv}` });
+  if (data.snsNote) links.push({ icon: Globe, label: "note", handle: data.snsNote, color: "var(--cp-yellow)", href: data.snsNote.startsWith("http") ? data.snsNote : `https://note.com/${data.snsNote}` });
+  if (data.snsOther) links.push({ icon: Link2, label: "Other", handle: data.snsOther, color: "var(--cp-yellow)", href: data.snsOther.startsWith("http") ? data.snsOther : `#` });
+  return links;
+}
 
 // Horizontal speed lines SVG
 function SpeedLinesH({ className }: { className?: string }) {
@@ -41,8 +53,10 @@ function SpeedLinesH({ className }: { className?: string }) {
 }
 
 export default function ContactSection() {
+  const data = useSiteData();
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const socialLinks = data ? buildSocialLinks(data) : defaultSocialLinks.map((l) => ({ ...l, href: "#" }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -354,7 +368,7 @@ export default function ContactSection() {
             </div>
 
             {/* Social links — circular panels */}
-            <div>
+            {socialLinks.length > 0 && <div>
               <div
                 className="mb-3 inline-block px-3 py-1 text-xs font-black uppercase tracking-wider"
                 style={{
@@ -371,7 +385,7 @@ export default function ContactSection() {
                   return (
                     <motion.a
                       key={link.label}
-                      href="#"
+                      href={link.href}
                       className="flex items-center gap-4 px-4 py-3 transition-all duration-150"
                       style={{
                         border: "3px solid var(--cp-border)",
@@ -416,7 +430,7 @@ export default function ContactSection() {
                   );
                 })}
               </div>
-            </div>
+            </div>}
           </motion.div>
         </div>
       </div>

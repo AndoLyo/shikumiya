@@ -27,6 +27,8 @@ import {
   RectangleVertical,
   Square,
 } from "lucide-react";
+import type { SiteData } from "@/lib/site-data";
+import DevicePreview from "@/components/DevicePreview";
 
 // ─── Shared Styles ──────────────────────────────────────────
 const inputClass =
@@ -497,6 +499,30 @@ export default function OrderTemplatePage({
     setStep(target);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // ─── Save preview data to sessionStorage when entering Step 3 ───
+  useEffect(() => {
+    if (step === 3) {
+      const previewData: SiteData = {
+        artistName,
+        catchcopy,
+        subtitle,
+        bio: fieldValues.bio || "",
+        motto: fieldValues.motto || "",
+        email,
+        snsX: fieldValues.snsX || "",
+        snsInstagram: fieldValues.snsInstagram || "",
+        snsPixiv: fieldValues.snsPixiv || "",
+        works: works.map((w) => ({ src: w.data, title: w.title })),
+        heroImage: heroImage?.data,
+        profileImage: profileImage?.data,
+        colorPrimary: activeColors.primary,
+        colorAccent: activeColors.accent,
+        colorBackground: activeColors.background,
+      };
+      sessionStorage.setItem("preview-data", JSON.stringify(previewData));
+    }
+  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Field value helpers ────────────────────────────────
   const setFieldValue = (fieldId: string, value: string) => {
@@ -1819,6 +1845,16 @@ export default function OrderTemplatePage({
               transition={{ duration: 0.35, ease: "easeInOut" }}
               className="space-y-6"
             >
+              {/* Site Preview */}
+              <section className="glass-card p-6 sm:p-8">
+                <h3 className="text-white font-bold text-sm mb-3">サイトプレビュー</h3>
+                <DevicePreview url={`/preview/${templateId}`} title="サイトプレビュー" />
+                <p className="text-text-muted text-[10px] mt-3 text-center">
+                  ※ このプレビューは、入力いただいた文字・画像・色をそのまま表示しています。
+                  「ご要望・備考」欄の内容は、制作時にスタッフが反映するため、完成品とは異なる場合があります。
+                </p>
+              </section>
+
               {/* Summary */}
               <section className="glass-card p-6 sm:p-8">
                 <h2 className="text-white text-sm font-bold tracking-wider mb-6 flex items-center gap-2">

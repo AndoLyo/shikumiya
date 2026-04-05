@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { useSiteData } from "./SiteDataContext";
 
 // Speed lines SVG as inline component
 function SpeedLines({ className }: { className?: string }) {
@@ -66,6 +67,24 @@ function StarBurst({
 }
 
 export default function HeroSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "YUKI";
+  const subtitleText = data?.subtitle || "マンガ作家 ＆ イラストレーター";
+  const catchcopyText = data?.catchcopy || "";
+  const heroImage = data?.heroImage;
+
+  // Default description when no data
+  const defaultDescription = (
+    <>
+      少年マンガからラブコメまで、
+      <br />
+      <span style={{ color: "var(--cp-red)" }}>圧倒的画力</span>
+      でキャラクターに魂を込める。
+      <br />
+      AIとの融合で新時代のマンガを創造中！
+    </>
+  );
+
   return (
     <section
       className="relative overflow-hidden pt-28 pb-0 md:pt-36"
@@ -152,7 +171,7 @@ export default function HeroSection() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
         >
-          ★ マンガ作家 ＆ イラストレーター ★
+          ★ {subtitleText} ★
         </motion.div>
 
         {/* Title with outline stroke */}
@@ -171,20 +190,22 @@ export default function HeroSection() {
               letterSpacing: "-0.02em",
             }}
           >
-            YUKI
+            {artistName}
           </span>
-          <span
-            style={{
-              color: "var(--cp-red)",
-              WebkitTextStroke: "3px var(--cp-border)",
-              display: "block",
-              textShadow: "4px 4px 0 var(--cp-border)",
-              letterSpacing: "-0.02em",
-              marginTop: "-0.1em",
-            }}
-          >
-            COMICS
-          </span>
+          {!data && (
+            <span
+              style={{
+                color: "var(--cp-red)",
+                WebkitTextStroke: "3px var(--cp-border)",
+                display: "block",
+                textShadow: "4px 4px 0 var(--cp-border)",
+                letterSpacing: "-0.02em",
+                marginTop: "-0.1em",
+              }}
+            >
+              COMICS
+            </span>
+          )}
         </motion.h1>
 
         {/* Description — action pose panel */}
@@ -216,12 +237,7 @@ export default function HeroSection() {
             className="text-base font-bold leading-relaxed"
             style={{ color: "var(--cp-text)" }}
           >
-            少年マンガからラブコメまで、
-            <br />
-            <span style={{ color: "var(--cp-red)" }}>圧倒的画力</span>
-            でキャラクターに魂を込める。
-            <br />
-            AIとの融合で新時代のマンガを創造中！
+            {catchcopyText || defaultDescription}
           </p>
         </motion.div>
 
@@ -270,11 +286,17 @@ export default function HeroSection() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.7 }}
         >
-          {[
-            { num: "500+", label: "作品数" },
-            { num: "10K+", label: "フォロワー" },
-            { num: "5年", label: "制作歴" },
-          ].map((stat, i) => (
+          {(data?.stats
+            ? data.stats.slice(0, 3).map((s) => {
+                const parts = s.split(":");
+                return { num: parts[0] || s, label: parts[1] || "" };
+              })
+            : [
+                { num: "500+", label: "作品数" },
+                { num: "10K+", label: "フォロワー" },
+                { num: "5年", label: "制作歴" },
+              ]
+          ).map((stat, i) => (
             <div
               key={stat.label}
               className="py-4 text-center"
