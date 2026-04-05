@@ -19,6 +19,8 @@ export interface SiteData {
   skills?: string[];
   stats?: string[];
   tools?: string[];
+  location?: string;
+  artStyle?: string;
 }
 
 export const defaultSiteData: SiteData = {

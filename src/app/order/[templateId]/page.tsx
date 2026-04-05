@@ -1962,6 +1962,8 @@ export default function OrderTemplatePage({
                     skills: uniqueTags.skills || [],
                     stats: uniqueTags.stats || [],
                     tools: uniqueTags.tools || [],
+                    location: fieldValues.location || "",
+                    artStyle: fieldValues.artStyle || "",
                   }}
                 />
                 <p className="text-text-muted text-[10px] mt-3 text-center">

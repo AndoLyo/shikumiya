@@ -283,12 +283,17 @@ export default function AboutSection() {
                   className="mt-4 grid grid-cols-2 gap-[2px]"
                   style={{ border: "2px solid var(--cp-border)" }}
                 >
-                  {[
+                  {(data ? [
+                    ...(data.location ? [{ label: "拠点", value: data.location }] : []),
+                    ...(data.artStyle ? [{ label: "スタイル", value: data.artStyle }] : []),
+                    ...(data.tools && data.tools.length > 0 ? [{ label: "ツール", value: data.tools.join(", ") }] : []),
+                    ...(data.stats && data.stats.length > 0 ? [{ label: "実績", value: data.stats.join(", ") }] : []),
+                  ] : [
                     { label: "拠点", value: "東京" },
                     { label: "スタイル", value: "少年〜青年" },
                     { label: "ツール", value: "CLIP STUDIO + AI" },
                     { label: "実績", value: "商業誌5本" },
-                  ].map((item, i) => (
+                  ]).map((item, i) => (
                     <div
                       key={i}
                       className="px-3 py-2"
@@ -314,90 +319,101 @@ export default function AboutSection() {
             </div>
           </motion.div>
 
-          {/* Right: Skills panel */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            {/* Skills header */}
-            <div
-              className="mb-5 px-4 py-2 inline-flex items-center gap-2"
-              style={{
-                backgroundColor: "var(--cp-yellow)",
-                border: "2.5px solid var(--cp-border)",
-                boxShadow: "3px 3px 0 var(--cp-border)",
-              }}
+          {/* Right: Skills panel (only show when no custom data, or when skills provided) */}
+          {(!data || (data.skills && data.skills.length > 0)) && (
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <span className="text-sm font-black uppercase tracking-wider" style={{ color: "var(--cp-text)" }}>
-                ⚡ POWER STATS
-              </span>
-            </div>
-
-            {/* Skill bars */}
-            <div
-              className="p-5"
-              style={{
-                border: "3px solid var(--cp-border)",
-                backgroundColor: "var(--cp-surface)",
-                boxShadow: "6px 6px 0 var(--cp-border)",
-              }}
-            >
-              {skills.map((skill, i) => (
-                <SkillBar
-                  key={skill.label}
-                  label={skill.label}
-                  value={skill.value}
-                  color={skill.color}
-                  delay={0.3 + i * 0.12}
-                />
-              ))}
-            </div>
-
-            {/* Awards / achievements */}
-            <div className="mt-6">
+              {/* Skills header */}
               <div
-                className="mb-3 px-4 py-2 inline-flex items-center gap-2"
+                className="mb-5 px-4 py-2 inline-flex items-center gap-2"
                 style={{
-                  backgroundColor: "var(--cp-border)",
+                  backgroundColor: "var(--cp-yellow)",
                   border: "2.5px solid var(--cp-border)",
+                  boxShadow: "3px 3px 0 var(--cp-border)",
                 }}
               >
-                <span className="text-sm font-black uppercase tracking-wider text-white">
-                  🏆 ACHIEVEMENTS
+                <span className="text-sm font-black uppercase tracking-wider" style={{ color: "var(--cp-text)" }}>
+                  ⚡ POWER STATS
                 </span>
               </div>
+
+              {/* Skill bars */}
               <div
-                className="p-4 grid grid-cols-1 gap-2"
+                className="p-5"
                 style={{
                   border: "3px solid var(--cp-border)",
-                  boxShadow: "5px 5px 0 var(--cp-border)",
+                  backgroundColor: "var(--cp-surface)",
+                  boxShadow: "6px 6px 0 var(--cp-border)",
                 }}
               >
-                {[
-                  { icon: "🥇", text: "マンガ賞 準大賞受賞 2022" },
-                  { icon: "📚", text: "週刊少年誌 連載経験あり" },
-                  { icon: "🌐", text: "海外ファン 50カ国以上" },
-                  { icon: "🤖", text: "AIコラボ 先駆者として登壇" },
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 px-3 py-2"
-                    style={{
-                      backgroundColor: i % 2 === 0 ? "#f8f8f0" : "transparent",
-                      borderLeft: "3px solid var(--cp-yellow)",
-                    }}
-                  >
-                    <span className="text-lg">{item.icon}</span>
-                    <span className="text-xs font-bold" style={{ color: "var(--cp-text)" }}>
-                      {item.text}
-                    </span>
-                  </div>
+                {(data?.skills
+                  ? data.skills.map((s, i) => ({
+                      label: s,
+                      value: 80 + Math.floor(Math.random() * 15),
+                      color: ["var(--cp-red)", "var(--cp-blue)", "var(--cp-yellow)"][i % 3],
+                    }))
+                  : skills
+                ).map((skill, i) => (
+                  <SkillBar
+                    key={skill.label}
+                    label={skill.label}
+                    value={skill.value}
+                    color={skill.color}
+                    delay={0.3 + i * 0.12}
+                  />
                 ))}
               </div>
-            </div>
-          </motion.div>
+
+              {/* Awards / achievements — only show for demo (no data) */}
+              {!data && (
+                <div className="mt-6">
+                  <div
+                    className="mb-3 px-4 py-2 inline-flex items-center gap-2"
+                    style={{
+                      backgroundColor: "var(--cp-border)",
+                      border: "2.5px solid var(--cp-border)",
+                    }}
+                  >
+                    <span className="text-sm font-black uppercase tracking-wider text-white">
+                      🏆 ACHIEVEMENTS
+                    </span>
+                  </div>
+                  <div
+                    className="p-4 grid grid-cols-1 gap-2"
+                    style={{
+                      border: "3px solid var(--cp-border)",
+                      boxShadow: "5px 5px 0 var(--cp-border)",
+                    }}
+                  >
+                    {[
+                      { icon: "🥇", text: "マンガ賞 準大賞受賞 2022" },
+                      { icon: "📚", text: "週刊少年誌 連載経験あり" },
+                      { icon: "🌐", text: "海外ファン 50カ国以上" },
+                      { icon: "🤖", text: "AIコラボ 先駆者として登壇" },
+                    ].map((item, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-3 px-3 py-2"
+                        style={{
+                          backgroundColor: i % 2 === 0 ? "#f8f8f0" : "transparent",
+                          borderLeft: "3px solid var(--cp-yellow)",
+                        }}
+                      >
+                        <span className="text-lg">{item.icon}</span>
+                        <span className="text-xs font-bold" style={{ color: "var(--cp-text)" }}>
+                          {item.text}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          )}
         </div>
       </div>
     </section>
