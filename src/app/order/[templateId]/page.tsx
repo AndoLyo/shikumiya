@@ -28,7 +28,16 @@ import {
   Square,
 } from "lucide-react";
 import type { SiteData } from "@/lib/site-data";
-import DevicePreview from "@/components/DevicePreview";
+import { SiteDataProvider } from "@/components/portfolio-templates/comic-panel/SiteDataContext";
+import { useState as usePreviewState } from "react";
+
+// Lazy imports for template preview (comic-panel only for now)
+import ComicHeader from "@/components/portfolio-templates/comic-panel/Header";
+import ComicHero from "@/components/portfolio-templates/comic-panel/HeroSection";
+import ComicWorks from "@/components/portfolio-templates/comic-panel/WorksSection";
+import ComicAbout from "@/components/portfolio-templates/comic-panel/AboutSection";
+import ComicContact from "@/components/portfolio-templates/comic-panel/ContactSection";
+import ComicFooter from "@/components/portfolio-templates/comic-panel/Footer";
 
 // ─── Shared Styles ──────────────────────────────────────────
 const inputClass =
@@ -37,6 +46,87 @@ const labelClass = "block text-sm font-medium text-white mb-1";
 const helpClass = "text-text-muted text-[10px] mt-1";
 
 // ─── HelpTooltip ────────────────────────────────────────────
+// ─── Inline Preview Component ─────────────────────────────
+function InlinePreview({ templateId, siteData }: { templateId: string; siteData: SiteData }) {
+  const [viewMode, setViewMode] = useState<"pc" | "mobile">("pc");
+
+  // Only comic-panel is supported for now
+  const renderTemplate = () => {
+    if (templateId === "comic-panel") {
+      return (
+        <SiteDataProvider data={siteData}>
+          <div
+            className="comic-panel-template"
+            style={{
+              "--cp-bg": siteData.colorBackground || "#FFFEF5",
+              "--cp-surface": "#FFFFFF",
+              "--cp-text": "#1A1A1A",
+              "--cp-text-muted": "#666666",
+              "--cp-red": siteData.colorPrimary || "#E63946",
+              "--cp-blue": siteData.colorAccent || "#2563EB",
+              "--cp-yellow": "#FFC107",
+              "--cp-border": "#1A1A1A",
+              backgroundColor: siteData.colorBackground || "#FFFEF5",
+            } as React.CSSProperties}
+          >
+            <ComicHeader />
+            <main>
+              <ComicHero />
+              <ComicWorks />
+              <ComicAbout />
+              <ComicContact />
+            </main>
+            <ComicFooter />
+          </div>
+        </SiteDataProvider>
+      );
+    }
+    return (
+      <div className="flex items-center justify-center h-64 text-text-muted text-sm">
+        このテンプレートのプレビューは準備中です
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      {/* PC / Mobile toggle */}
+      <div className="flex justify-center gap-2 mb-4">
+        <button
+          type="button"
+          onClick={() => setViewMode("pc")}
+          className={`px-4 py-1.5 rounded-full text-xs transition-colors ${viewMode === "pc" ? "bg-primary text-[#0a0a0f] font-bold" : "bg-white/[0.05] text-text-muted"}`}
+        >
+          PC
+        </button>
+        <button
+          type="button"
+          onClick={() => setViewMode("mobile")}
+          className={`px-4 py-1.5 rounded-full text-xs transition-colors ${viewMode === "mobile" ? "bg-primary text-[#0a0a0f] font-bold" : "bg-white/[0.05] text-text-muted"}`}
+        >
+          スマホ
+        </button>
+      </div>
+
+      {/* Preview container */}
+      <div className="flex justify-center">
+        <div
+          className={`overflow-hidden rounded-xl border border-white/[0.1] transition-all duration-300 ${
+            viewMode === "pc" ? "w-full" : "w-[375px] max-w-full"
+          }`}
+        >
+          <div
+            className="overflow-y-auto"
+            style={{ maxHeight: "70vh" }}
+          >
+            {renderTemplate()}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function HelpTooltip({ text }: { text: string }) {
   const [open, setOpen] = useState(false);
   return (
@@ -523,13 +613,7 @@ export default function OrderTemplatePage({
         stats: uniqueTags.stats || [],
         tools: uniqueTags.tools || [],
       };
-      try {
-        sessionStorage.setItem("preview-data", JSON.stringify(previewData));
-      } catch {
-        // sessionStorage容量超え時は画像なしで保存
-        const lightData = { ...previewData, works: previewData.works.map(w => ({ src: "", title: w.title })), heroImage: undefined, profileImage: undefined };
-        sessionStorage.setItem("preview-data", JSON.stringify(lightData));
-      }
+      // sessionStorageは不要（インラインプレビューはstateから直接描画）
     }
   }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -1854,10 +1938,32 @@ export default function OrderTemplatePage({
               transition={{ duration: 0.35, ease: "easeInOut" }}
               className="space-y-6"
             >
-              {/* Site Preview */}
-              <section className="glass-card p-6 sm:p-8">
+              {/* Site Preview (inline rendering, no iframe) */}
+              <section className="glass-card p-4 sm:p-6">
                 <h3 className="text-white font-bold text-sm mb-3">サイトプレビュー</h3>
-                <DevicePreview url={`/preview/${templateId}`} title="サイトプレビュー" />
+                <InlinePreview
+                  templateId={templateId}
+                  siteData={{
+                    artistName,
+                    catchcopy,
+                    subtitle,
+                    bio: fieldValues.bio || "",
+                    motto: fieldValues.motto || "",
+                    email,
+                    snsX: fieldValues.snsX || "",
+                    snsInstagram: fieldValues.snsInstagram || "",
+                    snsPixiv: fieldValues.snsPixiv || "",
+                    works: works.map((w) => ({ src: w.data, title: w.title })),
+                    heroImage: heroImage?.data,
+                    profileImage: profileImage?.data,
+                    colorPrimary: activeColors.primary,
+                    colorAccent: activeColors.accent,
+                    colorBackground: activeColors.background,
+                    skills: uniqueTags.skills || [],
+                    stats: uniqueTags.stats || [],
+                    tools: uniqueTags.tools || [],
+                  }}
+                />
                 <p className="text-text-muted text-[10px] mt-3 text-center">
                   ※ このプレビューは、入力いただいた文字・画像・色をそのまま表示しています。
                   「ご要望・備考」欄の内容は、制作時にスタッフが反映するため、完成品とは異なる場合があります。
