@@ -3,6 +3,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import { Mail, ExternalLink, X } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
+import type { SiteData } from "@/lib/site-data";
 
 const STYLE = `
   .de-contact-backdrop {
@@ -41,14 +43,27 @@ interface ContactOverlayProps {
   onClose: () => void;
 }
 
-const socialLinks = [
+const defaultSocialLinks = [
   { label: "X / Twitter", href: "https://x.com/", platform: "@ando_lyo" },
   { label: "Instagram", href: "https://instagram.com/", platform: "@lyo.art" },
   { label: "note", href: "https://note.com/", platform: "Lyo Vision" },
   { label: "Behance", href: "https://behance.net/", platform: "Lyo Works" },
 ];
 
+function buildSocialLinks(data: SiteData) {
+  const links: { label: string; href: string; platform: string }[] = [];
+  if (data.snsX) links.push({ label: "X / Twitter", platform: data.snsX, href: data.snsX.startsWith("http") ? data.snsX : `https://x.com/${data.snsX.replace("@", "")}` });
+  if (data.snsInstagram) links.push({ label: "Instagram", platform: data.snsInstagram, href: data.snsInstagram.startsWith("http") ? data.snsInstagram : `https://instagram.com/${data.snsInstagram.replace("@", "")}` });
+  if (data.snsPixiv) links.push({ label: "Pixiv", platform: data.snsPixiv, href: data.snsPixiv.startsWith("http") ? data.snsPixiv : `https://pixiv.net/users/${data.snsPixiv}` });
+  if (data.snsNote) links.push({ label: "note", platform: data.snsNote, href: data.snsNote.startsWith("http") ? data.snsNote : `https://note.com/${data.snsNote}` });
+  if (data.snsOther) links.push({ label: "Other", platform: data.snsOther, href: data.snsOther.startsWith("http") ? data.snsOther : "#" });
+  return links;
+}
+
 export function ContactOverlay({ isOpen, onClose }: ContactOverlayProps) {
+  const data = useSiteData();
+  const email = data?.email || "hello@lyo-vision.art";
+  const socialLinks = data ? buildSocialLinks(data) : defaultSocialLinks;
   // Keyboard: Escape to close
   useEffect(() => {
     if (!isOpen) return;
@@ -207,7 +222,7 @@ export function ContactOverlay({ isOpen, onClose }: ContactOverlayProps) {
                   Email
                 </div>
                 <a
-                  href="mailto:hello@lyo-vision.art"
+                  href={`mailto:${email}`}
                   className="de-contact-link group flex items-center gap-3"
                   style={{
                     color: "var(--de-text)",
@@ -219,12 +234,12 @@ export function ContactOverlay({ isOpen, onClose }: ContactOverlayProps) {
                   }}
                 >
                   <Mail size={15} style={{ color: "var(--de-gold)", flexShrink: 0 }} />
-                  hello@lyo-vision.art
+                  {email}
                 </a>
               </motion.div>
 
               {/* Social links */}
-              <motion.div
+              {socialLinks.length > 0 && <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.42, duration: 0.45 }}
@@ -277,7 +292,7 @@ export function ContactOverlay({ isOpen, onClose }: ContactOverlayProps) {
                     </motion.a>
                   ))}
                 </div>
-              </motion.div>
+              </motion.div>}
 
               {/* Gold bottom accent */}
               <div

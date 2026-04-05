@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const works = [
   {
@@ -188,6 +189,9 @@ function WorkCard({ work, index }: { work: (typeof works)[number]; index: number
 }
 
 export default function WorksSection() {
+  const siteData = useSiteData();
+  const hasDataWorks = siteData?.works && siteData.works.length > 0;
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   return (

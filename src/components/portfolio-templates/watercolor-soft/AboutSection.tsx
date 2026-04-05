@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const skills = [
   { label: "水彩画", color: "#7FB5D5", bg: "#EDF5FB" },
@@ -21,6 +22,11 @@ const timelineItems = [
 ];
 
 export default function AboutSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Mizuki";
+  const bioText = data?.bio || "";
+  const profileImage = data?.profileImage;
+
   return (
     <section
       id="about"

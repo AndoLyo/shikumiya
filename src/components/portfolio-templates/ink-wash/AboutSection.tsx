@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 // Skills as hanko (判子) seal stamp style
 const skills = [
@@ -93,6 +94,11 @@ function HankoStamp({ label, en }: { label: string; en: string }) {
 }
 
 export default function AboutSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "墨彩";
+  const bioText = data?.bio || "";
+  const profileImage = data?.profileImage;
+
   return (
     <section
       id="about"

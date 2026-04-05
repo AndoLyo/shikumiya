@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   .de-hero-scroll-line {
@@ -17,6 +18,10 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ onEnter }: HeroSectionProps) {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Your Name";
+  const subtitleText = data?.subtitle || "Digital Artist";
+
   return (
     <section
       style={{
@@ -82,7 +87,7 @@ export function HeroSection({ onEnter }: HeroSectionProps) {
           margin: 0,
         }}
       >
-        Your Name
+        {artistName}
       </motion.h1>
 
       {/* Gold rule */}
@@ -112,7 +117,7 @@ export function HeroSection({ onEnter }: HeroSectionProps) {
           margin: 0,
         }}
       >
-        Digital Artist
+        {subtitleText}
       </motion.p>
 
       {/* Scroll indicator */}

@@ -1,6 +1,7 @@
 "use client";
 
 import { Heart } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const footerLinks = [
   { label: "Works", href: "#gallery" },
@@ -15,6 +16,9 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Hana";
+
   return (
     <footer style={{ backgroundColor: "var(--color-text)" }}>
       {/* Wavy top divider */}
@@ -68,7 +72,7 @@ export default function Footer() {
         {/* Bottom row */}
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
           <p className="text-xs text-white/40">
-            &copy; {new Date().getFullYear()} Hana. All rights reserved.
+            &copy; {new Date().getFullYear()} {artistName}. All rights reserved.
           </p>
 
           {/* Social */}

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 // Floating watercolor dots config
 const floatingDots = [
@@ -14,6 +15,11 @@ const floatingDots = [
 ];
 
 export default function HeroSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Mizuki";
+  const subtitleText = data?.subtitle || "Watercolor Artist";
+  const catchcopyText = data?.catchcopy || "";
+
   return (
     <section
       className="relative overflow-hidden pt-36 pb-0 md:pt-48"

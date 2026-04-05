@@ -1,8 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 export function Footer() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "[Artist Name]";
   return (
     <footer
       style={{
@@ -23,7 +26,7 @@ export function Footer() {
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
       >
-        &copy; 2026 [Artist Name]. All rights reserved.
+        &copy; {new Date().getFullYear()} {artistName}. All rights reserved.
       </motion.p>
 
       <motion.p

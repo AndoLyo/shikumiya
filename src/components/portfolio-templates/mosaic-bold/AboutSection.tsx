@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   .mb-about {
@@ -144,6 +145,11 @@ const skills = [
 ];
 
 export function AboutSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "BOLD";
+  const bioText = data?.bio || "";
+  const profileImage = data?.profileImage;
+
   return (
     <section id="about">
       <style>{STYLE}</style>

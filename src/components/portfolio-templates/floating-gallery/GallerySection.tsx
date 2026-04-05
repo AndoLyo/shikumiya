@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, MouseEvent } from "react";
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   .fg-gallery-perspective {
@@ -265,7 +266,44 @@ function FloatingCard({ work, index }: { work: Work; index: number }) {
   );
 }
 
+function DataWorkCard({ work, index }: { work: { src: string; title: string }; index: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40, scale: 0.92 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.8, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <div
+        className="relative overflow-hidden rounded-xl"
+        style={{
+          border: "1px solid var(--fg-border)",
+          background: "var(--fg-surface)",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(108,99,255,0.08)",
+        }}
+      >
+        <img
+          src={work.src}
+          alt={work.title}
+          className="w-full h-auto block"
+          style={{ objectFit: "contain" }}
+        />
+        <div className="fg-card-overlay absolute inset-0 flex flex-col justify-end p-4">
+          <div className="fg-card-info">
+            <h3 className="text-base font-bold leading-tight" style={{ color: "var(--fg-text)" }}>
+              {work.title}
+            </h3>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export function GallerySection() {
+  const siteData = useSiteData();
+  const hasDataWorks = siteData?.works && siteData.works.length > 0;
+
   return (
     <section
       id="gallery"
@@ -316,31 +354,35 @@ export function GallerySection() {
 
       {/* 3D perspective container */}
       <div className="fg-gallery-perspective relative z-10 max-w-6xl mx-auto">
-        {/* Grid layout — 4 columns on large, 2 on medium, 1 on small */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-          {/* Row 1: tall, square, tall, square */}
-          {WORKS.slice(0, 4).map((work, i) => (
-            <FloatingCard key={work.id} work={work} index={i} />
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 mt-5 sm:mt-6">
-          {/* Row 2: tall, wide (spans 2 cols), tall */}
-          <FloatingCard work={WORKS[4]} index={4} />
-
-          <div className="sm:col-span-2">
-            <FloatingCard work={WORKS[5]} index={5} />
+        {hasDataWorks ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            {siteData!.works.map((work, i) => (
+              <DataWorkCard key={i} work={work} index={i} />
+            ))}
           </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+              {WORKS.slice(0, 4).map((work, i) => (
+                <FloatingCard key={work.id} work={work} index={i} />
+              ))}
+            </div>
 
-          <FloatingCard work={WORKS[6]} index={6} />
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 mt-5 sm:mt-6">
+              <FloatingCard work={WORKS[4]} index={4} />
+              <div className="sm:col-span-2">
+                <FloatingCard work={WORKS[5]} index={5} />
+              </div>
+              <FloatingCard work={WORKS[6]} index={6} />
+            </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 mt-5 sm:mt-6">
-          {/* Row 3: wide (full) */}
-          <div className="sm:col-span-2 lg:col-span-4">
-            <FloatingCard work={WORKS[7]} index={7} />
-          </div>
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 mt-5 sm:mt-6">
+              <div className="sm:col-span-2 lg:col-span-4">
+                <FloatingCard work={WORKS[7]} index={7} />
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Bottom glow */}

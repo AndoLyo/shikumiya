@@ -1,6 +1,7 @@
 "use client";
 
 import { Feather } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const footerLinks = [
   { label: "Works", href: "#works" },
@@ -15,6 +16,9 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Mizuki";
+
   return (
     <footer style={{ backgroundColor: "var(--wc-text)" }}>
       {/* Organic wavy top SVG divider — transitions from section above */}
@@ -72,7 +76,7 @@ export default function Footer() {
         {/* Bottom row */}
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
           <p className="text-xs text-white/35">
-            &copy; {new Date().getFullYear()} Mizuki. All rights reserved.
+            &copy; {new Date().getFullYear()} {artistName}. All rights reserved.
           </p>
 
           {/* Social pills */}

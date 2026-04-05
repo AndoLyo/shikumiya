@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   .fg-glass-card {
@@ -58,6 +59,19 @@ const STATS = [
 ];
 
 export function AboutSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Yuki Sora";
+  const subtitleText = data?.subtitle || "AI アーティスト";
+  const locationText = data?.location || "Tokyo, Japan";
+  const bioText = data?.bio || "";
+  const profileImage = data?.profileImage;
+  const displaySkills = data?.skills && data.skills.length > 0 ? data.skills : (data?.tools && data.tools.length > 0 ? data.tools : (data ? [] : SKILLS));
+  const displayStats = data
+    ? (data.stats && data.stats.length > 0
+        ? data.stats.slice(0, 3).map((s) => { const p = s.split(":"); return { value: p[0] || s, label: p[1] || "" }; })
+        : [])
+    : STATS;
+
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const yParallax = useTransform(scrollYProgress, [0, 1], ["8%", "-8%"]);
@@ -166,19 +180,21 @@ export function AboutSection() {
               <div
                 className="w-28 h-28 rounded-full overflow-hidden"
                 style={{
-                  background:
+                  background: profileImage ? "var(--fg-surface)" :
                     "linear-gradient(135deg, var(--fg-surface) 0%, #2d2860 50%, var(--fg-accent) 100%)",
                   boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
                 }}
               >
-                {/* Decorative inner pattern */}
+                {profileImage ? (
+                  <img src={profileImage} alt={artistName} className="w-full h-full object-cover" />
+                ) : (
                 <div
                   className="w-full h-full"
                   style={{
                     background:
                       "radial-gradient(circle at 40% 35%, rgba(165,160,255,0.5) 0%, transparent 55%), radial-gradient(circle at 65% 65%, rgba(108,99,255,0.6) 0%, transparent 45%)",
                   }}
-                />
+                />)}
               </div>
             </div>
 
@@ -188,25 +204,25 @@ export function AboutSection() {
                 className="text-xl font-bold"
                 style={{ color: "var(--fg-text)" }}
               >
-                AI アーティスト
+                {subtitleText}
               </h3>
               <p
                 className="text-sm mt-1"
                 style={{ color: "var(--fg-accent-light)" }}
               >
-                Yuki Sora
+                {artistName}
               </p>
               <p
                 className="text-xs mt-1"
                 style={{ color: "var(--fg-text-muted)" }}
               >
-                Tokyo, Japan
+                {locationText}
               </p>
             </div>
 
             {/* Stats */}
-            <div className="flex flex-row md:flex-col gap-4 md:gap-3 w-full">
-              {STATS.map((stat, i) => (
+            {displayStats.length > 0 && <div className="flex flex-row md:flex-col gap-4 md:gap-3 w-full">
+              {displayStats.map((stat, i) => (
                 <motion.div
                   key={stat.label}
                   className="text-center md:text-left"
@@ -229,7 +245,7 @@ export function AboutSection() {
                   </div>
                 </motion.div>
               ))}
-            </div>
+            </div>}
           </motion.div>
 
           {/* Right — Bio + Skills */}
@@ -249,26 +265,22 @@ export function AboutSection() {
                 創作について
               </h4>
               <div
-                className="space-y-3 text-sm leading-relaxed"
+                className="space-y-3 text-sm leading-relaxed whitespace-pre-wrap"
                 style={{ color: "var(--fg-text-muted)" }}
               >
-                <p>
+                {bioText ? <p>{bioText}</p> : (<><p>
                   AIと人間の感性が交差する境界線をテーマに、浮遊するような幻想的な作品を制作しています。
                   3年前にMidjourneyと出会い、AIが持つ無限の可能性に魅了されてから、毎日新しい世界を生み出し続けています。
                 </p>
                 <p>
                   「重力から解放された美しさ」が一貫したテーマ。光と影が生み出す奥行き、
                   現実と幻想の境目を漂うような作品を通して、見る人の日常に宇宙的な静けさをお届けします。
-                </p>
-                <p>
-                  個人作品の制作を中心に、クリエイターブランドとのコラボレーション、
-                  NFTアート、印刷物・デジタルメディア向けのビジュアル制作も承っています。
-                </p>
+                </p></>)}
               </div>
             </div>
 
             {/* Skills */}
-            <div>
+            {displaySkills.length > 0 && <div>
               <h4
                 className="text-sm font-semibold mb-4 tracking-wider uppercase"
                 style={{ color: "var(--fg-text)" }}
@@ -276,7 +288,7 @@ export function AboutSection() {
                 使用ツール・スキル
               </h4>
               <div className="flex flex-wrap gap-2">
-                {SKILLS.map((skill, i) => (
+                {displaySkills.map((skill, i) => (
                   <motion.span
                     key={skill}
                     className="fg-pill text-xs px-3 py-1.5 rounded-full font-medium cursor-default"
@@ -299,7 +311,7 @@ export function AboutSection() {
                   </motion.span>
                 ))}
               </div>
-            </div>
+            </div>}
           </motion.div>
         </div>
       </motion.div>

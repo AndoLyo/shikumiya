@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 // Abstract ink splash / brush stroke SVG shapes
 function InkSplash({ className }: { className?: string }) {
@@ -68,6 +69,11 @@ function PaperTexture() {
 }
 
 export default function HeroSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "SUMI SAI";
+  const subtitleText = data?.subtitle || "";
+  const catchcopyText = data?.catchcopy || "";
+
   return (
     <section
       className="relative overflow-hidden min-h-screen flex items-center"

@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Mail } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
+import { buildSnsLinks } from "@/lib/site-data";
 
 // Brush stroke divider SVG
 function BrushDivider() {
@@ -83,6 +85,9 @@ const socialLinks = [
 ];
 
 export default function ContactSection() {
+  const data = useSiteData();
+  const email = data?.email || "hello@sumi-works.jp";
+
   return (
     <section
       id="contact"
@@ -136,7 +141,7 @@ export default function ContactSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <a
-            href="mailto:hello@sumi-works.jp"
+            href={`mailto:${email}`}
             className="group inline-flex items-center gap-3 text-sm tracking-[0.15em] px-10 py-4 border transition-all duration-400 hover:opacity-75"
             style={{
               borderColor: "var(--color-text)",
@@ -144,7 +149,7 @@ export default function ContactSection() {
             }}
           >
             <Mail size={16} strokeWidth={1.5} />
-            <span>hello@sumi-works.jp</span>
+            <span>{email}</span>
           </a>
         </motion.div>
 

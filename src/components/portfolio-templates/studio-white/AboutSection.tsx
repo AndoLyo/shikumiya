@@ -1,8 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 export function AboutSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Your Name";
+  const bioText = data?.bio || "";
+  const profileImage = data?.profileImage;
+  const email = data?.email || "hello@lyo-vision.art";
+
   return (
     <section
       id="about"
@@ -57,7 +64,7 @@ export function AboutSection() {
         {/* Contact */}
         <div id="contact">
           <a
-            href="mailto:hello@lyo-vision.art"
+            href={`mailto:${email}`}
             className="text-xs tracking-[0.2em] uppercase transition-colors duration-200"
             style={{ color: "var(--sw-text-muted)" }}
             onMouseEnter={(e) =>
@@ -67,7 +74,7 @@ export function AboutSection() {
               (e.currentTarget.style.color = "var(--sw-text-muted)")
             }
           >
-            hello@lyo-vision.art
+            {email}
           </a>
         </div>
       </motion.div>

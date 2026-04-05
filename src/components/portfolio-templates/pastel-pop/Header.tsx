@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Heart, Menu, X } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const navItems = [
   { label: "Works", href: "#gallery" },
@@ -10,6 +11,9 @@ const navItems = [
 ];
 
 export default function Header() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Hana";
+
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 

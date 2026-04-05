@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ZoomIn } from "lucide-react";
 import type { Work } from "@/app/portfolio-templates/studio-white/page";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   .sw-grid-item {
@@ -74,6 +75,8 @@ interface GalleryGridProps {
 }
 
 export function GalleryGrid({ works, onOpen }: GalleryGridProps) {
+  const siteData = useSiteData();
+
   return (
     <section
       id="works"

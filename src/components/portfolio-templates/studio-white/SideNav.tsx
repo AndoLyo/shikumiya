@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Grid3x3, User, Mail } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   .sw-sidenav {
@@ -57,6 +58,9 @@ function scrollToSection(id: string) {
 }
 
 export function SideNav() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Portfolio";
+
   const [activeHref, setActiveHref] = useState("#works");
 
   useEffect(() => {

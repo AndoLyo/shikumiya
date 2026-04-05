@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   @keyframes fg-float-shape {
@@ -132,6 +133,10 @@ function scrollToGallery() {
 }
 
 export function HeroSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "";
+  const subtitleText = data?.subtitle || "";
+  const catchcopyText = data?.catchcopy || "";
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
 
@@ -210,7 +215,7 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3 }}
         >
-          AI アーティスト ポートフォリオ
+          {catchcopyText || "AI アーティスト ポートフォリオ"}
         </motion.p>
 
         {/* Main title */}
@@ -220,10 +225,10 @@ export function HeroSection() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.9, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
-          FLOAT
+          {artistName || "FLOAT"}
         </motion.h1>
 
-        <motion.div
+        {!data && <motion.div
           className="relative"
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -241,7 +246,7 @@ export function HeroSection() {
           >
             GALLERY
           </h1>
-        </motion.div>
+        </motion.div>}
 
         {/* Divider line */}
         <motion.div
@@ -278,9 +283,9 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 1.1 }}
         >
-          奥行きと光が交差する空間で、AIが生み出した作品たちが浮遊する。
+          {subtitleText || (<>奥行きと光が交差する空間で、AIが生み出した作品たちが浮遊する。
           <br />
-          没入型の3Dギャラリー体験へ。
+          没入型の3Dギャラリー体験へ。</>)}
         </motion.p>
 
         {/* CTA */}

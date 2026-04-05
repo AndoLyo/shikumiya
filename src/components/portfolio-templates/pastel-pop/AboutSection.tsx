@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const skills = [
   { label: "デジタルイラスト", color: "#FF7EB3", bg: "#FFF0F5" },
@@ -21,6 +22,11 @@ const timelineItems = [
 ];
 
 export default function AboutSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Hana";
+  const bioText = data?.bio || "";
+  const profileImage = data?.profileImage;
+
   return (
     <section
       id="about"

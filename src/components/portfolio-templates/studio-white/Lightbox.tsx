@@ -4,6 +4,7 @@ import { useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Work } from "@/app/portfolio-templates/studio-white/page";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   .sw-lightbox-backdrop {

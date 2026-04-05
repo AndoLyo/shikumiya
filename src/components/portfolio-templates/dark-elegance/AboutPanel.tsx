@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   @keyframes de-rule-expand {
@@ -31,7 +32,7 @@ interface AboutPanelProps {
   onClose: () => void;
 }
 
-const skills = [
+const defaultSkills = [
   "Midjourney",
   "Stable Diffusion",
   "ComfyUI",
@@ -42,13 +43,31 @@ const skills = [
   "LoRA Training",
 ];
 
-const stats = [
+const defaultStats = [
   { value: "180+", label: "作品数" },
   { value: "6年", label: "キャリア" },
   { value: "40+", label: "受賞歴" },
 ];
 
 export function AboutPanel({ isOpen, onClose }: AboutPanelProps) {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Lyo";
+  const subtitleText = data?.subtitle || "AI Artist & Digital Creator";
+  const locationText = data?.location || "Tokyo, Japan";
+  const bioText = data?.bio || "";
+  const mottoText = data?.motto || "";
+  const skills = data?.skills && data.skills.length > 0 ? data.skills : (data ? [] : defaultSkills);
+  const tools = data?.tools && data.tools.length > 0 ? data.tools : [];
+  const displaySkills = skills.length > 0 ? skills : tools;
+  const stats = data
+    ? (data.stats && data.stats.length > 0
+        ? data.stats.slice(0, 3).map((s) => {
+            const parts = s.split(":");
+            return { value: parts[0] || s, label: parts[1] || "" };
+          })
+        : [])
+    : defaultStats;
+
   return (
     <>
       <style>{STYLE}</style>
@@ -154,7 +173,7 @@ export function AboutPanel({ isOpen, onClose }: AboutPanelProps) {
                     marginBottom: "8px",
                   }}
                 >
-                  Lyo
+                  {artistName}
                 </motion.h2>
 
                 <motion.div
@@ -168,11 +187,11 @@ export function AboutPanel({ isOpen, onClose }: AboutPanelProps) {
                     marginBottom: "32px",
                   }}
                 >
-                  AI Artist &amp; Digital Creator — Tokyo, Japan
+                  {subtitleText} — {locationText}
                 </motion.div>
 
                 {/* Stats row */}
-                <motion.div
+                {stats.length > 0 && <motion.div
                   className="flex gap-8"
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -204,7 +223,7 @@ export function AboutPanel({ isOpen, onClose }: AboutPanelProps) {
                       </div>
                     </div>
                   ))}
-                </motion.div>
+                </motion.div>}
 
                 {/* Gold divider */}
                 <motion.div
@@ -225,6 +244,7 @@ export function AboutPanel({ isOpen, onClose }: AboutPanelProps) {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
+                  className="whitespace-pre-wrap"
                   style={{
                     fontFamily: "Georgia, 'Times New Roman', serif",
                     fontSize: "15px",
@@ -233,12 +253,12 @@ export function AboutPanel({ isOpen, onClose }: AboutPanelProps) {
                     marginBottom: "16px",
                   }}
                 >
-                  光と影の狭間に宿る美を、AIという新しい筆で描き続けています。
+                  {bioText || (<>光と影の狭間に宿る美を、AIという新しい筆で描き続けています。
                   かつて写真家として培った「一瞬を切り取る感性」を武器に、
-                  デジタルとアナログの境界を超えた作品世界を追求しています。
+                  デジタルとアナログの境界を超えた作品世界を追求しています。</>)}
                 </motion.p>
 
-                <motion.p
+                {!data && <motion.p
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.47 }}
@@ -253,10 +273,10 @@ export function AboutPanel({ isOpen, onClose }: AboutPanelProps) {
                   作品は国内外のギャラリー・コレクターへ提供。
                   「見た者の記憶に刻まれる一枚」を信条に、
                   妥協のないクオリティを追い続けています。
-                </motion.p>
+                </motion.p>}
 
                 {/* Skills */}
-                <motion.div
+                {displaySkills.length > 0 && <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.52 }}
@@ -273,7 +293,7 @@ export function AboutPanel({ isOpen, onClose }: AboutPanelProps) {
                     Tools &amp; Skills
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {skills.map((skill, i) => (
+                    {displaySkills.map((skill, i) => (
                       <span
                         key={skill}
                         className="de-skill-tag"
@@ -290,7 +310,7 @@ export function AboutPanel({ isOpen, onClose }: AboutPanelProps) {
                       </span>
                     ))}
                   </div>
-                </motion.div>
+                </motion.div>}
 
                 {/* Bottom gold rule */}
                 <motion.div

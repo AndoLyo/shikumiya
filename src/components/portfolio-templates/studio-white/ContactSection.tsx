@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Mail, ExternalLink } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
+import { buildSnsLinks } from "@/lib/site-data";
 
 const STYLE = `
   .sw-contact-link {
@@ -28,6 +30,10 @@ const socialLinks = [
 ];
 
 export function ContactSection() {
+  const data = useSiteData();
+  const email = data?.email || "hello@example.com";
+  const artistName = data?.artistName || "Your Name";
+
   return (
     <section
       id="contact"
@@ -66,7 +72,7 @@ export function ContactSection() {
         {/* Email */}
         <div style={{ marginBottom: "32px" }}>
           <a
-            href="mailto:hello@example.com"
+            href={`mailto:${email}`}
             className="sw-contact-link flex items-center gap-3"
             style={{
               color: "var(--sw-text)",
@@ -77,7 +83,7 @@ export function ContactSection() {
             }}
           >
             <Mail size={15} style={{ color: "var(--sw-text-muted)", flexShrink: 0 }} />
-            hello@example.com
+            {email}
           </a>
         </div>
 
@@ -122,7 +128,7 @@ export function ContactSection() {
             letterSpacing: "0.1em",
           }}
         >
-          &copy; {new Date().getFullYear()} Your Name. All rights reserved.
+          &copy; {new Date().getFullYear()} {artistName}. All rights reserved.
         </p>
       </motion.div>
     </section>

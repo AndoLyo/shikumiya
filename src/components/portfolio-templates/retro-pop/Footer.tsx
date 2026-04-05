@@ -2,6 +2,7 @@
 
 import { useRef, useEffect } from "react";
 import { Zap } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const footerLinks = [
   { label: "WORKS", href: "#works" },
@@ -19,6 +20,9 @@ const marqueeText =
   "YUKI PORTFOLIO  ★  RETRO POP ART  ★  AI ILLUSTRATION  ★  CHARACTER DESIGN  ★  DIGITAL ART  ★  ";
 
 export default function Footer() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "RETRO POP";
+
   const marqueeRef = useRef<HTMLDivElement>(null);
 
   // Duplicate the marquee content for seamless loop

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   .fg-footer-glow {
@@ -34,6 +35,8 @@ const STYLE = `
 `;
 
 export function Footer() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Yuki Sora";
   const year = new Date().getFullYear();
 
   return (
@@ -83,7 +86,7 @@ export function Footer() {
           className="text-xs text-center"
           style={{ color: "var(--fg-text-muted)" }}
         >
-          &copy; {year} Yuki Sora. All rights reserved.
+          &copy; {year} {artistName}. All rights reserved.
         </p>
 
         {/* Template label */}

@@ -23,6 +23,16 @@ export interface SiteData {
   artStyle?: string;
 }
 
+export function buildSnsLinks(data: SiteData): { label: string; handle: string; href: string }[] {
+  const links: { label: string; handle: string; href: string }[] = [];
+  if (data.snsX) links.push({ label: "X / Twitter", handle: data.snsX, href: data.snsX.startsWith("http") ? data.snsX : `https://x.com/${data.snsX.replace("@", "")}` });
+  if (data.snsInstagram) links.push({ label: "Instagram", handle: data.snsInstagram, href: data.snsInstagram.startsWith("http") ? data.snsInstagram : `https://instagram.com/${data.snsInstagram.replace("@", "")}` });
+  if (data.snsPixiv) links.push({ label: "Pixiv", handle: data.snsPixiv, href: data.snsPixiv.startsWith("http") ? data.snsPixiv : `https://pixiv.net/users/${data.snsPixiv}` });
+  if (data.snsNote) links.push({ label: "note", handle: data.snsNote, href: data.snsNote.startsWith("http") ? data.snsNote : `https://note.com/${data.snsNote}` });
+  if (data.snsOther) links.push({ label: "Other", handle: data.snsOther, href: data.snsOther.startsWith("http") ? data.snsOther : "#" });
+  return links;
+}
+
 export const defaultSiteData: SiteData = {
   artistName: "Your Name",
   catchcopy: "",

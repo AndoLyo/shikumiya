@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Zap, Menu, X } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const navColors = ["var(--rp-orange)", "var(--rp-teal)", "var(--rp-pink)", "var(--rp-yellow)"];
 
@@ -12,6 +13,9 @@ const navItems = [
 ];
 
 export default function Header() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "RETRO";
+
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 

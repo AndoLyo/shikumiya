@@ -3,6 +3,8 @@
 import { useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Mail, AtSign, Globe, ExternalLink } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
+import { buildSnsLinks } from "@/lib/site-data";
 
 const STYLE = `
   .fg-contact-glass {
@@ -87,13 +89,19 @@ const SOCIAL_LINKS = [
 ];
 
 export function ContactSection() {
+  const siteData = useSiteData();
+  const email = siteData?.email || "hello@yukisora.art";
+  const socialLinks = siteData ? buildSnsLinks(siteData).map(l => ({
+    label: l.label, handle: l.handle, icon: AtSign, href: l.href,
+  })) : SOCIAL_LINKS;
+
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const yParallax = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
   const [copied, setCopied] = useState(false);
 
   function handleEmailCopy() {
-    navigator.clipboard.writeText("hello@yukisora.art").then(() => {
+    navigator.clipboard.writeText(email).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
@@ -216,7 +224,7 @@ export function ContactSection() {
                   className="text-sm font-medium"
                   style={{ color: "var(--fg-text)" }}
                 >
-                  hello@yukisora.art
+                  {email}
                 </span>
               </div>
               <motion.button
@@ -254,7 +262,7 @@ export function ContactSection() {
               SNS
             </p>
             <div className="space-y-3">
-              {SOCIAL_LINKS.map((link, i) => {
+              {socialLinks.map((link, i) => {
                 const Icon = link.icon;
                 return (
                   <motion.a

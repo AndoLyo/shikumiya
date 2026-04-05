@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Mail, ExternalLink, Link2, Image } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
+import { buildSnsLinks } from "@/lib/site-data";
 
 const socialLinks = [
   {
@@ -28,6 +30,9 @@ const socialLinks = [
 ];
 
 export default function ContactSection() {
+  const data = useSiteData();
+  const email = data?.email || "hello@example.com";
+
   return (
     <section
       id="contact"

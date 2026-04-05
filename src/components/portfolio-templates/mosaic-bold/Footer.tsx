@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   .mb-footer {
@@ -102,6 +103,9 @@ const footerLinks = [
 ];
 
 export function Footer() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "BOLD";
+
   return (
     <footer className="mb-footer">
       <style>{STYLE}</style>

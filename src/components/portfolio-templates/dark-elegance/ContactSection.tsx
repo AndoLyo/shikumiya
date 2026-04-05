@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Mail, ExternalLink } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
+import type { SiteData } from "@/lib/site-data";
 
 const STYLE = `
   .de-contact-section-link {
@@ -22,13 +24,27 @@ const STYLE = `
   }
 `;
 
-const socialLinks = [
+const defaultSocialLinks = [
   { label: "X / Twitter", href: "https://x.com/", handle: "@yourname" },
   { label: "Instagram", href: "https://instagram.com/", handle: "@yourname" },
   { label: "note", href: "https://note.com/", handle: "Your Name" },
 ];
 
+function buildSocialLinks(data: SiteData) {
+  const links: { label: string; href: string; handle: string }[] = [];
+  if (data.snsX) links.push({ label: "X / Twitter", handle: data.snsX, href: data.snsX.startsWith("http") ? data.snsX : `https://x.com/${data.snsX.replace("@", "")}` });
+  if (data.snsInstagram) links.push({ label: "Instagram", handle: data.snsInstagram, href: data.snsInstagram.startsWith("http") ? data.snsInstagram : `https://instagram.com/${data.snsInstagram.replace("@", "")}` });
+  if (data.snsNote) links.push({ label: "note", handle: data.snsNote, href: data.snsNote.startsWith("http") ? data.snsNote : `https://note.com/${data.snsNote}` });
+  if (data.snsPixiv) links.push({ label: "Pixiv", handle: data.snsPixiv, href: data.snsPixiv.startsWith("http") ? data.snsPixiv : `https://pixiv.net/users/${data.snsPixiv}` });
+  if (data.snsOther) links.push({ label: "Other", handle: data.snsOther, href: data.snsOther.startsWith("http") ? data.snsOther : "#" });
+  return links;
+}
+
 export function ContactSection() {
+  const data = useSiteData();
+  const email = data?.email || "hello@example.com";
+  const artistName = data?.artistName || "Your Name";
+  const socialLinks = data ? buildSocialLinks(data) : defaultSocialLinks;
   return (
     <section
       style={{
@@ -123,7 +139,7 @@ export function ContactSection() {
             Email
           </div>
           <a
-            href="mailto:hello@example.com"
+            href={`mailto:${email}`}
             className="de-contact-section-link flex items-center gap-3"
             style={{
               color: "var(--de-text)",
@@ -135,7 +151,7 @@ export function ContactSection() {
             }}
           >
             <Mail size={15} style={{ color: "var(--de-gold)", flexShrink: 0 }} />
-            hello@example.com
+            {email}
           </a>
         </div>
 
@@ -209,7 +225,7 @@ export function ContactSection() {
               color: "var(--de-text-muted)",
             }}
           >
-            &copy; {new Date().getFullYear()} Your Name. All rights reserved.
+            &copy; {new Date().getFullYear()} {artistName}. All rights reserved.
           </p>
         </div>
       </motion.div>

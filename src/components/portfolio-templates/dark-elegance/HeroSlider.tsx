@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   @keyframes de-progress {
@@ -139,6 +140,22 @@ export function HeroSlider({
   onAboutClick,
   onContactClick,
 }: HeroSliderProps) {
+  const siteData = useSiteData();
+  const hasDataWorks = siteData?.works && siteData.works.length > 0;
+  const artistName = siteData?.artistName || "Lyo";
+
+  const displayWorks: Work[] = hasDataWorks
+    ? siteData!.works.map((w, i) => ({
+        id: i + 1,
+        title: w.title,
+        subtitle: "",
+        category: "",
+        year: "",
+        gradient: "",
+        aspectRatio: "auto",
+      }))
+    : works;
+
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isPaused, setIsPaused] = useState(false);
@@ -165,14 +182,14 @@ export function HeroSlider({
   );
 
   const next = useCallback(() => {
-    const nextIdx = (current + 1) % works.length;
+    const nextIdx = (current + 1) % displayWorks.length;
     goTo(nextIdx, 1);
-  }, [current, goTo]);
+  }, [current, goTo, displayWorks.length]);
 
   const prev = useCallback(() => {
-    const prevIdx = (current - 1 + works.length) % works.length;
+    const prevIdx = (current - 1 + displayWorks.length) % displayWorks.length;
     goTo(prevIdx, -1);
-  }, [current, goTo]);
+  }, [current, goTo, displayWorks.length]);
 
   // Auto-play
   useEffect(() => {
@@ -193,7 +210,7 @@ export function HeroSlider({
     return () => window.removeEventListener("keydown", handleKey);
   }, [next, prev]);
 
-  const work = works[current];
+  const work = displayWorks[current];
 
   const variants = {
     enter: (dir: number) => ({
@@ -246,19 +263,35 @@ export function HeroSlider({
                 padding: "48px",
               }}
             >
-              {/* Artwork placeholder — object-contain equivalent */}
-              <div
-                style={{
-                  background: work.gradient,
-                  aspectRatio: work.aspectRatio,
-                  maxWidth: "100%",
-                  maxHeight: "100%",
-                  width: "auto",
-                  height: "auto",
-                  boxShadow:
-                    "0 0 60px rgba(0,0,0,0.9), 0 0 120px rgba(0,0,0,0.6)",
-                }}
-              />
+              {/* Artwork — image or gradient placeholder */}
+              {hasDataWorks && siteData!.works[current] ? (
+                <img
+                  src={siteData!.works[current].src}
+                  alt={siteData!.works[current].title}
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    width: "auto",
+                    height: "auto",
+                    objectFit: "contain",
+                    boxShadow:
+                      "0 0 60px rgba(0,0,0,0.9), 0 0 120px rgba(0,0,0,0.6)",
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    background: work.gradient,
+                    aspectRatio: work.aspectRatio,
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    width: "auto",
+                    height: "auto",
+                    boxShadow:
+                      "0 0 60px rgba(0,0,0,0.9), 0 0 120px rgba(0,0,0,0.6)",
+                  }}
+                />
+              )}
             </div>
           </motion.div>
         </AnimatePresence>
@@ -438,7 +471,7 @@ export function HeroSlider({
                 fontStyle: "italic",
               }}
             >
-              Lyo
+              {artistName}
             </div>
           </div>
         </div>
@@ -559,7 +592,7 @@ export function HeroSlider({
               textAlign: "center",
             }}
           >
-            {String(current + 1).padStart(2, "0")} / {String(works.length).padStart(2, "0")}
+            {String(current + 1).padStart(2, "0")} / {String(displayWorks.length).padStart(2, "0")}
           </div>
 
           <div className="flex items-center justify-between">

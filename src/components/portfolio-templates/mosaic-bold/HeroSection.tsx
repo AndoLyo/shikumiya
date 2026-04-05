@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   .mb-hero {
@@ -123,6 +124,10 @@ const stats = [
 ];
 
 export function HeroSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "BOLD";
+  const subtitleText = data?.subtitle || "VISUAL ARTIST & AI CREATOR";
+
   return (
     <section className="mb-hero" style={{ paddingTop: "clamp(6rem, 15vw, 14rem)" }}>
       <style>{STYLE}</style>

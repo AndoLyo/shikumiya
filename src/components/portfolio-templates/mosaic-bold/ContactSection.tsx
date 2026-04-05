@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Mail, ExternalLink } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
+import { buildSnsLinks } from "@/lib/site-data";
 
 const STYLE = `
   .mb-contact {
@@ -114,6 +116,10 @@ const socialLinks = [
 ];
 
 export function ContactSection() {
+  const data = useSiteData();
+  const email = data?.email || "hello@example.com";
+  const artistName = data?.artistName || "BOLD";
+
   return (
     <section id="contact">
       <style>{STYLE}</style>
@@ -156,7 +162,7 @@ export function ContactSection() {
 
           {/* Email */}
           <motion.a
-            href="mailto:hello@example.com"
+            href={`mailto:${email}`}
             className="mb-email-link"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -164,7 +170,7 @@ export function ContactSection() {
             transition={{ duration: 0.6, delay: 0.5 }}
           >
             <Mail size={20} />
-            hello@example.com
+            {email}
           </motion.a>
 
           {/* Social links */}

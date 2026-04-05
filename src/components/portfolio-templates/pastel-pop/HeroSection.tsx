@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Sparkles, Star } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const floatingShapes = [
   { id: 1, shape: "circle", size: 60, top: "12%", left: "8%", color: "#FFE066", delay: 0 },
@@ -23,6 +24,11 @@ const floatAnim = {
 };
 
 export default function HeroSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Hana";
+  const subtitleText = data?.subtitle || "";
+  const catchcopyText = data?.catchcopy || "";
+
   return (
     <section
       className="relative overflow-hidden pt-32 pb-0 md:pt-44"

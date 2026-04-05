@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   @keyframes cn-thumb-glow {
@@ -68,13 +69,26 @@ const works: Work[] = [
 ];
 
 export function WorksSection() {
+  const siteData = useSiteData();
+  const hasDataWorks = siteData?.works && siteData.works.length > 0;
+
+  const displayWorks: Work[] = hasDataWorks
+    ? siteData!.works.map((w, i) => ({
+        id: i + 1,
+        title: w.title,
+        category: "",
+        gradient: "",
+        aspectClass: "aspect-auto",
+      }))
+    : works;
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState(0);
-  const activeWork = works[activeIndex];
+  const activeWork = displayWorks[activeIndex];
 
   const go = (dir: number) => {
     setDirection(dir);
-    setActiveIndex((prev) => (prev + dir + works.length) % works.length);
+    setActiveIndex((prev) => (prev + dir + displayWorks.length) % displayWorks.length);
   };
 
   return (
@@ -143,12 +157,21 @@ export function WorksSection() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.4, ease: "easeInOut" }}
-                className={`w-full max-w-sm sm:max-w-md md:max-w-lg ${activeWork.aspectClass} max-h-[45vh]`}
+                className={`w-full max-w-sm sm:max-w-md md:max-w-lg ${hasDataWorks ? "" : activeWork.aspectClass} max-h-[45vh]`}
                 style={{
-                  background: activeWork.gradient,
+                  background: hasDataWorks ? "var(--cn-surface)" : activeWork.gradient,
                   minWidth: "260px",
                 }}
-              />
+              >
+                {hasDataWorks && siteData!.works[activeIndex] && (
+                  <img
+                    src={siteData!.works[activeIndex].src}
+                    alt={siteData!.works[activeIndex].title}
+                    className="w-full h-auto block"
+                    style={{ objectFit: "contain" }}
+                  />
+                )}
+              </motion.div>
             </AnimatePresence>
 
             {/* Corner accents */}
@@ -198,14 +221,14 @@ export function WorksSection() {
               className="text-xs font-mono"
               style={{ color: "var(--cn-text-muted)" }}
             >
-              {String(activeIndex + 1).padStart(2, "0")} / {String(works.length).padStart(2, "0")}
+              {String(activeIndex + 1).padStart(2, "0")} / {String(displayWorks.length).padStart(2, "0")}
             </span>
           </motion.div>
         </AnimatePresence>
 
         {/* Thumbnail strip */}
         <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-1 max-w-full px-2">
-          {works.map((work, i) => {
+          {displayWorks.map((work, i) => {
             const isActive = i === activeIndex;
             return (
               <button
@@ -224,10 +247,18 @@ export function WorksSection() {
                 }}
                 aria-label={work.title}
               >
-                <div
-                  className="w-full h-full"
-                  style={{ background: work.gradient }}
-                />
+                {hasDataWorks && siteData!.works[i] ? (
+                  <img
+                    src={siteData!.works[i].src}
+                    alt={work.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className="w-full h-full"
+                    style={{ background: work.gradient }}
+                  />
+                )}
               </button>
             );
           })}

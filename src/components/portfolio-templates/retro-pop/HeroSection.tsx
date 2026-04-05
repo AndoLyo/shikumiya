@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 // Scattered geometric shape data
 const shapes = [
@@ -38,6 +39,11 @@ function Zigzag({ color }: { color: string }) {
 }
 
 export default function HeroSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "RETRO";
+  const subtitleText = data?.subtitle || "";
+  const catchcopyText = data?.catchcopy || "";
+
   return (
     <section
       className="relative overflow-hidden pt-36 pb-0 min-h-screen flex flex-col justify-center"

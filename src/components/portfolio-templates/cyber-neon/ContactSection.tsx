@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Mail, ExternalLink } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
+import type { SiteData } from "@/lib/site-data";
 
 const STYLE = `
   @keyframes cn-connect-flicker {
@@ -33,14 +35,29 @@ const STYLE = `
   }
 `;
 
-const socialLinks = [
+const defaultSocialLinks = [
   { label: "X / Twitter", href: "https://x.com/" },
   { label: "Instagram", href: "https://instagram.com/" },
   { label: "note", href: "https://note.com/" },
   { label: "Pixiv", href: "https://pixiv.net/" },
 ];
 
+function buildSocialLinks(data: SiteData) {
+  const links: { label: string; href: string }[] = [];
+  if (data.snsX) links.push({ label: "X / Twitter", href: data.snsX.startsWith("http") ? data.snsX : `https://x.com/${data.snsX.replace("@", "")}` });
+  if (data.snsInstagram) links.push({ label: "Instagram", href: data.snsInstagram.startsWith("http") ? data.snsInstagram : `https://instagram.com/${data.snsInstagram.replace("@", "")}` });
+  if (data.snsPixiv) links.push({ label: "Pixiv", href: data.snsPixiv.startsWith("http") ? data.snsPixiv : `https://pixiv.net/users/${data.snsPixiv}` });
+  if (data.snsNote) links.push({ label: "note", href: data.snsNote.startsWith("http") ? data.snsNote : `https://note.com/${data.snsNote}` });
+  if (data.snsOther) links.push({ label: "Other", href: data.snsOther.startsWith("http") ? data.snsOther : "#" });
+  return links;
+}
+
 export function ContactSection() {
+  const data = useSiteData();
+  const email = data?.email || "hello@example.com";
+  const artistName = data?.artistName || "CYBER.EXE";
+  const socialLinks = data ? buildSocialLinks(data) : defaultSocialLinks;
+
   return (
     <section
       id="contact"
@@ -123,7 +140,7 @@ export function ContactSection() {
 
         {/* Email */}
         <motion.a
-          href="mailto:hello@example.com"
+          href={`mailto:${email}`}
           className="group flex items-center gap-3 font-mono text-base sm:text-lg tracking-wider transition-all duration-300"
           style={{ color: "var(--cn-text)" }}
           initial={{ opacity: 0, y: 20 }}
@@ -155,12 +172,12 @@ export function ContactSection() {
               (e.currentTarget as HTMLElement).style.textShadow = "none";
             }}
           >
-            hello@example.com
+            {email}
           </span>
         </motion.a>
 
         {/* Social links */}
-        <motion.div
+        {socialLinks.length > 0 && <motion.div
           className="flex flex-wrap justify-center gap-3"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -193,7 +210,7 @@ export function ContactSection() {
               />
             </motion.a>
           ))}
-        </motion.div>
+        </motion.div>}
 
         {/* Footer credit */}
         <motion.p
@@ -204,7 +221,7 @@ export function ContactSection() {
           viewport={{ once: true }}
           transition={{ delay: 1 }}
         >
-          &copy; 2047 CYBER.EXE — All Rights Reserved
+          &copy; {new Date().getFullYear()} {artistName} — All Rights Reserved
         </motion.p>
       </div>
     </section>

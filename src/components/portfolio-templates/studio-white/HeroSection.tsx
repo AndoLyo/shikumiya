@@ -1,8 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 export function HeroSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Your Name";
+  const subtitleText = data?.subtitle || "Digital Artist";
+
   return (
     <section
       id="hero"
@@ -31,7 +36,7 @@ export function HeroSection() {
           margin: 0,
         }}
       >
-        Your Name
+        {artistName}
       </motion.h1>
 
       {/* Divider */}
@@ -61,7 +66,7 @@ export function HeroSection() {
           margin: 0,
         }}
       >
-        Digital Artist
+        {subtitleText}
       </motion.p>
 
       {/* Scroll indicator */}

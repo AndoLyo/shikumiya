@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const skills = [
   { label: "Procreate", bg: "var(--rp-orange)", color: "#fff" },
@@ -35,6 +36,11 @@ function ZigzagDivider({ color }: { color: string }) {
 }
 
 export default function AboutSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "RETRO";
+  const bioText = data?.bio || "";
+  const profileImage = data?.profileImage;
+
   return (
     <section
       id="about"

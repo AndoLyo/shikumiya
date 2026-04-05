@@ -1,5 +1,7 @@
 "use client";
 
+import { useSiteData } from "@/lib/SiteDataContext";
+
 // Vermillion seal SVG for footer
 function FooterSeal() {
   return (
@@ -29,6 +31,9 @@ function FooterSeal() {
 }
 
 export default function Footer() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "Sumi Works";
+
   const year = new Date().getFullYear();
 
   return (
@@ -75,7 +80,7 @@ export default function Footer() {
           className="text-[11px] tracking-[0.1em]"
           style={{ color: "var(--color-text-muted)" }}
         >
-          &copy; {year} Sumi Works. All rights reserved.
+          &copy; {year} {artistName}. All rights reserved.
         </p>
       </div>
     </footer>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const categories = ["すべて", "キャラクター", "風景", "AIアート", "コミック"];
 
@@ -122,6 +123,9 @@ const pillColors: Record<string, { bg: string; text: string; activeBg: string }>
 };
 
 export default function GallerySection() {
+  const siteData = useSiteData();
+  const hasDataWorks = siteData?.works && siteData.works.length > 0;
+
   const [activeCategory, setActiveCategory] = useState("すべて");
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 

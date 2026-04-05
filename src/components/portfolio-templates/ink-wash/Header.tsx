@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const navItems = [
   { label: "作品", href: "#works" },
@@ -31,6 +32,9 @@ function InkDivider() {
 }
 
 export default function Header() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "墨彩";
+
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 

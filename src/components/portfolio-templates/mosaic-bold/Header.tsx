@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   .mb-header {
@@ -73,6 +74,9 @@ function scrollToSection(id: string) {
 }
 
 export function Header() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "BOLD";
+
   const [compact, setCompact] = useState(false);
 
   useEffect(() => {

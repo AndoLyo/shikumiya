@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 type WorkItem = {
   id: number;
@@ -100,6 +101,9 @@ const works: WorkItem[] = [
 const categories = ["すべて", "風景", "植物", "静物", "情景"];
 
 export default function WorksSection() {
+  const siteData = useSiteData();
+  const hasDataWorks = siteData?.works && siteData.works.length > 0;
+
   const [activeCategory, setActiveCategory] = useState("すべて");
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 

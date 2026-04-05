@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 /* CSS animations injected once via a style tag */
 const STYLE = `
@@ -97,6 +98,11 @@ function scrollToWorks() {
 }
 
 export function HeroSection() {
+  const data = useSiteData();
+  const artistName = data?.artistName || "CYBER.EXE";
+  const subtitleText = data?.subtitle || "サイバーパンク & SFアート / AI生成作品集";
+  const catchcopyText = data?.catchcopy || "// AIアート ポートフォリオ";
+
   return (
     <section
       className="tpl-snap-section cn-grid-bg"
@@ -142,7 +148,7 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          // AIアート ポートフォリオ
+          {catchcopyText}
         </motion.p>
 
         {/* Glitch title */}
@@ -153,14 +159,14 @@ export function HeroSection() {
         >
           <h1
             className="cn-glitch-title text-5xl sm:text-7xl md:text-9xl font-black tracking-tighter uppercase"
-            data-text="CYBER.EXE"
+            data-text={artistName}
             style={{
               color: "var(--cn-text)",
               fontFamily: "'Courier New', monospace",
               textShadow: "0 0 30px rgba(224,224,255,0.3)",
             }}
           >
-            CYBER.EXE
+            {artistName}
           </h1>
         </motion.div>
 
@@ -172,7 +178,7 @@ export function HeroSection() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.8 }}
         >
-          サイバーパンク & SFアート / AI生成作品集
+          {subtitleText}
         </motion.p>
 
         {/* Divider */}

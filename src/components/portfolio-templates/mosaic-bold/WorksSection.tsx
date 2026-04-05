@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useSiteData } from "@/lib/SiteDataContext";
 
 const STYLE = `
   .mb-mosaic-grid {
@@ -209,6 +210,9 @@ function getTileClass(span: Work["span"]) {
 }
 
 export function WorksSection() {
+  const siteData = useSiteData();
+  const hasDataWorks = siteData?.works && siteData.works.length > 0;
+
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   return (
