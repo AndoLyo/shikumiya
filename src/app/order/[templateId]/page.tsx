@@ -519,8 +519,17 @@ export default function OrderTemplatePage({
         colorPrimary: activeColors.primary,
         colorAccent: activeColors.accent,
         colorBackground: activeColors.background,
+        skills: uniqueTags.skills || [],
+        stats: uniqueTags.stats || [],
+        tools: uniqueTags.tools || [],
       };
-      sessionStorage.setItem("preview-data", JSON.stringify(previewData));
+      try {
+        sessionStorage.setItem("preview-data", JSON.stringify(previewData));
+      } catch {
+        // sessionStorage容量超え時は画像なしで保存
+        const lightData = { ...previewData, works: previewData.works.map(w => ({ src: "", title: w.title })), heroImage: undefined, profileImage: undefined };
+        sessionStorage.setItem("preview-data", JSON.stringify(lightData));
+      }
     }
   }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
 

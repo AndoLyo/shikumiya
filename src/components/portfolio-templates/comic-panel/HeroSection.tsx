@@ -286,11 +286,13 @@ export default function HeroSection() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.7 }}
         >
-          {(data?.stats
-            ? data.stats.slice(0, 3).map((s) => {
-                const parts = s.split(":");
-                return { num: parts[0] || s, label: parts[1] || "" };
-              })
+          {(data
+            ? (data.stats && data.stats.length > 0
+                ? data.stats.slice(0, 3).map((s) => {
+                    const parts = s.split(":");
+                    return { num: parts[0] || s, label: parts[1] || "" };
+                  })
+                : [])
             : [
                 { num: "500+", label: "作品数" },
                 { num: "10K+", label: "フォロワー" },

@@ -445,7 +445,7 @@ const lightPresets: ColorPreset[] = [
 // ━━━━━━━━━━━━━━━━━━━━
 
 const sectionAssignments: Record<string, SectionDef[]> = {
-  "comic-panel":      [heroSection, worksSection, aboutSection, skillsSection, contactSection],
+  "comic-panel":      [heroSection, worksSection, aboutSection, skillsSection, statsSection, contactSection],
   "cyber-neon":       [heroSection, worksSection, aboutSection, toolsSection, contactSection],
   "dark-elegance":    [heroSection, worksSection, aboutSection, statsSection, contactSection],
   "floating-gallery": [heroSection, worksSection, aboutSection, contactSection],
