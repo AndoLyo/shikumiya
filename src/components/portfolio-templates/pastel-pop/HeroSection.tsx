@@ -79,20 +79,22 @@ export default function HeroSection() {
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
         {/* Badge */}
-        <motion.div
-          className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
-          style={{
-            backgroundColor: "var(--color-surface)",
-            color: "var(--color-accent)",
-            border: "2px solid var(--color-border)",
-          }}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-        >
-          <Sparkles className="h-4 w-4" />
-          <span>イラストレーター ＆ AIアーティスト</span>
-        </motion.div>
+        {(!data || data.subtitle) && (
+          <motion.div
+            className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
+            style={{
+              backgroundColor: "var(--color-surface)",
+              color: "var(--color-accent)",
+              border: "2px solid var(--color-border)",
+            }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>{subtitleText || "イラストレーター ＆ AIアーティスト"}</span>
+          </motion.div>
+        )}
 
         {/* Heading */}
         <motion.h1
@@ -107,7 +109,7 @@ export default function HeroSection() {
             className="relative inline-block"
             style={{ color: "var(--color-accent)" }}
           >
-            Hana
+            {artistName}
             {/* underline squiggle */}
             <svg
               className="absolute -bottom-2 left-0 w-full"
@@ -125,7 +127,6 @@ export default function HeroSection() {
               />
             </svg>
           </span>
-          {" "}✨
         </motion.h1>
 
         {/* Subtitle */}
@@ -136,9 +137,9 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25, ease: "easeOut" }}
         >
-          かわいい世界観を描き続けるイラストレーター。
+          {catchcopyText || (!data ? (<>かわいい世界観を描き続けるイラストレーター。
           <br />
-          AI生成とアナログの融合で、唯一無二の作品を。
+          AI生成とアナログの融合で、唯一無二の作品を。</>) : "")}
         </motion.p>
 
         {/* CTA buttons */}
@@ -168,30 +169,39 @@ export default function HeroSection() {
         </motion.div>
 
         {/* Stats row */}
-        <motion.div
-          className="mt-14 flex items-center justify-center gap-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, delay: 0.6 }}
-        >
-          {[
-            { num: "200+", label: "作品数" },
-            { num: "5K+", label: "フォロワー" },
-            { num: "3年", label: "制作歴" },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <p
-                className="text-2xl font-extrabold"
-                style={{ color: "var(--color-accent)" }}
-              >
-                {stat.num}
-              </p>
-              <p className="text-xs font-medium" style={{ color: "var(--color-text-muted)" }}>
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </motion.div>
+        {(() => {
+          const displayStats = data
+            ? (data.stats && data.stats.length > 0
+                ? data.stats.slice(0, 3).map((s) => { const p = s.split(":"); return { num: p[0] || s, label: p[1] || "" }; })
+                : [])
+            : [
+                { num: "200+", label: "作品数" },
+                { num: "5K+", label: "フォロワー" },
+                { num: "3年", label: "制作歴" },
+              ];
+          return displayStats.length > 0 ? (
+            <motion.div
+              className="mt-14 flex items-center justify-center gap-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.7, delay: 0.6 }}
+            >
+              {displayStats.map((stat) => (
+                <div key={stat.label} className="text-center">
+                  <p
+                    className="text-2xl font-extrabold"
+                    style={{ color: "var(--color-accent)" }}
+                  >
+                    {stat.num}
+                  </p>
+                  <p className="text-xs font-medium" style={{ color: "var(--color-text-muted)" }}>
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
+            </motion.div>
+          ) : null;
+        })()}
       </div>
 
       {/* Wavy SVG bottom divider */}

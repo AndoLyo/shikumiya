@@ -122,130 +122,143 @@ export default function AboutSection() {
               className="mb-1 text-2xl font-extrabold"
               style={{ color: "var(--color-text)" }}
             >
-              Hana（はな）
+              {data ? artistName : "Hana（はな）"}
             </h3>
             <p
               className="mb-5 text-sm font-medium"
               style={{ color: "var(--color-text-muted)" }}
             >
-              イラストレーター / AIアーティスト
+              {data?.subtitle || (!data ? "イラストレーター / AIアーティスト" : "")}
             </p>
 
             {/* Quote */}
-            <blockquote className="relative mb-6">
-              <span
-                className="absolute -top-4 -left-2 text-5xl font-serif leading-none opacity-30"
-                style={{ color: "var(--color-accent)" }}
-              >
-                &ldquo;
-              </span>
-              <p
-                className="relative pl-4 text-base italic leading-relaxed"
-                style={{ color: "var(--color-text)" }}
-              >
-                かわいいと美しいの境界線で、毎日絵を描いています。
-                <br />
-                AIという道具を使いながら、心を込めた作品を届けたい。
-              </p>
-            </blockquote>
+            {(data?.motto || !data) && (
+              <blockquote className="relative mb-6">
+                <span
+                  className="absolute -top-4 -left-2 text-5xl font-serif leading-none opacity-30"
+                  style={{ color: "var(--color-accent)" }}
+                >
+                  &ldquo;
+                </span>
+                <p
+                  className="relative pl-4 text-base italic leading-relaxed"
+                  style={{ color: "var(--color-text)" }}
+                >
+                  {data?.motto || (<>かわいいと美しいの境界線で、毎日絵を描いています。
+                  <br />
+                  AIという道具を使いながら、心を込めた作品を届けたい。</>)}
+                </p>
+              </blockquote>
+            )}
 
-            <p
-              className="mb-6 text-sm leading-relaxed"
-              style={{ color: "var(--color-text-muted)" }}
-            >
-              2021年からデジタルイラストをスタート。パステルカラーと丸みのあるフォルムが持ち味で、
-              キャラクターから風景まで幅広く制作。2023年よりAIアートを取り入れ、
-              独自のスタイルを確立しました。SNSを中心に作品を発信中です。
-            </p>
+            {(bioText || !data) && (
+              <p
+                className="mb-6 text-sm leading-relaxed whitespace-pre-wrap"
+                style={{ color: "var(--color-text-muted)" }}
+              >
+                {bioText || "2021年からデジタルイラストをスタート。パステルカラーと丸みのあるフォルムが持ち味で、\nキャラクターから風景まで幅広く制作。2023年よりAIアートを取り入れ、\n独自のスタイルを確立しました。SNSを中心に作品を発信中です。"}
+              </p>
+            )}
 
             {/* Skills tags */}
-            <div className="flex flex-wrap gap-2">
-              {skills.map((skill) => (
-                <span
-                  key={skill.label}
-                  className="rounded-full px-3.5 py-1.5 text-xs font-semibold"
-                  style={{
-                    backgroundColor: skill.bg,
-                    color: skill.color,
-                    border: `1.5px solid ${skill.color}33`,
-                  }}
-                >
-                  {skill.label}
-                </span>
-              ))}
-            </div>
+            {(() => {
+              const displaySkills = data
+                ? (data.skills && data.skills.length > 0
+                    ? data.skills.map((s, i) => ({ label: s, color: skills[i % skills.length]?.color || "#FF7EB3", bg: skills[i % skills.length]?.bg || "#FFF0F5" }))
+                    : [])
+                : skills;
+              return displaySkills.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {displaySkills.map((skill) => (
+                    <span
+                      key={skill.label}
+                      className="rounded-full px-3.5 py-1.5 text-xs font-semibold"
+                      style={{
+                        backgroundColor: skill.bg,
+                        color: skill.color,
+                        border: `1.5px solid ${skill.color}33`,
+                      }}
+                    >
+                      {skill.label}
+                    </span>
+                  ))}
+                </div>
+              ) : null;
+            })()}
           </motion.div>
         </div>
 
-        {/* Timeline */}
-        <motion.div
-          className="mt-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <h4
-            className="mb-8 text-center text-lg font-bold"
-            style={{ color: "var(--color-text)" }}
+        {/* Timeline — demo only */}
+        {!data && (
+          <motion.div
+            className="mt-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
-            活動の歩み
-          </h4>
-          <div className="relative mx-auto max-w-2xl">
-            {/* Center line */}
-            <div
-              className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2"
-              style={{ backgroundColor: "var(--color-border)" }}
-            />
-            {timelineItems.map((item, index) => (
+            <h4
+              className="mb-8 text-center text-lg font-bold"
+              style={{ color: "var(--color-text)" }}
+            >
+              活動の歩み
+            </h4>
+            <div className="relative mx-auto max-w-2xl">
+              {/* Center line */}
               <div
-                key={item.year}
-                className={`relative mb-8 flex items-center ${
-                  index % 2 === 0 ? "flex-row" : "flex-row-reverse"
-                } gap-4`}
-              >
-                {/* Content box */}
-                <div className={`flex-1 ${index % 2 === 0 ? "text-right pr-6" : "text-left pl-6"}`}>
+                className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2"
+                style={{ backgroundColor: "var(--color-border)" }}
+              />
+              {timelineItems.map((item, index) => (
+                <div
+                  key={item.year}
+                  className={`relative mb-8 flex items-center ${
+                    index % 2 === 0 ? "flex-row" : "flex-row-reverse"
+                  } gap-4`}
+                >
+                  {/* Content box */}
+                  <div className={`flex-1 ${index % 2 === 0 ? "text-right pr-6" : "text-left pl-6"}`}>
+                    <div
+                      className="inline-block rounded-2xl px-4 py-3"
+                      style={{
+                        backgroundColor: "var(--color-surface)",
+                        border: "1.5px solid var(--color-border)",
+                      }}
+                    >
+                      <p
+                        className="text-xs font-bold"
+                        style={{ color: "var(--color-accent)" }}
+                      >
+                        {item.year}
+                      </p>
+                      <p
+                        className="mt-0.5 text-sm"
+                        style={{ color: "var(--color-text)" }}
+                      >
+                        {item.text}
+                      </p>
+                    </div>
+                  </div>
+                  {/* Center dot */}
                   <div
-                    className="inline-block rounded-2xl px-4 py-3"
+                    className="absolute left-1/2 -translate-x-1/2 flex h-8 w-8 items-center justify-center rounded-full border-4 z-10"
                     style={{
+                      borderColor: "var(--color-accent)",
                       backgroundColor: "var(--color-surface)",
-                      border: "1.5px solid var(--color-border)",
                     }}
                   >
-                    <p
-                      className="text-xs font-bold"
-                      style={{ color: "var(--color-accent)" }}
-                    >
-                      {item.year}
-                    </p>
-                    <p
-                      className="mt-0.5 text-sm"
-                      style={{ color: "var(--color-text)" }}
-                    >
-                      {item.text}
-                    </p>
+                    <div
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: "var(--color-accent)" }}
+                    />
                   </div>
+                  {/* Spacer */}
+                  <div className="flex-1" />
                 </div>
-                {/* Center dot */}
-                <div
-                  className="absolute left-1/2 -translate-x-1/2 flex h-8 w-8 items-center justify-center rounded-full border-4 z-10"
-                  style={{
-                    borderColor: "var(--color-accent)",
-                    backgroundColor: "var(--color-surface)",
-                  }}
-                >
-                  <div
-                    className="h-2.5 w-2.5 rounded-full"
-                    style={{ backgroundColor: "var(--color-accent)" }}
-                  />
-                </div>
-                {/* Spacer */}
-                <div className="flex-1" />
-              </div>
-            ))}
-          </div>
-        </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </div>
     </section>
   );

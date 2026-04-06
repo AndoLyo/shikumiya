@@ -38,7 +38,7 @@ export function AboutSection() {
           className="text-4xl sm:text-5xl font-light tracking-tight mb-8"
           style={{ color: "var(--sw-text)", lineHeight: 1.1 }}
         >
-          Lyo
+          {artistName}
         </h2>
 
         {/* Divider */}
@@ -52,14 +52,14 @@ export function AboutSection() {
         />
 
         {/* Bio */}
-        <p
-          className="text-sm leading-relaxed mb-6"
-          style={{ color: "var(--sw-text)", fontWeight: 300, maxWidth: "480px" }}
-        >
-          AIと人間の感性が交わる場所で、静けさを形にする。
-          余白を恐れず、装飾を排し、一枚の作品が語るべきものをただ語らせる。
-          それだけが、私のやることです。
-        </p>
+        {(bioText || !data) && (
+          <p
+            className="text-sm leading-relaxed mb-6 whitespace-pre-wrap"
+            style={{ color: "var(--sw-text)", fontWeight: 300, maxWidth: "480px" }}
+          >
+            {bioText || "AIと人間の感性が交わる場所で、静けさを形にする。\n余白を恐れず、装飾を排し、一枚の作品が語るべきものをただ語らせる。\nそれだけが、私のやることです。"}
+          </p>
+        )}
 
         {/* Contact */}
         <div id="contact">

@@ -175,7 +175,7 @@ export function AboutSection() {
             <h2 className="mb-about-heading">
               ABOUT<br />THE<br />ARTIST
             </h2>
-            <p className="mb-about-subhead">AIアートクリエイター / フォトグラファー</p>
+            <p className="mb-about-subhead">{data?.subtitle || (!data ? "AIアートクリエイター / フォトグラファー" : "")}</p>
           </motion.div>
 
           {/* Profile image */}
@@ -237,43 +237,47 @@ export function AboutSection() {
             </h3>
           </div>
 
-          <p className="mb-bio-text">
-            AIと人間の創造性の交点に立つアーティスト。
-            2020年よりAI画像生成の可能性を探求し、
-            モノクロームの緊張感と鮮烈な一色を組み合わせた
-            高コントラストのビジュアルワークを制作。
-            東京を拠点に、国内外のブランド・出版物・展示に作品を提供。
+          <p className="mb-bio-text whitespace-pre-wrap">
+            {bioText || (!data ? "AIと人間の創造性の交点に立つアーティスト。\n2020年よりAI画像生成の可能性を探求し、\nモノクロームの緊張感と鮮烈な一色を組み合わせた\n高コントラストのビジュアルワークを制作。\n東京を拠点に、国内外のブランド・出版物・展示に作品を提供。" : "")}
           </p>
 
           {/* Skills list */}
-          <div>
-            <p
-              style={{
-                fontFamily: "'Courier New', monospace",
-                fontSize: "0.65rem",
-                letterSpacing: "0.3em",
-                textTransform: "uppercase",
-                color: "var(--mb-text-muted)",
-                marginBottom: "0.75rem",
-              }}
-            >
-              Tools &amp; Skills
-            </p>
-            {skills.map((skill, i) => (
-              <motion.div
-                key={skill.name}
-                className="mb-skill-item"
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.07 + 0.3 }}
+          {(data
+            ? (data.skills && data.skills.length > 0 ? data.skills.map(s => ({ name: s, level: "" })) : [])
+            : skills
+          ).length > 0 && (
+            <div>
+              <p
+                style={{
+                  fontFamily: "'Courier New', monospace",
+                  fontSize: "0.65rem",
+                  letterSpacing: "0.3em",
+                  textTransform: "uppercase",
+                  color: "var(--mb-text-muted)",
+                  marginBottom: "0.75rem",
+                }}
               >
-                <div className="mb-skill-bullet" />
-                <span className="mb-skill-name">{skill.name}</span>
-                <span className="mb-skill-level">{skill.level}</span>
-              </motion.div>
-            ))}
-          </div>
+                Tools &amp; Skills
+              </p>
+              {(data
+                ? (data.skills && data.skills.length > 0 ? data.skills.map(s => ({ name: s, level: "" })) : [])
+                : skills
+              ).map((skill, i) => (
+                <motion.div
+                  key={skill.name}
+                  className="mb-skill-item"
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.07 + 0.3 }}
+                >
+                  <div className="mb-skill-bullet" />
+                  <span className="mb-skill-name">{skill.name}</span>
+                  <span className="mb-skill-level">{skill.level}</span>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </motion.div>
       </div>
     </section>

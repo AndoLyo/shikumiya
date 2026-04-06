@@ -145,7 +145,7 @@ export default function HeroSection() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >
-          ★ イラストレーター ＆ AIアーティスト ★
+          {subtitleText || (!data ? "★ イラストレーター ＆ AIアーティスト ★" : `★ ${artistName} ★`)}
         </motion.div>
 
         {/* Big display heading */}
@@ -156,23 +156,34 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
         >
-          <span
-            className="block text-[clamp(3rem,10vw,9rem)] tracking-tighter"
-            style={{ transform: "rotate(-2deg)", display: "inline-block" }}
-          >
-            YUKI&apos;S
-          </span>
-          <span
-            className="block text-[clamp(3rem,10vw,9rem)] tracking-tighter relative"
-            style={{ transform: "rotate(1deg)", display: "inline-block" }}
-          >
+          {data ? (
             <span
-              className="relative z-10"
-              style={{ color: "var(--rp-orange)", WebkitTextStroke: "3px var(--rp-border)" }}
+              className="block text-[clamp(3rem,10vw,9rem)] tracking-tighter"
+              style={{ transform: "rotate(-2deg)", display: "inline-block" }}
             >
-              PORTFOLIO
+              {artistName}
             </span>
-          </span>
+          ) : (
+            <>
+              <span
+                className="block text-[clamp(3rem,10vw,9rem)] tracking-tighter"
+                style={{ transform: "rotate(-2deg)", display: "inline-block" }}
+              >
+                YUKI&apos;S
+              </span>
+              <span
+                className="block text-[clamp(3rem,10vw,9rem)] tracking-tighter relative"
+                style={{ transform: "rotate(1deg)", display: "inline-block" }}
+              >
+                <span
+                  className="relative z-10"
+                  style={{ color: "var(--rp-orange)", WebkitTextStroke: "3px var(--rp-border)" }}
+                >
+                  PORTFOLIO
+                </span>
+              </span>
+            </>
+          )}
         </motion.h1>
 
         {/* Sub text + colored block */}
@@ -182,43 +193,43 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.35, ease: "easeOut" }}
         >
-          {/* Yellow block */}
-          <div
-            className="shrink-0 px-5 py-4 border-2 rotate-1"
-            style={{ backgroundColor: "var(--rp-yellow)", borderColor: "var(--rp-border)" }}
-          >
-            <p
-              className="text-sm font-black uppercase tracking-wider"
-              style={{ color: "var(--rp-text)" }}
-            >
-              ✦ 200+ WORKS
-            </p>
-            <p
-              className="text-sm font-black uppercase tracking-wider"
-              style={{ color: "var(--rp-text)" }}
-            >
-              ✦ 5K FOLLOWERS
-            </p>
-            <p
-              className="text-sm font-black uppercase tracking-wider"
-              style={{ color: "var(--rp-text)" }}
-            >
-              ✦ 3 YEARS EXP.
-            </p>
-          </div>
+          {/* Yellow block — stats */}
+          {(() => {
+            const displayStats = data
+              ? (data.stats && data.stats.length > 0
+                  ? data.stats.slice(0, 3).map((s) => { const p = s.split(":"); return `✦ ${p[0]}${p[1] ? " " + p[1] : ""}`; })
+                  : [])
+              : ["✦ 200+ WORKS", "✦ 5K FOLLOWERS", "✦ 3 YEARS EXP."];
+            return displayStats.length > 0 ? (
+              <div
+                className="shrink-0 px-5 py-4 border-2 rotate-1"
+                style={{ backgroundColor: "var(--rp-yellow)", borderColor: "var(--rp-border)" }}
+              >
+                {displayStats.map((line, i) => (
+                  <p
+                    key={i}
+                    className="text-sm font-black uppercase tracking-wider"
+                    style={{ color: "var(--rp-text)" }}
+                  >
+                    {line}
+                  </p>
+                ))}
+              </div>
+            ) : null;
+          })()}
 
           <div>
             <p
               className="text-base leading-relaxed max-w-md font-medium"
               style={{ color: "var(--rp-text-muted)" }}
             >
-              大胆な色彩と遊び心あふれるスタイルで、
+              {catchcopyText || (!data ? (<>大胆な色彩と遊び心あふれるスタイルで、
               <br />
               AIと手描きを融合した唯一無二の世界を表現。
               <br />
               90年代ポップカルチャーからインスパイアされた
               <br />
-              エネルギッシュな作品を制作しています。
+              エネルギッシュな作品を制作しています。</>) : "")}
             </p>
 
             {/* CTA row */}

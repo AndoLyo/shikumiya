@@ -215,7 +215,7 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3 }}
         >
-          {catchcopyText || "AI アーティスト ポートフォリオ"}
+          {catchcopyText || (!data ? "AI アーティスト ポートフォリオ" : "")}
         </motion.p>
 
         {/* Main title */}
@@ -283,9 +283,9 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 1.1 }}
         >
-          {subtitleText || (<>奥行きと光が交差する空間で、AIが生み出した作品たちが浮遊する。
+          {subtitleText || (!data ? (<>奥行きと光が交差する空間で、AIが生み出した作品たちが浮遊する。
           <br />
-          没入型の3Dギャラリー体験へ。</>)}
+          没入型の3Dギャラリー体験へ。</>) : "")}
         </motion.p>
 
         {/* CTA */}

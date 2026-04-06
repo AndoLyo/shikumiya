@@ -223,18 +223,20 @@ export default function WorksSection() {
           <BrushUnderline />
         </motion.div>
 
-        <motion.p
-          className="mt-6 text-sm leading-loose max-w-lg"
-          style={{ color: "var(--color-text-muted)" }}
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-        >
-          墨の濃淡と余白が織りなす、静寂の世界。それぞれの作品に込められた
-          <br className="hidden md:block" />
-          息遣いを感じてください。
-        </motion.p>
+        {!siteData && (
+          <motion.p
+            className="mt-6 text-sm leading-loose max-w-lg"
+            style={{ color: "var(--color-text-muted)" }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+          >
+            墨の濃淡と余白が織りなす、静寂の世界。それぞれの作品に込められた
+            <br className="hidden md:block" />
+            息遣いを感じてください。
+          </motion.p>
+        )}
       </div>
 
       {/* Horizontal scrolling gallery */}
@@ -251,9 +253,15 @@ export default function WorksSection() {
         {/* Left spacer for alignment with content */}
         <div className="flex-shrink-0 w-0" aria-hidden="true" />
 
-        {works.map((work, i) => (
-          <WorkCard key={work.id} work={work} index={i} />
-        ))}
+        {hasDataWorks ? (
+          siteData!.works.map((work, i) => (
+            <WorkCard key={i} work={{ id: String(i + 1).padStart(2, "0"), title: work.title, titleEn: "", category: "", src: work.src }} index={i} />
+          ))
+        ) : (
+          works.map((work, i) => (
+            <WorkCard key={work.id} work={work} index={i} />
+          ))
+        )}
 
         {/* End card — "see more" */}
         <div
@@ -279,7 +287,7 @@ export default function WorksSection() {
 
       {/* Scroll indicators (ink dots) */}
       <div className="flex justify-center items-center gap-2 mt-8 px-8">
-        {works.map((_, i) => (
+        {(hasDataWorks ? siteData!.works : works).map((_, i) => (
           <InkDot key={i} active={i === 0} />
         ))}
       </div>

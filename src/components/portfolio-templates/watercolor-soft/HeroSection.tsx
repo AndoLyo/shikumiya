@@ -117,10 +117,10 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          Watercolor Artist
+          {subtitleText || "Watercolor Artist"}
         </motion.p>
 
-        {/* Main heading — elegant serif-style */}
+        {/* Main heading */}
         <motion.h1
           className="mb-6 text-5xl font-light leading-tight md:text-7xl"
           style={{ color: "var(--wc-text)", letterSpacing: "-0.02em" }}
@@ -128,39 +128,47 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.1, ease: "easeOut" }}
         >
-          Painting the
-          <br />
-          <span
-            className="relative font-semibold"
-            style={{ color: "var(--wc-blue)" }}
-          >
-            Unseen
-            {/* Watercolor underline SVG */}
-            <svg
-              className="absolute -bottom-1 left-0 w-full overflow-visible"
-              height="12"
-              viewBox="0 0 200 12"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M2,8 C40,2 80,10 120,6 C160,2 190,9 198,8"
-                stroke="var(--wc-pink)"
-                strokeWidth="3"
-                fill="none"
-                strokeLinecap="round"
-                opacity="0.7"
-              />
-              <path
-                d="M10,10 C50,5 90,11 130,8 C170,5 195,10 200,9"
-                stroke="var(--wc-blue)"
-                strokeWidth="1.5"
-                fill="none"
-                strokeLinecap="round"
-                opacity="0.4"
-              />
-            </svg>
-          </span>
+          {data ? (
+            <span className="relative font-semibold" style={{ color: "var(--wc-blue)" }}>
+              {artistName}
+            </span>
+          ) : (
+            <>
+              Painting the
+              <br />
+              <span
+                className="relative font-semibold"
+                style={{ color: "var(--wc-blue)" }}
+              >
+                Unseen
+                {/* Watercolor underline SVG */}
+                <svg
+                  className="absolute -bottom-1 left-0 w-full overflow-visible"
+                  height="12"
+                  viewBox="0 0 200 12"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M2,8 C40,2 80,10 120,6 C160,2 190,9 198,8"
+                    stroke="var(--wc-pink)"
+                    strokeWidth="3"
+                    fill="none"
+                    strokeLinecap="round"
+                    opacity="0.7"
+                  />
+                  <path
+                    d="M10,10 C50,5 90,11 130,8 C170,5 195,10 200,9"
+                    stroke="var(--wc-blue)"
+                    strokeWidth="1.5"
+                    fill="none"
+                    strokeLinecap="round"
+                    opacity="0.4"
+                  />
+                </svg>
+              </span>
+            </>
+          )}
         </motion.h1>
 
         {/* Subtitle in italic style */}
@@ -171,8 +179,7 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.25, ease: "easeOut" }}
         >
-          水彩の柔らかな色づかいで、<br />
-          夢のような世界を描き続けています。
+          {catchcopyText || (!data ? (<>水彩の柔らかな色づかいで、<br />夢のような世界を描き続けています。</>) : "")}
         </motion.p>
 
         {/* CTA buttons */}
@@ -202,33 +209,42 @@ export default function HeroSection() {
         </motion.div>
 
         {/* Soft stats */}
-        <motion.div
-          className="mt-16 flex items-center justify-center gap-12"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          {[
-            { num: "150+", label: "作品数" },
-            { num: "3K+", label: "フォロワー" },
-            { num: "5年", label: "制作歴" },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <p
-                className="text-2xl font-semibold"
-                style={{ color: "var(--wc-blue)" }}
-              >
-                {stat.num}
-              </p>
-              <p
-                className="mt-1 text-xs font-medium tracking-wide"
-                style={{ color: "var(--wc-text-muted)" }}
-              >
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </motion.div>
+        {(() => {
+          const displayStats = data
+            ? (data.stats && data.stats.length > 0
+                ? data.stats.slice(0, 3).map((s) => { const p = s.split(":"); return { num: p[0] || s, label: p[1] || "" }; })
+                : [])
+            : [
+                { num: "150+", label: "作品数" },
+                { num: "3K+", label: "フォロワー" },
+                { num: "5年", label: "制作歴" },
+              ];
+          return displayStats.length > 0 ? (
+            <motion.div
+              className="mt-16 flex items-center justify-center gap-12"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              {displayStats.map((stat) => (
+                <div key={stat.label} className="text-center">
+                  <p
+                    className="text-2xl font-semibold"
+                    style={{ color: "var(--wc-blue)" }}
+                  >
+                    {stat.num}
+                  </p>
+                  <p
+                    className="mt-1 text-xs font-medium tracking-wide"
+                    style={{ color: "var(--wc-text-muted)" }}
+                  >
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
+            </motion.div>
+          ) : null;
+        })()}
       </div>
 
       {/* Organic wavy bottom — transitions into WorksSection */}

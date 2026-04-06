@@ -255,7 +255,7 @@ export function WorksSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            {works.length} Selected Works
+            {(hasDataWorks ? siteData!.works.length : works.length)} Selected Works
           </motion.span>
         </div>
       </div>
@@ -268,35 +268,61 @@ export function WorksSection() {
         viewport={{ once: true, margin: "-10%" }}
         transition={{ duration: 0.5 }}
       >
-        {works.map((work, i) => (
-          <motion.div
-            key={work.id}
-            className={getTileClass(work.span)}
-            onMouseEnter={() => setHoveredId(work.id)}
-            onMouseLeave={() => setHoveredId(null)}
-            initial={{ opacity: 0, scale: 0.98 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: Math.min(i * 0.06, 0.4) }}
-          >
-            {/* Gradient image placeholder */}
-            <div
-              className="mb-tile-img"
-              style={{ background: work.gradient }}
-              role="img"
-              aria-label={work.title}
-            />
+        {hasDataWorks ? (
+          siteData!.works.map((work, i) => (
+            <motion.div
+              key={i}
+              className="mb-tile"
+              onMouseEnter={() => setHoveredId(i + 1)}
+              onMouseLeave={() => setHoveredId(null)}
+              initial={{ opacity: 0, scale: 0.98 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: Math.min(i * 0.06, 0.4) }}
+            >
+              <img
+                src={work.src}
+                alt={work.title}
+                className="mb-tile-img"
+                style={{ filter: "grayscale(100%)" }}
+              />
+              <div className="mb-tile-overlay">
+                <div className="mb-tile-title">{work.title}</div>
+              </div>
+              <div className="mb-tile-accent-corner" />
+            </motion.div>
+          ))
+        ) : (
+          works.map((work, i) => (
+            <motion.div
+              key={work.id}
+              className={getTileClass(work.span)}
+              onMouseEnter={() => setHoveredId(work.id)}
+              onMouseLeave={() => setHoveredId(null)}
+              initial={{ opacity: 0, scale: 0.98 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: Math.min(i * 0.06, 0.4) }}
+            >
+              {/* Gradient image placeholder */}
+              <div
+                className="mb-tile-img"
+                style={{ background: work.gradient }}
+                role="img"
+                aria-label={work.title}
+              />
 
-            {/* Hover overlay */}
-            <div className="mb-tile-overlay">
-              <div className="mb-tile-category">{work.category}</div>
-              <div className="mb-tile-title">{work.title}</div>
-            </div>
+              {/* Hover overlay */}
+              <div className="mb-tile-overlay">
+                <div className="mb-tile-category">{work.category}</div>
+                <div className="mb-tile-title">{work.title}</div>
+              </div>
 
-            {/* Accent corner triangle */}
-            <div className="mb-tile-accent-corner" />
-          </motion.div>
-        ))}
+              {/* Accent corner triangle */}
+              <div className="mb-tile-accent-corner" />
+            </motion.div>
+          ))
+        )}
       </motion.div>
     </section>
   );

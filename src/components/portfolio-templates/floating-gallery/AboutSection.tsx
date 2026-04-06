@@ -268,14 +268,14 @@ export function AboutSection() {
                 className="space-y-3 text-sm leading-relaxed whitespace-pre-wrap"
                 style={{ color: "var(--fg-text-muted)" }}
               >
-                {bioText ? <p>{bioText}</p> : (<><p>
+                {bioText ? <p>{bioText}</p> : (!data ? (<><p>
                   AIと人間の感性が交差する境界線をテーマに、浮遊するような幻想的な作品を制作しています。
                   3年前にMidjourneyと出会い、AIが持つ無限の可能性に魅了されてから、毎日新しい世界を生み出し続けています。
                 </p>
                 <p>
                   「重力から解放された美しさ」が一貫したテーマ。光と影が生み出す奥行き、
                   現実と幻想の境目を漂うような作品を通して、見る人の日常に宇宙的な静けさをお届けします。
-                </p></>)}
+                </p></>) : null)}
               </div>
             </div>
 

@@ -193,91 +193,123 @@ export default function WorksSection() {
             gridAutoRows: "180px",
           }}
         >
-          {works.map((work, index) => {
-            const isHovered = hoveredId === work.id;
-            return (
+          {hasDataWorks ? (
+            siteData!.works.map((work, index) => (
               <motion.div
-                key={work.id}
+                key={index}
                 className="relative cursor-pointer overflow-hidden border-[3px] group"
                 style={{
-                  gridColumn: `span ${work.colSpan}`,
-                  gridRow: `span ${work.rowSpan}`,
                   borderColor: "var(--rp-border)",
-                  background: work.gradient,
-                  transform: `rotate(${work.rotation}deg)`,
-                  transformOrigin: "center center",
-                  boxShadow: isHovered
-                    ? `6px 6px 0px var(--rp-border)`
-                    : `3px 3px 0px var(--rp-border)`,
+                  background: "var(--rp-surface)",
+                  boxShadow: `3px 3px 0px var(--rp-border)`,
                   transition: "transform 0.25s ease, box-shadow 0.25s ease",
                 }}
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.5, delay: index * 0.07, ease: "easeOut" }}
-                onMouseEnter={() => setHoveredId(work.id)}
-                onMouseLeave={() => setHoveredId(null)}
-                whileHover={{
-                  rotate: work.rotation * -0.5,
-                  scale: 1.03,
-                  zIndex: 10,
-                }}
+                whileHover={{ scale: 1.03, zIndex: 10 }}
               >
-                {/* Emoji center */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span
-                    className="select-none transition-transform duration-300 group-hover:scale-125"
-                    style={{
-                      fontSize: work.colSpan === 2 && work.rowSpan === 2 ? "5rem" : work.rowSpan === 2 ? "3.5rem" : "2.5rem",
-                    }}
-                    role="img"
-                    aria-label={work.title}
-                  >
-                    {work.emoji}
-                  </span>
-                </div>
-
-                {/* Category sticker */}
+                <img src={work.src} alt={work.title} className="w-full h-full object-cover" />
                 <div
-                  className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide border-2 z-10"
-                  style={{
-                    backgroundColor: work.categoryBg,
-                    color: work.categoryColor,
-                    borderColor: "var(--rp-border)",
-                    transform: `rotate(${-work.rotation * 1.5}deg)`,
-                  }}
-                >
-                  {work.category}
-                </div>
-
-                {/* Hover overlay */}
-                <motion.div
-                  className="absolute inset-0 flex flex-col justify-end p-4"
+                  className="absolute inset-0 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   style={{
                     background: "linear-gradient(to top, rgba(26,26,46,0.9) 0%, rgba(26,26,46,0.3) 60%, transparent 100%)",
                   }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: isHovered ? 1 : 0 }}
-                  transition={{ duration: 0.2 }}
                 >
                   <p className="text-white font-black text-sm uppercase tracking-wide drop-shadow-lg">
                     {work.title}
                   </p>
-                  <p className="text-white/60 text-xs font-bold mt-0.5">
-                    #{work.id.toString().padStart(2, "0")}
-                  </p>
-                </motion.div>
-
-                {/* Corner number badge */}
-                <div
-                  className="absolute bottom-2 right-3 text-[10px] font-black opacity-30 select-none"
-                  style={{ color: "#fff" }}
-                >
-                  {work.id.toString().padStart(2, "0")}
                 </div>
               </motion.div>
-            );
-          })}
+            ))
+          ) : (
+            works.map((work, index) => {
+              const isHovered = hoveredId === work.id;
+              return (
+                <motion.div
+                  key={work.id}
+                  className="relative cursor-pointer overflow-hidden border-[3px] group"
+                  style={{
+                    gridColumn: `span ${work.colSpan}`,
+                    gridRow: `span ${work.rowSpan}`,
+                    borderColor: "var(--rp-border)",
+                    background: work.gradient,
+                    transform: `rotate(${work.rotation}deg)`,
+                    transformOrigin: "center center",
+                    boxShadow: isHovered
+                      ? `6px 6px 0px var(--rp-border)`
+                      : `3px 3px 0px var(--rp-border)`,
+                    transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                  }}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.5, delay: index * 0.07, ease: "easeOut" }}
+                  onMouseEnter={() => setHoveredId(work.id)}
+                  onMouseLeave={() => setHoveredId(null)}
+                  whileHover={{
+                    rotate: work.rotation * -0.5,
+                    scale: 1.03,
+                    zIndex: 10,
+                  }}
+                >
+                  {/* Emoji center */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span
+                      className="select-none transition-transform duration-300 group-hover:scale-125"
+                      style={{
+                        fontSize: work.colSpan === 2 && work.rowSpan === 2 ? "5rem" : work.rowSpan === 2 ? "3.5rem" : "2.5rem",
+                      }}
+                      role="img"
+                      aria-label={work.title}
+                    >
+                      {work.emoji}
+                    </span>
+                  </div>
+
+                  {/* Category sticker */}
+                  <div
+                    className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide border-2 z-10"
+                    style={{
+                      backgroundColor: work.categoryBg,
+                      color: work.categoryColor,
+                      borderColor: "var(--rp-border)",
+                      transform: `rotate(${-work.rotation * 1.5}deg)`,
+                    }}
+                  >
+                    {work.category}
+                  </div>
+
+                  {/* Hover overlay */}
+                  <motion.div
+                    className="absolute inset-0 flex flex-col justify-end p-4"
+                    style={{
+                      background: "linear-gradient(to top, rgba(26,26,46,0.9) 0%, rgba(26,26,46,0.3) 60%, transparent 100%)",
+                    }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isHovered ? 1 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <p className="text-white font-black text-sm uppercase tracking-wide drop-shadow-lg">
+                      {work.title}
+                    </p>
+                    <p className="text-white/60 text-xs font-bold mt-0.5">
+                      #{work.id.toString().padStart(2, "0")}
+                    </p>
+                  </motion.div>
+
+                  {/* Corner number badge */}
+                  <div
+                    className="absolute bottom-2 right-3 text-[10px] font-black opacity-30 select-none"
+                    style={{ color: "#fff" }}
+                  >
+                    {work.id.toString().padStart(2, "0")}
+                  </div>
+                </motion.div>
+              );
+            })
+          )}
         </div>
 
         {/* View all CTA */}

@@ -166,112 +166,142 @@ export default function GallerySection() {
           </p>
         </motion.div>
 
-        {/* Category filter pills */}
-        <motion.div
-          className="mb-10 flex flex-wrap justify-center gap-3"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          {categories.map((cat) => {
-            const isActive = activeCategory === cat;
-            const colors = pillColors[cat] || pillColors["すべて"];
-            return (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className="rounded-full px-5 py-2 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5"
-                style={
-                  isActive
-                    ? {
-                        backgroundColor: colors.activeBg,
-                        color: cat === "コミック" ? "#4A3548" : "white",
-                        boxShadow: `0 4px 12px ${colors.activeBg}66`,
-                      }
-                    : {
-                        backgroundColor: colors.bg,
-                        color: colors.text,
-                        border: `1.5px solid var(--color-border)`,
-                      }
-                }
-              >
-                {cat}
-              </button>
-            );
-          })}
-        </motion.div>
+        {/* Category filter pills — demo only */}
+        {!hasDataWorks && (
+          <motion.div
+            className="mb-10 flex flex-wrap justify-center gap-3"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            {categories.map((cat) => {
+              const isActive = activeCategory === cat;
+              const colors = pillColors[cat] || pillColors["すべて"];
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className="rounded-full px-5 py-2 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5"
+                  style={
+                    isActive
+                      ? {
+                          backgroundColor: colors.activeBg,
+                          color: cat === "コミック" ? "#4A3548" : "white",
+                          boxShadow: `0 4px 12px ${colors.activeBg}66`,
+                        }
+                      : {
+                          backgroundColor: colors.bg,
+                          color: colors.text,
+                          border: `1.5px solid var(--color-border)`,
+                        }
+                  }
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
 
         {/* Masonry layout using CSS columns */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={activeCategory}
+            key={hasDataWorks ? "data" : activeCategory}
             className="columns-2 md:columns-3 lg:columns-4 gap-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            {filtered.map((work, index) => (
-              <motion.div
-                key={work.id}
-                className="mb-4 break-inside-avoid"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.06, ease: "easeOut" }}
-              >
-                <div
-                  className="group relative cursor-pointer overflow-hidden rounded-2xl"
-                  style={{
-                    aspectRatio: work.aspectRatio,
-                    background: work.gradient,
-                  }}
-                  onMouseEnter={() => setHoveredId(work.id)}
-                  onMouseLeave={() => setHoveredId(null)}
+            {hasDataWorks ? (
+              siteData!.works.map((work, index) => (
+                <motion.div
+                  key={index}
+                  className="mb-4 break-inside-avoid"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.06, ease: "easeOut" }}
                 >
-                  {/* Emoji placeholder centered */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span
-                      className="transition-transform duration-300 group-hover:scale-110"
+                  <div
+                    className="group relative cursor-pointer overflow-hidden rounded-2xl"
+                    style={{ background: "var(--color-surface)" }}
+                  >
+                    <img src={work.src} alt={work.title} className="w-full h-auto block" />
+                    <div
+                      className="absolute inset-0 flex flex-col items-center justify-end rounded-2xl p-4 opacity-0 transition-all duration-300 group-hover:opacity-100"
                       style={{
-                        fontSize: work.aspectRatio === "4/3" ? "3.5rem" : "2.5rem",
+                        background:
+                          "linear-gradient(to top, rgba(74,53,72,0.85) 0%, rgba(74,53,72,0.2) 60%, transparent 100%)",
                       }}
-                      role="img"
-                      aria-label={work.title}
                     >
-                      {work.emoji}
-                    </span>
+                      <p className="text-sm font-bold text-white drop-shadow">{work.title}</p>
+                    </div>
                   </div>
-
-                  {/* Hover overlay with title */}
+                </motion.div>
+              ))
+            ) : (
+              filtered.map((work, index) => (
+                <motion.div
+                  key={work.id}
+                  className="mb-4 break-inside-avoid"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.06, ease: "easeOut" }}
+                >
                   <div
-                    className={`absolute inset-0 flex flex-col items-center justify-end rounded-2xl p-4 transition-all duration-300 ${
-                      hoveredId === work.id ? "opacity-100" : "opacity-0"
-                    }`}
+                    className="group relative cursor-pointer overflow-hidden rounded-2xl"
                     style={{
-                      background:
-                        "linear-gradient(to top, rgba(74,53,72,0.85) 0%, rgba(74,53,72,0.2) 60%, transparent 100%)",
+                      aspectRatio: work.aspectRatio,
+                      background: work.gradient,
                     }}
+                    onMouseEnter={() => setHoveredId(work.id)}
+                    onMouseLeave={() => setHoveredId(null)}
                   >
-                    <p className="text-sm font-bold text-white drop-shadow">{work.title}</p>
-                    <p className="mt-1 rounded-full px-3 py-0.5 text-[10px] font-semibold text-white/80 bg-white/20">
-                      {work.category}
-                    </p>
-                  </div>
+                    {/* Emoji placeholder centered */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span
+                        className="transition-transform duration-300 group-hover:scale-110"
+                        style={{
+                          fontSize: work.aspectRatio === "4/3" ? "3.5rem" : "2.5rem",
+                        }}
+                        role="img"
+                        aria-label={work.title}
+                      >
+                        {work.emoji}
+                      </span>
+                    </div>
 
-                  {/* Corner badge */}
-                  <div
-                    className="absolute right-2.5 top-2.5 rounded-full px-2.5 py-1 text-[10px] font-bold opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-                    style={{
-                      backgroundColor: "rgba(255,255,255,0.9)",
-                      color: "var(--color-text)",
-                    }}
-                  >
-                    #{work.id.toString().padStart(2, "0")}
+                    {/* Hover overlay with title */}
+                    <div
+                      className={`absolute inset-0 flex flex-col items-center justify-end rounded-2xl p-4 transition-all duration-300 ${
+                        hoveredId === work.id ? "opacity-100" : "opacity-0"
+                      }`}
+                      style={{
+                        background:
+                          "linear-gradient(to top, rgba(74,53,72,0.85) 0%, rgba(74,53,72,0.2) 60%, transparent 100%)",
+                      }}
+                    >
+                      <p className="text-sm font-bold text-white drop-shadow">{work.title}</p>
+                      <p className="mt-1 rounded-full px-3 py-0.5 text-[10px] font-semibold text-white/80 bg-white/20">
+                        {work.category}
+                      </p>
+                    </div>
+
+                    {/* Corner badge */}
+                    <div
+                      className="absolute right-2.5 top-2.5 rounded-full px-2.5 py-1 text-[10px] font-bold opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                      style={{
+                        backgroundColor: "rgba(255,255,255,0.9)",
+                        color: "var(--color-text)",
+                      }}
+                    >
+                      #{work.id.toString().padStart(2, "0")}
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))
+            )}
           </motion.div>
         </AnimatePresence>
       </div>

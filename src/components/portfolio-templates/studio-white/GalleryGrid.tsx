@@ -74,8 +74,23 @@ interface GalleryGridProps {
   onOpen: (index: number) => void;
 }
 
-export function GalleryGrid({ works, onOpen }: GalleryGridProps) {
+export function GalleryGrid({ works: propWorks, onOpen }: GalleryGridProps) {
   const siteData = useSiteData();
+  const hasDataWorks = siteData?.works && siteData.works.length > 0;
+
+  // Use data works when available, otherwise fall back to prop works
+  const works: Work[] = hasDataWorks
+    ? siteData!.works.map((w, i) => ({
+        id: i + 1,
+        title: w.title,
+        year: "",
+        medium: "",
+        gradient: "",
+        ratio: "1/1",
+      }))
+    : propWorks;
+
+  if (works.length === 0) return null;
 
   return (
     <section
@@ -131,13 +146,23 @@ export function GalleryGrid({ works, onOpen }: GalleryGridProps) {
             }}
             style={{ border: "1px solid var(--sw-border)" }}
           >
-            {/* Image placeholder — uniform square container */}
-            <div
-              style={{
-                aspectRatio: "1 / 1",
-                background: work.gradient,
-              }}
-            />
+            {/* Image / gradient placeholder */}
+            {hasDataWorks && siteData!.works[index] ? (
+              <div style={{ aspectRatio: "1 / 1", background: "var(--sw-surface)" }}>
+                <img
+                  src={siteData!.works[index].src}
+                  alt={work.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div
+                style={{
+                  aspectRatio: "1 / 1",
+                  background: work.gradient,
+                }}
+              />
+            )}
 
             {/* Hover overlay */}
             <div className="sw-grid-overlay">

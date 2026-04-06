@@ -148,68 +148,78 @@ export default function AboutSection() {
               className="mb-1 text-2xl font-semibold"
               style={{ color: "var(--wc-text)" }}
             >
-              Mizuki（みずき）
+              {data ? artistName : "Mizuki（みずき）"}
             </h3>
             <p
               className="mb-6 text-sm"
               style={{ color: "var(--wc-text-muted)" }}
             >
-              水彩画家 / デジタルアーティスト
+              {data?.subtitle || (!data ? "水彩画家 / デジタルアーティスト" : "")}
             </p>
 
             {/* Quote with large decorative quotation mark */}
-            <blockquote className="relative mb-7 pl-5">
-              <span
-                className="absolute -top-6 -left-2 text-7xl font-serif leading-none pointer-events-none select-none"
-                style={{ color: "var(--wc-pink)", opacity: 0.3 }}
-                aria-hidden="true"
-              >
-                &ldquo;
-              </span>
-              <p
-                className="relative text-base italic leading-relaxed"
-                style={{
-                  color: "var(--wc-text)",
-                  borderLeft: "2px solid var(--wc-border)",
-                  paddingLeft: "1rem",
-                }}
-              >
-                水と絵の具が紙の上で出会う瞬間が大好きです。<br />
-                その予測できない広がりの中に、美しさを見つけています。
-              </p>
-            </blockquote>
-
-            <p
-              className="mb-7 text-sm leading-relaxed"
-              style={{ color: "var(--wc-text-muted)" }}
-            >
-              2019年に水彩画を始めて以来、自然・植物・情景を中心に描き続けています。
-              アナログの温かみとデジタルの表現力を組み合わせた独自スタイルで、
-              国内外のクライアントから依頼をいただいています。
-              作品を通じて、日常の中にある静かな美しさを届けたいと思っています。
-            </p>
-
-            {/* Skills as soft-colored rounded tags */}
-            <div className="flex flex-wrap gap-2">
-              {skills.map((skill) => (
+            {(data?.motto || !data) && (
+              <blockquote className="relative mb-7 pl-5">
                 <span
-                  key={skill.label}
-                  className="rounded-full px-4 py-1.5 text-xs font-medium"
+                  className="absolute -top-6 -left-2 text-7xl font-serif leading-none pointer-events-none select-none"
+                  style={{ color: "var(--wc-pink)", opacity: 0.3 }}
+                  aria-hidden="true"
+                >
+                  &ldquo;
+                </span>
+                <p
+                  className="relative text-base italic leading-relaxed"
                   style={{
-                    backgroundColor: skill.bg,
-                    color: skill.color,
-                    border: `1px solid ${skill.color}33`,
+                    color: "var(--wc-text)",
+                    borderLeft: "2px solid var(--wc-border)",
+                    paddingLeft: "1rem",
                   }}
                 >
-                  {skill.label}
-                </span>
-              ))}
-            </div>
+                  {data?.motto || (<>水と絵の具が紙の上で出会う瞬間が大好きです。<br />
+                  その予測できない広がりの中に、美しさを見つけています。</>)}
+                </p>
+              </blockquote>
+            )}
+
+            {(bioText || !data) && (
+              <p
+                className="mb-7 text-sm leading-relaxed whitespace-pre-wrap"
+                style={{ color: "var(--wc-text-muted)" }}
+              >
+                {bioText || "2019年に水彩画を始めて以来、自然・植物・情景を中心に描き続けています。\nアナログの温かみとデジタルの表現力を組み合わせた独自スタイルで、\n国内外のクライアントから依頼をいただいています。\n作品を通じて、日常の中にある静かな美しさを届けたいと思っています。"}
+              </p>
+            )}
+
+            {/* Skills as soft-colored rounded tags */}
+            {(() => {
+              const displaySkills = data
+                ? (data.skills && data.skills.length > 0
+                    ? data.skills.map((s, i) => ({ label: s, color: skills[i % skills.length]?.color || "#7FB5D5", bg: skills[i % skills.length]?.bg || "#EDF5FB" }))
+                    : [])
+                : skills;
+              return displaySkills.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {displaySkills.map((skill) => (
+                    <span
+                      key={skill.label}
+                      className="rounded-full px-4 py-1.5 text-xs font-medium"
+                      style={{
+                        backgroundColor: skill.bg,
+                        color: skill.color,
+                        border: `1px solid ${skill.color}33`,
+                      }}
+                    >
+                      {skill.label}
+                    </span>
+                  ))}
+                </div>
+              ) : null;
+            })()}
           </motion.div>
         </div>
 
-        {/* Timeline */}
-        <motion.div
+        {/* Timeline — demo only */}
+        {!data && <motion.div
           className="mt-20"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -280,7 +290,7 @@ export default function AboutSection() {
               </div>
             ))}
           </div>
-        </motion.div>
+        </motion.div>}
       </div>
     </section>
   );

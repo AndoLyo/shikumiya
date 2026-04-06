@@ -104,10 +104,10 @@ export default function AboutSection() {
                 className="text-2xl font-black uppercase tracking-tight text-center mb-1"
                 style={{ color: "#fff", WebkitTextStroke: "1px var(--rp-border)" }}
               >
-                YUKI
+                {data ? artistName : "YUKI"}
               </h3>
               <p className="text-sm font-bold uppercase text-white/80 tracking-wider text-center">
-                Illustrator / AI Artist
+                {data?.subtitle || (!data ? "Illustrator / AI Artist" : "")}
               </p>
 
               {/* Social dots */}
@@ -159,63 +159,71 @@ export default function AboutSection() {
               </h2>
 
               {/* Quote block */}
-              <div
-                className="mb-6 px-5 py-4 border-l-4 rotate-[-0.5deg]"
-                style={{
-                  backgroundColor: "var(--rp-surface)",
-                  borderColor: "var(--rp-orange)",
-                  border: "2px solid var(--rp-border)",
-                  borderLeft: "6px solid var(--rp-orange)",
-                }}
-              >
-                <p
-                  className="text-base italic font-bold leading-relaxed"
-                  style={{ color: "var(--rp-text)" }}
+              {(data?.motto || !data) && (
+                <div
+                  className="mb-6 px-5 py-4 border-l-4 rotate-[-0.5deg]"
+                  style={{
+                    backgroundColor: "var(--rp-surface)",
+                    borderColor: "var(--rp-orange)",
+                    border: "2px solid var(--rp-border)",
+                    borderLeft: "6px solid var(--rp-orange)",
+                  }}
                 >
-                  「90年代の大胆さと現代のAIを掛け合わせた、
-                  まだ誰も見たことのないビジュアルを追い求めています。」
-                </p>
-              </div>
+                  <p
+                    className="text-base italic font-bold leading-relaxed"
+                    style={{ color: "var(--rp-text)" }}
+                  >
+                    {data?.motto || "「90年代の大胆さと現代のAIを掛け合わせた、まだ誰も見たことのないビジュアルを追い求めています。」"}
+                  </p>
+                </div>
+              )}
 
-              <p
-                className="text-sm leading-relaxed mb-8"
-                style={{ color: "var(--rp-text-muted)" }}
-              >
-                2021年よりデジタルイラストをスタート。
-                90年代ポップカルチャーとメンフィスデザインにインスパイアされた
-                大胆な色使いと幾何学模様が持ち味。2023年よりAI画像生成を取り入れ、
-                独自のレトロポップスタイルを確立。SNS・クライアントワークを通じて
-                累計200点以上の作品を発表。
-              </p>
-
-              {/* Skills stickers */}
-              <div>
+              {(bioText || !data) && (
                 <p
-                  className="text-xs font-black uppercase tracking-widest mb-3"
+                  className="text-sm leading-relaxed mb-8 whitespace-pre-wrap"
                   style={{ color: "var(--rp-text-muted)" }}
                 >
-                  SKILLS
+                  {bioText || "2021年よりデジタルイラストをスタート。\n90年代ポップカルチャーとメンフィスデザインにインスパイアされた\n大胆な色使いと幾何学模様が持ち味。2023年よりAI画像生成を取り入れ、\n独自のレトロポップスタイルを確立。SNS・クライアントワークを通じて\n累計200点以上の作品を発表。"}
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  {skills.map((skill, i) => (
-                    <motion.span
-                      key={skill.label}
-                      className="px-3 py-1.5 text-xs font-black uppercase tracking-wide border-2"
-                      style={{
-                        backgroundColor: skill.bg,
-                        color: skill.color,
-                        borderColor: "var(--rp-border)",
-                        transform: `rotate(${(i % 3 - 1) * 1.5}deg)`,
-                        display: "inline-block",
-                      }}
-                      whileHover={{ scale: 1.08, rotate: 0 }}
-                      transition={{ duration: 0.15 }}
+              )}
+
+              {/* Skills stickers */}
+              {(() => {
+                const displaySkills = data
+                  ? (data.skills && data.skills.length > 0
+                      ? data.skills.map((s, i) => ({ label: s, bg: skills[i % skills.length]?.bg || "var(--rp-orange)", color: skills[i % skills.length]?.color || "#fff" }))
+                      : [])
+                  : skills;
+                return displaySkills.length > 0 ? (
+                  <div>
+                    <p
+                      className="text-xs font-black uppercase tracking-widest mb-3"
+                      style={{ color: "var(--rp-text-muted)" }}
                     >
-                      {skill.label}
-                    </motion.span>
-                  ))}
-                </div>
-              </div>
+                      SKILLS
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {displaySkills.map((skill, i) => (
+                        <motion.span
+                          key={skill.label}
+                          className="px-3 py-1.5 text-xs font-black uppercase tracking-wide border-2"
+                          style={{
+                            backgroundColor: skill.bg,
+                            color: skill.color,
+                            borderColor: "var(--rp-border)",
+                            transform: `rotate(${(i % 3 - 1) * 1.5}deg)`,
+                            display: "inline-block",
+                          }}
+                          whileHover={{ scale: 1.08, rotate: 0 }}
+                          transition={{ duration: 0.15 }}
+                        >
+                          {skill.label}
+                        </motion.span>
+                      ))}
+                    </div>
+                  </div>
+                ) : null;
+              })()}
             </motion.div>
           </div>
         </div>

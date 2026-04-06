@@ -253,9 +253,9 @@ export function AboutPanel({ isOpen, onClose }: AboutPanelProps) {
                     marginBottom: "16px",
                   }}
                 >
-                  {bioText || (<>光と影の狭間に宿る美を、AIという新しい筆で描き続けています。
+                  {bioText || (!data ? <>光と影の狭間に宿る美を、AIという新しい筆で描き続けています。
                   かつて写真家として培った「一瞬を切り取る感性」を武器に、
-                  デジタルとアナログの境界を超えた作品世界を追求しています。</>)}
+                  デジタルとアナログの境界を超えた作品世界を追求しています。</> : "")}
                 </motion.p>
 
                 {!data && <motion.p

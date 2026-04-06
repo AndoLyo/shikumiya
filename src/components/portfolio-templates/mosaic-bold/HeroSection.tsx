@@ -126,7 +126,22 @@ const stats = [
 export function HeroSection() {
   const data = useSiteData();
   const artistName = data?.artistName || "BOLD";
-  const subtitleText = data?.subtitle || "VISUAL ARTIST & AI CREATOR";
+  const subtitleText = data?.subtitle || (!data ? "VISUAL ARTIST & AI CREATOR" : "");
+
+  const displayStats = data
+    ? (data.stats && data.stats.length > 0
+        ? data.stats.slice(0, 3).map((s) => {
+            const numMatch = s.match(/^(\d+)/);
+            const suffixMatch = s.match(/\d+(.*?)(?::|$)/);
+            const parts = s.split(":");
+            return {
+              num: numMatch ? parseInt(numMatch[1]) : 0,
+              suffix: suffixMatch ? suffixMatch[1].trim() : "",
+              label: parts[1]?.trim() || "",
+            };
+          })
+        : [])
+    : stats;
 
   return (
     <section className="mb-hero" style={{ paddingTop: "clamp(6rem, 15vw, 14rem)" }}>
@@ -154,13 +169,9 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
-          <p className="mb-hero-sub mb-4">AIアートポートフォリオ — 2025</p>
+          {!data && <p className="mb-hero-sub mb-4">AIアートポートフォリオ — 2025</p>}
           <h1 className="mb-display-text">
-            VISUAL
-            <br />
-            <span style={{ color: "var(--mb-accent)" }}>IMPACT</span>
-            <br />
-            STUDIO
+            {data ? artistName : (<>VISUAL<br /><span style={{ color: "var(--mb-accent)" }}>IMPACT</span><br />STUDIO</>)}
           </h1>
         </motion.div>
 
@@ -171,27 +182,28 @@ export function HeroSection() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.5 }}
         >
-          大胆なビジュアルと鋭いタイポグラフィで、<br />
-          見る者の記憶に刻む作品を。
+          {subtitleText || (!data ? (<>大胆なビジュアルと鋭いタイポグラフィで、<br />見る者の記憶に刻む作品を。</>) : "")}
         </motion.p>
       </div>
 
       {/* Stats row */}
-      <motion.div
-        className="mb-stats-row"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.7 }}
-      >
-        {stats.map((s) => (
-          <div key={s.label} className="mb-stat-cell">
-            <div className="mb-stat-num">
-              <Counter target={s.num} suffix={s.suffix} />
+      {displayStats.length > 0 && (
+        <motion.div
+          className="mb-stats-row"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.7 }}
+        >
+          {displayStats.map((s) => (
+            <div key={s.label} className="mb-stat-cell">
+              <div className="mb-stat-num">
+                <Counter target={s.num} suffix={s.suffix} />
+              </div>
+              <div className="mb-stat-label">{s.label}</div>
             </div>
-            <div className="mb-stat-label">{s.label}</div>
-          </div>
-        ))}
-      </motion.div>
+          ))}
+        </motion.div>
+      )}
     </section>
   );
 }

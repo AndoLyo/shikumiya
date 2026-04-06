@@ -103,12 +103,14 @@ export function AboutSection() {
     ...(data.motto ? [{ prefix: "> ", text: "MISSION:", value: data.motto }] : []),
   ] : defaultTerminalLines;
 
-  const skills = data?.skills
-    ? data.skills.map((s, i) => ({
-        name: s,
-        level: 80 + Math.floor(Math.random() * 15),
-        color: ["var(--cn-cyan)", "var(--cn-magenta)", "var(--cn-lime)"][i % 3],
-      }))
+  const skills = data
+    ? (data.skills && data.skills.length > 0
+        ? data.skills.map((s, i) => ({
+            name: s,
+            level: 80 + Math.floor(Math.random() * 15),
+            color: ["var(--cn-cyan)", "var(--cn-magenta)", "var(--cn-lime)"][i % 3],
+          }))
+        : [])
     : defaultSkills;
 
   const hudStats = data
@@ -120,7 +122,7 @@ export function AboutSection() {
         : [])
     : defaultHudStats;
 
-  const bioText = data?.bio || "AIと人間の感性が交わる境界線をテーマに作品を制作。サイバーパンクの美学をAIと融合させ、\n            見る者を近未来へと誘う体験を提供しています。";
+  const bioText = data?.bio || (!data ? "AIと人間の感性が交わる境界線をテーマに作品を制作。サイバーパンクの美学をAIと融合させ、\n            見る者を近未来へと誘う体験を提供しています。" : "");
 
   return (
     <section
@@ -236,82 +238,90 @@ export function AboutSection() {
           </div>}
         </div>
 
-        {/* Right — Skill bars */}
-        <motion.div
-          className="flex flex-col gap-6"
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <div>
-            <h2
-              className="text-2xl sm:text-3xl font-black font-mono uppercase mb-1"
-              style={{
-                color: "var(--cn-text)",
-                textShadow: "0 0 20px rgba(224,224,255,0.2)",
-              }}
-            >
-              SKILL_MATRIX
-            </h2>
-            <div
-              className="h-px w-24"
-              style={{
-                background:
-                  "linear-gradient(90deg, var(--cn-cyan), var(--cn-magenta), transparent)",
-              }}
-            />
-          </div>
-
-          <div className="space-y-5">
-            {skills.map((skill, i) => (
-              <motion.div
-                key={skill.name}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.12 + 0.4 }}
-              >
-                <div className="flex justify-between items-baseline mb-1.5">
-                  <span
-                    className="font-mono text-xs tracking-wider uppercase"
-                    style={{ color: "var(--cn-text)" }}
-                  >
-                    {skill.name}
-                  </span>
-                  <span
-                    className="font-mono text-xs"
-                    style={{ color: skill.color, textShadow: `0 0 8px ${skill.color}` }}
-                  >
-                    {skill.level}%
-                  </span>
-                </div>
-                <div
-                  className="h-1.5 w-full rounded-full overflow-hidden"
-                  style={{ background: "rgba(255,255,255,0.06)" }}
-                >
-                  <div
-                    className="cn-skill-bar h-full rounded-full"
+        {/* Right — Skill bars + Bio */}
+        {(skills.length > 0 || bioText) && (
+          <motion.div
+            className="flex flex-col gap-6"
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {skills.length > 0 && (
+              <>
+                <div>
+                  <h2
+                    className="text-2xl sm:text-3xl font-black font-mono uppercase mb-1"
                     style={{
-                      width: `${skill.level}%`,
-                      background: `linear-gradient(90deg, ${skill.color}, transparent)`,
-                      boxShadow: `0 0 8px ${skill.color}`,
-                      animationDelay: `${i * 0.15 + 0.5}s`,
+                      color: "var(--cn-text)",
+                      textShadow: "0 0 20px rgba(224,224,255,0.2)",
+                    }}
+                  >
+                    SKILL_MATRIX
+                  </h2>
+                  <div
+                    className="h-px w-24"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, var(--cn-cyan), var(--cn-magenta), transparent)",
                     }}
                   />
                 </div>
-              </motion.div>
-            ))}
-          </div>
 
-          {/* Bio */}
-          <p
-            className="text-sm leading-relaxed font-mono mt-2 whitespace-pre-wrap"
-            style={{ color: "var(--cn-text-muted)" }}
-          >
-            {bioText}
-          </p>
-        </motion.div>
+                <div className="space-y-5">
+                  {skills.map((skill, i) => (
+                    <motion.div
+                      key={skill.name}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: i * 0.12 + 0.4 }}
+                    >
+                      <div className="flex justify-between items-baseline mb-1.5">
+                        <span
+                          className="font-mono text-xs tracking-wider uppercase"
+                          style={{ color: "var(--cn-text)" }}
+                        >
+                          {skill.name}
+                        </span>
+                        <span
+                          className="font-mono text-xs"
+                          style={{ color: skill.color, textShadow: `0 0 8px ${skill.color}` }}
+                        >
+                          {skill.level}%
+                        </span>
+                      </div>
+                      <div
+                        className="h-1.5 w-full rounded-full overflow-hidden"
+                        style={{ background: "rgba(255,255,255,0.06)" }}
+                      >
+                        <div
+                          className="cn-skill-bar h-full rounded-full"
+                          style={{
+                            width: `${skill.level}%`,
+                            background: `linear-gradient(90deg, ${skill.color}, transparent)`,
+                            boxShadow: `0 0 8px ${skill.color}`,
+                            animationDelay: `${i * 0.15 + 0.5}s`,
+                          }}
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* Bio */}
+            {bioText && (
+              <p
+                className="text-sm leading-relaxed font-mono mt-2 whitespace-pre-wrap"
+                style={{ color: "var(--cn-text-muted)" }}
+              >
+                {bioText}
+              </p>
+            )}
+          </motion.div>
+        )}
       </motion.div>
     </section>
   );

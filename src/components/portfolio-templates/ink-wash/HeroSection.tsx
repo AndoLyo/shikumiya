@@ -116,7 +116,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.0, ease: "easeOut", delay: 0.2 }}
           >
-            {["墨", "の", "美"].map((char, i) => (
+            {(data ? artistName.split("").slice(0, 3) : ["墨", "の", "美"]).map((char, i) => (
               <span
                 key={i}
                 className="block text-[5rem] sm:text-[7rem] md:text-[8rem] leading-none font-bold select-none"
@@ -161,9 +161,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.65 }}
           >
-            静謐な筆致で
-            <br />
-            世界を描く。
+            {catchcopyText || (!data ? (<>静謐な筆致で<br />世界を描く。</>) : "")}
           </motion.h1>
 
           <motion.p
@@ -173,9 +171,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
           >
-            日本の伝統美と現代のデジタルアートが交わる場所。
-            <br />
-            墨の濃淡が生み出す、唯一無二の表現世界へ。
+            {subtitleText || (!data ? (<>日本の伝統美と現代のデジタルアートが交わる場所。<br />墨の濃淡が生み出す、唯一無二の表現世界へ。</>) : "")}
           </motion.p>
 
           <motion.div

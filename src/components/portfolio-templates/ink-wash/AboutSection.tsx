@@ -98,6 +98,11 @@ export default function AboutSection() {
   const artistName = data?.artistName || "墨彩";
   const bioText = data?.bio || "";
   const profileImage = data?.profileImage;
+  const displaySkills = data
+    ? (data.skills && data.skills.length > 0
+        ? data.skills.map((s, i) => ({ label: s, en: "" }))
+        : [])
+    : skills;
 
   return (
     <section
@@ -192,30 +197,51 @@ export default function AboutSection() {
               className="text-2xl sm:text-3xl font-semibold tracking-[0.04em] mb-6 leading-snug"
               style={{ color: "var(--color-text)" }}
             >
-              はじめまして、
-              <br />
-              <span style={{ color: "var(--color-accent-secondary)" }}>
-                山田 蒼
-              </span>
-              です。
+              {data ? (
+                <>
+                  <span style={{ color: "var(--color-accent-secondary)" }}>
+                    {artistName}
+                  </span>
+                </>
+              ) : (
+                <>
+                  はじめまして、
+                  <br />
+                  <span style={{ color: "var(--color-accent-secondary)" }}>
+                    山田 蒼
+                  </span>
+                  です。
+                </>
+              )}
             </h2>
 
-            <p
-              className="text-sm leading-loose mb-5"
-              style={{ color: "var(--color-text-muted)" }}
-            >
-              東京を拠点に活動する墨彩画家・デジタルアーティストです。
-              伝統的な水墨画の技法とAI画像生成を融合させ、
-              古代と未来が交わる独自の作品世界を追求しています。
-            </p>
+            {bioText ? (
+              <p
+                className="text-sm leading-loose mb-10 whitespace-pre-wrap"
+                style={{ color: "var(--color-text-muted)" }}
+              >
+                {bioText}
+              </p>
+            ) : !data ? (
+              <>
+                <p
+                  className="text-sm leading-loose mb-5"
+                  style={{ color: "var(--color-text-muted)" }}
+                >
+                  東京を拠点に活動する墨彩画家・デジタルアーティストです。
+                  伝統的な水墨画の技法とAI画像生成を融合させ、
+                  古代と未来が交わる独自の作品世界を追求しています。
+                </p>
 
-            <p
-              className="text-sm leading-loose mb-10"
-              style={{ color: "var(--color-text-muted)" }}
-            >
-              余白の美しさと、墨の偶然性を大切にしながら、
-              見る人の心に静寂をもたらす作品を届けたいと思っています。
-            </p>
+                <p
+                  className="text-sm leading-loose mb-10"
+                  style={{ color: "var(--color-text-muted)" }}
+                >
+                  余白の美しさと、墨の偶然性を大切にしながら、
+                  見る人の心に静寂をもたらす作品を届けたいと思っています。
+                </p>
+              </>
+            ) : null}
 
             {/* Divider brush stroke */}
             <svg
@@ -235,25 +261,29 @@ export default function AboutSection() {
             </svg>
 
             {/* Skills as hanko stamps */}
-            <p
-              className="text-xs tracking-[0.25em] mb-5"
-              style={{ color: "var(--color-text-muted)" }}
-            >
-              専門分野
-            </p>
-            <div className="flex flex-wrap gap-4">
-              {skills.map((skill, i) => (
-                <motion.div
-                  key={skill.label}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: 0.3 + i * 0.07 }}
+            {displaySkills.length > 0 && (
+              <>
+                <p
+                  className="text-xs tracking-[0.25em] mb-5"
+                  style={{ color: "var(--color-text-muted)" }}
                 >
-                  <HankoStamp label={skill.label} en={skill.en} />
-                </motion.div>
-              ))}
-            </div>
+                  専門分野
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  {displaySkills.map((skill, i) => (
+                    <motion.div
+                      key={skill.label}
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: 0.3 + i * 0.07 }}
+                    >
+                      <HankoStamp label={skill.label} en={skill.en} />
+                    </motion.div>
+                  ))}
+                </div>
+              </>
+            )}
           </motion.div>
         </div>
       </div>
