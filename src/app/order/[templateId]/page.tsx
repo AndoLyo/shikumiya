@@ -26,7 +26,11 @@ import {
   RectangleHorizontal,
   RectangleVertical,
   Square,
+  GripVertical,
 } from "lucide-react";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, rectSortingStrategy } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import type { SiteData } from "@/lib/site-data";
 import { SiteDataProvider } from "@/lib/SiteDataContext";
 import { useState as usePreviewState } from "react";
@@ -206,6 +210,45 @@ interface WorkImage {
 interface ProfileImage {
   data: string;
   name: string;
+}
+
+// ─── Sortable Work Item ────────────────────────────────────
+function SortableWorkItem({ work, index, onRemove, onTitleChange }: {
+  work: WorkImage;
+  index: number;
+  onRemove: () => void;
+  onTitleChange: (title: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: `work-${index}` });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="relative group">
+      {/* Drag handle */}
+      <div {...attributes} {...listeners} className="absolute top-1 left-1 z-10 w-6 h-6 rounded bg-black/50 flex items-center justify-center cursor-grab active:cursor-grabbing">
+        <GripVertical className="w-3 h-3 text-white" />
+      </div>
+      {/* Image thumbnail */}
+      <div className="aspect-square rounded-lg overflow-hidden bg-white/[0.03] border border-white/[0.08]">
+        <img src={work.data} alt={work.title} className="w-full h-full object-cover" />
+      </div>
+      {/* Remove button */}
+      <button type="button" onClick={onRemove} className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-500/80 flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+        <X className="w-3 h-3 text-white" />
+      </button>
+      {/* Title input */}
+      <input
+        type="text"
+        value={work.title}
+        onChange={(e) => onTitleChange(e.target.value)}
+        className="mt-1 w-full text-[10px] text-text-muted bg-transparent border-b border-white/[0.06] focus:border-primary/50 focus:outline-none px-0.5 py-0.5"
+        placeholder={`作品 ${String(index + 1).padStart(2, "0")}`}
+      />
+    </div>
+  );
 }
 
 // ─── Utility ────────────────────────────────────────────────
@@ -804,6 +847,21 @@ export default function OrderTemplatePage({
     setWorks((prev) => prev.map((w, i) => (i === idx ? { ...w, title } : w)));
   };
 
+  // ─── Drag & drop reordering ────────────────────────────
+  const dndSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      const oldIndex = parseInt(String(active.id).replace("work-", ""));
+      const newIndex = parseInt(String(over.id).replace("work-", ""));
+      setWorks((prev) => arrayMove(prev, oldIndex, newIndex));
+    }
+  };
+
   // ─── Drop handler factory ──────────────────────────────
   const onDrop =
     (handler: (files: FileList | null) => void) => (e: React.DragEvent) => {
@@ -1149,34 +1207,29 @@ export default function OrderTemplatePage({
             </div>
           )}
 
-          {/* Thumbnails */}
+          {/* Thumbnails with drag & drop reordering */}
           {works.length > 0 && (
-            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {works.map((w, i) => (
-                <div key={i} className="relative group">
-                  <div className="aspect-square rounded-lg overflow-hidden bg-white/[0.03] border border-white/[0.08]">
-                    <img
-                      src={w.data}
-                      alt={w.title}
-                      className="w-full h-full object-cover"
-                    />
+            <div className="mt-4">
+              <p className="text-text-muted text-[10px] mb-2">ドラッグで順番を入れ替えられます</p>
+              <DndContext
+                sensors={dndSensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext items={works.map((_, i) => `work-${i}`)} strategy={rectSortingStrategy}>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                    {works.map((w, i) => (
+                      <SortableWorkItem
+                        key={`work-${i}`}
+                        work={w}
+                        index={i}
+                        onRemove={() => removeWork(i)}
+                        onTitleChange={(title) => updateWorkTitle(i, title)}
+                      />
+                    ))}
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => removeWork(i)}
-                    className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                  <input
-                    type="text"
-                    value={w.title}
-                    onChange={(e) => updateWorkTitle(i, e.target.value)}
-                    placeholder={`作品 ${String(i + 1).padStart(2, "0")}`}
-                    className="mt-1.5 w-full bg-transparent border-b border-white/[0.08] text-white text-xs py-1 focus:border-primary/50 focus:outline-none transition-colors placeholder:text-text-muted"
-                  />
-                </div>
-              ))}
+                </SortableContext>
+              </DndContext>
             </div>
           )}
         </div>
