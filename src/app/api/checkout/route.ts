@@ -40,23 +40,44 @@ export async function POST(req: NextRequest) {
       artistName: body.artistName,
       siteSlug: body.siteSlug || "",
       siteTitle: body.siteTitle || "",
+      subtitle: body.subtitle || "",
       email: body.email,
-      genres: body.genres || [],
-      tools: body.tools || [],
       template: body.template,
       catchcopy: body.catchcopy || "",
       bio: body.bio || "",
       motto: body.motto || "",
+      // SNS
       snsX: body.snsX || "",
       snsInstagram: body.snsInstagram || "",
       snsPixiv: body.snsPixiv || "",
       snsNote: body.snsNote || "",
       snsOther: body.snsOther || "",
+      // 雰囲気・スタイル
+      moodTone: body.moodTone || "",
+      moodFont: body.moodFont || "",
+      moodAnimation: body.moodAnimation || "",
+      colorPrimary: body.colors?.primary || "",
+      colorAccent: body.colors?.accent || "",
+      colorBackground: body.colors?.background || "",
+      // テンプレ固有
+      skills: body.uniqueFields?.skills || [],
+      stats: body.uniqueFields?.stats || [],
+      tools: body.uniqueFields?.tools || body.tools || [],
+      workCategories: body.uniqueFields?.workCategories || [],
+      genres: body.genres || [],
+      location: body.uniqueFields?.location || body.location || "",
+      artStyle: body.uniqueFields?.artStyle || body.artStyle || "",
+      // 要望・参考
       requests: body.requests || "",
+      referenceUrl: body.referenceUrl || "",
+      // セクション設定
+      enabledSections: body.enabledSections || [],
+      // 画像・プラン
       plan: body.plan,
       imageGistId: body.imageGistId || "",
       worksMeta: body.worksMeta || [],
       hasProfileImage: body.hasProfileImage || false,
+      hasHeroImage: body.hasHeroImage || false,
       createdAt: new Date().toISOString(),
     };
 
