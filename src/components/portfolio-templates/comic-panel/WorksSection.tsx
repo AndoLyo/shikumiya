@@ -119,11 +119,9 @@ function PanelCard({ work, delay }: { work: WorkItem; delay: number }) {
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.4, delay }}
       whileHover={{
-        scale: 1.05,
-        zIndex: 10,
+        y: -8,
         boxShadow: "10px 10px 0 var(--cp-border)",
-        rotate: 1,
-        transition: { duration: 0.15 },
+        transition: { duration: 0.25, ease: "easeOut" },
       }}
     >
       {/* Panel number label */}
@@ -214,11 +212,9 @@ function DataWorkCard({
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.4, delay: index * 0.08 }}
       whileHover={{
-        scale: 1.05,
-        zIndex: 10,
+        y: -8,
         boxShadow: "10px 10px 0 var(--cp-border)",
-        rotate: 1,
-        transition: { duration: 0.15 },
+        transition: { duration: 0.25, ease: "easeOut" },
       }}
     >
       {/* Panel number label */}
