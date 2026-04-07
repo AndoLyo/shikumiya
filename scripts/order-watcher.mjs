@@ -137,7 +137,7 @@ async function processOrder(order) {
         orderId: order["注文ID"] || "",
         email: customerEmail,
         artistName,
-        siteUrl: `https://${siteUrl}.vercel.app`,
+        siteUrl: siteUrl.startsWith("https://") ? siteUrl : `https://${siteUrl}`,
         plan,
       });
       await fetch(`${GAS_URL}?${params.toString()}`);
