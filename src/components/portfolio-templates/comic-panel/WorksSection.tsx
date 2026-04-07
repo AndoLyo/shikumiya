@@ -119,9 +119,10 @@ function PanelCard({ work, delay }: { work: WorkItem; delay: number }) {
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.4, delay }}
       whileHover={{
-        scale: 1.03,
+        scale: 1.05,
         zIndex: 10,
-        boxShadow: "8px 8px 0 var(--cp-border)",
+        boxShadow: "10px 10px 0 var(--cp-border)",
+        rotate: 1,
         transition: { duration: 0.15 },
       }}
     >
@@ -213,9 +214,10 @@ function DataWorkCard({
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.4, delay: index * 0.08 }}
       whileHover={{
-        scale: 1.03,
+        scale: 1.05,
         zIndex: 10,
-        boxShadow: "8px 8px 0 var(--cp-border)",
+        boxShadow: "10px 10px 0 var(--cp-border)",
+        rotate: 1,
         transition: { duration: 0.15 },
       }}
     >
@@ -236,7 +238,7 @@ function DataWorkCard({
       <img
         src={work.src}
         alt={work.title}
-        className="w-full h-auto block"
+        className="w-full h-auto block transition-transform duration-500 group-hover:scale-110"
         style={{ objectFit: "contain" }}
       />
 
