@@ -822,6 +822,15 @@ export default function MemberDashboardPage() {
                   </a>
                 )}
 
+                {/* Edit site button */}
+                <Link
+                  href={`/member/${orderId}/edit`}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#00e5ff] to-[#00b4d8] hover:from-[#33eaff] hover:to-[#00c8e0] text-[#0a0a0f] font-semibold text-sm transition-all shadow-lg shadow-[#00e5ff]/10"
+                >
+                  <Palette className="w-4 h-4" />
+                  サイトを編集する
+                </Link>
+
                 {/* Edits remaining */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
