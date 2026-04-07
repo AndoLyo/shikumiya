@@ -243,8 +243,8 @@ async function createSite(orderMeta: OrderData, imageFiles: Record<string, strin
     throw new Error(`GitHub repo creation failed: ${err}`);
   }
 
-  // Wait for repo to be ready
-  await new Promise((r) => setTimeout(r, 3000));
+  // Wait for repo to be ready (GitHub needs time to propagate)
+  await new Promise((r) => setTimeout(r, 5000));
 
   // Step 1.5: Copy selected template's files from main repo
   const selectedTemplate = orderMeta.template || "comic-panel";
@@ -402,7 +402,9 @@ async function createSite(orderMeta: OrderData, imageFiles: Record<string, strin
 
     if (vercelRes.ok) {
       const vercelData = await vercelRes.json();
-      siteUrl = `https://${vercelData.name}.vercel.app`;
+      // Prevent double ".vercel.app" — strip suffix if API already includes it
+      const projectName = (vercelData.name || repoName).replace(/\.vercel\.app$/, "");
+      siteUrl = `https://${projectName}.vercel.app`;
 
       // Step 6: Trigger initial deployment
       await new Promise((r) => setTimeout(r, 2000));
