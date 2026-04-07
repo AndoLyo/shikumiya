@@ -451,18 +451,41 @@ const imageSpecs: Record<string, ImageSpec> = {
 
 const darkPresets: ColorPreset[] = [
   { name: "シアン", primary: "#00e5ff", accent: "#d4a853", background: "#0a0a0f", text: "#e5e5e5" },
+  { name: "ロイヤルブルー", primary: "#3b82f6", accent: "#93c5fd", background: "#0a0a14", text: "#e5e5e5" },
+  { name: "ネイビー × ゴールド", primary: "#d4a853", accent: "#60a5fa", background: "#0c1222", text: "#e5e5e5" },
   { name: "パープル", primary: "#8b5cf6", accent: "#a78bfa", background: "#0a0a0f", text: "#e5e5e5" },
+  { name: "ラベンダー", primary: "#a78bfa", accent: "#c4b5fd", background: "#0f0a1a", text: "#e5e5e5" },
+  { name: "ディープパープル", primary: "#7c3aed", accent: "#ddd6fe", background: "#1a0a2e", text: "#e5e5e5" },
   { name: "ピンク", primary: "#ec4899", accent: "#f9a8d4", background: "#0a0a0f", text: "#e5e5e5" },
+  { name: "ローズ", primary: "#f43f5e", accent: "#fda4af", background: "#0f0a0a", text: "#e5e5e5" },
+  { name: "マゼンタ", primary: "#d946ef", accent: "#e879f9", background: "#140a18", text: "#e5e5e5" },
   { name: "グリーン", primary: "#10b981", accent: "#34d399", background: "#0a0a0f", text: "#e5e5e5" },
+  { name: "エメラルド", primary: "#059669", accent: "#6ee7b7", background: "#0a0f0c", text: "#e5e5e5" },
+  { name: "ライム", primary: "#84cc16", accent: "#bef264", background: "#0a0f0a", text: "#e5e5e5" },
   { name: "レッド", primary: "#ef4444", accent: "#f87171", background: "#0a0a0f", text: "#e5e5e5" },
+  { name: "オレンジ", primary: "#f97316", accent: "#fb923c", background: "#0f0a06", text: "#e5e5e5" },
+  { name: "サンセット", primary: "#f59e0b", accent: "#fbbf24", background: "#0f0c06", text: "#e5e5e5" },
   { name: "ゴールド", primary: "#d4a853", accent: "#e8c878", background: "#0a0a0f", text: "#e5e5e5" },
+  { name: "シルバー", primary: "#94a3b8", accent: "#cbd5e1", background: "#0a0a0f", text: "#e5e5e5" },
+  { name: "モノクローム", primary: "#ffffff", accent: "#a1a1aa", background: "#09090b", text: "#fafafa" },
 ];
 
 const lightPresets: ColorPreset[] = [
   { name: "ホワイト × ブルー", primary: "#2563eb", accent: "#3b82f6", background: "#ffffff", text: "#1a1a1a" },
+  { name: "ホワイト × パープル", primary: "#7c3aed", accent: "#8b5cf6", background: "#ffffff", text: "#1a1a1a" },
+  { name: "ホワイト × ピンク", primary: "#ec4899", accent: "#f472b6", background: "#ffffff", text: "#1a1a1a" },
+  { name: "ホワイト × グリーン", primary: "#059669", accent: "#34d399", background: "#ffffff", text: "#1a1a1a" },
+  { name: "ホワイト × オレンジ", primary: "#ea580c", accent: "#f97316", background: "#ffffff", text: "#1a1a1a" },
+  { name: "ホワイト × レッド", primary: "#dc2626", accent: "#ef4444", background: "#ffffff", text: "#1a1a1a" },
   { name: "ホワイト × ゴールド", primary: "#a28d69", accent: "#c9b896", background: "#f5f3ef", text: "#2a2a2a" },
   { name: "ベージュ × ブラック", primary: "#1a1a1a", accent: "#a28d69", background: "#f2eee7", text: "#333333" },
-  { name: "ホワイト × グリーン", primary: "#059669", accent: "#34d399", background: "#ffffff", text: "#1a1a1a" },
+  { name: "クリーム × ブラウン", primary: "#92400e", accent: "#b45309", background: "#fefce8", text: "#422006" },
+  { name: "ミント × ダークグリーン", primary: "#065f46", accent: "#059669", background: "#ecfdf5", text: "#064e3b" },
+  { name: "パステルピンク", primary: "#db2777", accent: "#ec4899", background: "#fff1f2", text: "#4a3548" },
+  { name: "パステルブルー", primary: "#0369a1", accent: "#0284c7", background: "#f0f9ff", text: "#1e3a5f" },
+  { name: "パステルパープル", primary: "#7e22ce", accent: "#9333ea", background: "#faf5ff", text: "#3b0764" },
+  { name: "ライトモノ", primary: "#000000", accent: "#525252", background: "#fafafa", text: "#171717" },
+  { name: "グレー × ブラック", primary: "#18181b", accent: "#3f3f46", background: "#f4f4f5", text: "#27272a" },
 ];
 
 // ━━━━━━━━━━━━━━━━━━━━
