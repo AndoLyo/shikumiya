@@ -1,120 +1,93 @@
 # しくみや — セッション引き継ぎメモ
 
-> 最終更新: 2026-04-02
+> 最終更新: 2026-04-12
 
-## 次のセッションで最初に読むファイル（この順番で）
+## 現在の状況
 
-```
-1. このファイル（HANDOFF.md）— 全体の状況把握
-2. docs/01_REQUIREMENTS.md — 要件定義（何を作るか）
-3. docs/02_ARCHITECTURE.md — 技術設計（どう作るか）
-4. docs/03_BUSINESS_MODEL.md — 価格・解約・収益（いくらで売るか）
-5. docs/04_FUNNEL_DESIGN.md — ファネル設計（どう売るか）
-6. docs/05_DIFFERENTIATION.md — 差別化戦略（なぜ勝てるか）
-7. docs/06_CURRICULUM.md — カリキュラム（作った後どうするか）
-```
+### ビジネスピボット完了
+- テンプレ販売 → **B2B SaaSサブスク**に転換
+- ターゲット: **建築業（工務店・建設会社・設計事務所）**
+- 価格: 制作費0円 + ライト¥3,000/ミドル¥8,000/プレミアム¥15,000~/月
+- 独自ドメイン全プラン対応
 
-メモリも確認：`C:\Users\ryoya\.claude\projects\c--Users-ryoya-OneDrive-AI-Claude-lyo-vision-site\memory\MEMORY.md`
+### 公式サイト（トップページ）
+- 明るいテーマ（白ベース+ピンク紫オレンジ）にリニューアル済み
+- 12セクション構成（世界水準のSaaS構造）
 
-## プロジェクト概要
+### テンプレート（9種完成）
+| 業態 | ライト | ミドル | プレミアム |
+|------|--------|--------|-----------|
+| 工務店 | warm-craft | warm-craft-mid | warm-craft-pro |
+| 建設会社 | trust-navy | trust-navy-mid | trust-navy-pro |
+| 設計事務所 | clean-arch | clean-arch-mid | clean-arch-pro |
 
-- **事業**: AIアーティスト向けオリジナルギャラリーサイト制作
-- **サイト**: https://lyo-vision-site.vercel.app
-- **リポジトリ**: c:\Users\ryoya\OneDrive\AI\Claude\lyo-vision-site
-- **運営者**: Lyo（個人事業「Lyo Vision」）
-- **Claudeの呼び名**: クロコ（Lyoの相棒）
+### 管理ダッシュボード（完成）
 
-## 現在の状態
+**顧客用** (`/member/[orderId]/`):
+- サイドバー+プラン別🔒+アップグレードモーダル（A+Dハイブリッド）
+- ダッシュボード、編集依頼フォーム、依頼履歴、サイト機能一覧、アカウント設定
+- プラン管理モーダル（3プラン比較+アップグレード/ダウングレードボタン）
+- `?plan=lite|middle|premium` でプラン切替可能
 
-### 完了済み
-- [x] 事業戦略の全設計（ターゲット・価格・ファネル・差別化・インフラ）
-- [x] 設計ドキュメント6本作成（docs/配下、汎用フレームワーク付き）
-- [x] テンプレート10種にAIアート作品画像を差し替え（全デプロイ済み）
-- [x] Lyoがモバイルレスポンシブ調整済み（split-showcase, stack-cards, horizontal-scroll, neo-brutalist, globals.css）
+**Lyo用** (`/admin/`):
+- MRR/顧客数/依頼キュー/顧客一覧
+- 編集依頼の完了/修正指示（Claude API送信用）操作
 
-### 次にやること（優先度順）
-1. **LP書き換え** — 新戦略に合わせてトップページを全面リニューアル
-   - Hero: 「あなたのAIアート、流れていくだけでいいの？」+ テンプレプレビュー
-   - 価格セクション新規作成（¥980買い切り / ¥2,980月額 / 要相談）
-   - 「作った後」ロードマップセクション新規作成
-   - Formspreeフォーム設置（問い合わせ + 申込み）
-   - JSON-LD構造化データ（Service, FAQ, Person）
-   - 日本語メイン、かっこいい部分だけ英語
-2. **フォーム自動生成MVP** — 1テンプレートで「フォーム入力→サイト自動生成」が動くか検証
-3. **特定商取引法ページ** — /legal に新規作成
-4. **note記事1本** — AIアートポートフォリオサイトの紹介
+### 編集依頼フォーム（最新版）
+- STEP 1: 複数選択可（テキスト/画像/レイアウト/機能/その他）
+- STEP 2: カテゴリ別の選択式UI
+  - テキスト → 現在のテキスト一覧からクリック選択+変更後入力
+  - 画像 → サムネ選択+react-easy-cropクロップUI（推奨アスペクト比ガイド）
+  - レイアウト → セクション選択+アクションチェックリスト
+  - 機能 → カードタップ選択
+  - その他 → 自由テキスト
+- 右側にサイトプレビュー（デスクトップ/タブレット/モバイル切替）
 
-## 価格設計（確定）
+### プレミアム機能
+- AIチャットボット（3テンプレ全て）
+- 見学会予約（ポップアップフォーム+残枠自動減少）
+- 採用サブページ（`/trust-navy-pro/recruit`、履歴書アップロード付き）
+- 多言語JA/EN（設計事務所Pro、LangContext）
+- 360°パノラマビューア（ドラッグ回転+ズーム）
+- PDFダウンロード、動画セクション
+- 管理ダッシュボード（`/warm-craft-pro/admin`はデモ用）
 
-```
-¥980（買い切り）  = フォーム入力→自動生成。vercel.appドメイン。保守なし
-¥2,980/月        = 編集フォーム→AI確認→承認→AI自動実装。独自ドメイン。会員コンテンツ
-要相談           = Lyoが直接対応。フルカスタム
-アップグレード割引 = ¥980購入から1ヶ月以内に¥2,980申込み→初月¥980引き
-```
+## ★次にやるべきこと（最重要）
 
-## インフラ（確定）
+### Phase 1: テンプレートの構造改革（最優先）
+**現状の問題:** 9テンプレートのデータがコードにハードコード。テキスト/画像パスが直書き。
+**やること:** テンプレートのデータをsite.config.tsに集約し、コードはconfigを読んで描画するだけにする。
+**これが全ての土台。これなしに先に進むと全部やり直しになる。**
 
-- ホスティング: Vercel Pro（$20/月、Lyoアカウント一元管理、プロジェクト数無制限）
-- 決済: Stripe（3.6%）
-- メール配信: Stripe Webhook + GAS
-- 顧客DB: Google Spreadsheet
-- サイト生成: Claude Code CLI
+### Phase 2: テキスト/画像の即反映API
+- `/api/site-update` — 変更受取→GitHub API更新→Vercel自動デプロイ
+- テキスト変更とアスペクト比対応画像差替はAI不要でシステム完結
 
-## 重要な判断事項
+### Phase 3: Claude API連携
+- `/api/edit-request` — レイアウト/機能の依頼→GAS記録→Claude API
+- Claude API用のシステムプロンプト設計（テンプレート構造・ルール・禁止事項）
 
-- noteはメンバーシップ不使用。記事の単品売りのみ（手数料15%が痛い+招待枠制限）
-- コンテンツ配信は自社サイト内の会員専用ページ（かわいさん方式）
-- LINEは使わない
-- AI構築の事実は対外的に伏せる
-- 解約: いつでもOK、サイトは残る、更新停止、再開いつでも可
-- Xアカウント: @ando_lyo（Lyo@しくみや）で運用
-- 「ポートフォリオ」はSEO用、「ギャラリー」はコピー用。両方使う
+### Phase 4: スコアリング・自動承認
+- OK/NG記録 → score >= 80で自動承認
 
-## テンプレート一覧（10種・全てAIアート画像入り）
+### その他未実施
+- Stripe ¥3,000/月のPrice追加
+- template-forms.tsの建築業向けラベル対応
+- 建築LP（`/lp/construction`）の最終調整
 
-| テンプレート | パス | 特徴 |
-|---|---|---|
-| cinematic-dark | /templates/cinematic-dark | フルスクリーン・スクロールスナップ |
-| minimal-grid | /templates/minimal-grid | グリッド・カテゴリフィルター |
-| warm-natural | /templates/warm-natural | ベージュ基調・カード型 |
-| horizontal-scroll | /templates/horizontal-scroll | 横スクロール |
-| elegant-mono | /templates/elegant-mono | モノクロ・パララックス |
-| ai-art-portfolio | /templates/ai-art-portfolio | AIアート特化 |
-| split-showcase | /templates/split-showcase | 左右分割 |
-| stack-cards | /templates/stack-cards | カードスタッキング |
-| neo-brutalist | /templates/neo-brutalist | 太字・原色 |
-| glass-morphism | /templates/glass-morphism | ガラス透過 |
+## デザイン・UXルール
+- 明るい白ベース + ピンク(#e84393)・紫(#6c5ce7)・オレンジ(#f39c12)
+- 入力より選択。選ぶだけで依頼が完成するUI
+- 顧客を迷わせない。冗長な表示（同じ文字の重複等）を排除
+- 作り込みが甘いまま残さない。ボタンを押した先まで作り切る
+- 詳細は `memory/` 配下の feedback_*.md を参照
 
-## ファイル構成
+## 重要な参考資料
+- `lyo-vision-saas-business-plan.md` — ビジネスプラン全体
+- `site-structure-proposal.md` — SaaSサイト構造の調査
+- `architecture-website-template-guide.md` — 建築テンプレ設計ガイド
+- `claude-code-instruction-template.md` — 機能カタログ（プラン別提案テンプレ）
 
-```
-lyo-vision-site/
-├── HANDOFF.md              ← このファイル
-├── docs/                   ← 設計ドキュメント6本
-├── public/portfolio/       ← AIアート画像22枚
-├── src/
-│   ├── app/
-│   │   ├── page.tsx        ← LP（要書き換え）
-│   │   ├── templates/      ← テンプレ一覧・詳細ページ
-│   │   ├── not-found.tsx   ← 404
-│   │   └── privacy/        ← プライバシーポリシー
-│   ├── components/
-│   │   ├── HeroSection.tsx      ← LP Hero（要書き換え）
-│   │   ├── ShowcaseSection.tsx  ← テンプレギャラリー
-│   │   ├── AboutSection.tsx     ← 運営者
-│   │   ├── ServiceSection.tsx   ← 制作の流れ
-│   │   ├── ResourcesSection.tsx ← note記事導線
-│   │   ├── FAQSection.tsx       ← FAQ
-│   │   ├── ContactSection.tsx   ← 問い合わせ
-│   │   └── templates/           ← テンプレコンポーネント10種
-│   └── site.config.ts
-└── template-site/          ← テンプレの元ファイル（tsconfig excludeで除外済み）
-```
-
-## Lyoについて
-
-- 辛口フィードバック歓迎。忖度不要
-- 「まだやれることがあるならやってから作ろう」というスタンス
-- Claudeを「クロコ」と呼ぶ。相棒
-- 「顧客を迷わせちゃいけない」が信条
+## 管理画面の使い分け
+- `/member/[orderId]/` = 本物の顧客管理画面（全顧客共通）
+- `/portfolio-templates/warm-craft-pro/admin` = 営業デモ用ショーケース（将来削除検討）

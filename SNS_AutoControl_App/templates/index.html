@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNS AutoControl - Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Hiragino Sans', sans-serif;
+    background: #0a0a0a;
+    color: #e0e0e0;
+    line-height: 1.6;
+  }
+  .header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    padding: 20px 30px;
+    border-bottom: 1px solid #2a2a4a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header h1 {
+    font-size: 1.4em;
+    background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header .status { color: #888; font-size: 0.85em; }
+  .account-switch {
+    background: #222;
+    border: 1px solid #444;
+    color: #e0e0e0;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.85em;
+  }
+  .container { max-width: 1000px; margin: 0 auto; padding: 24px; }
+
+  /* Stats */
+  .stats-row { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+  .stat-card {
+    flex: 1;
+    min-width: 120px;
+    background: #111;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid #222;
+  }
+  .stat-card .number {
+    font-size: 1.8em;
+    font-weight: 700;
+    background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-card .label { color: #888; font-size: 0.8em; margin-top: 4px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+  .tab {
+    padding: 8px 20px;
+    border-radius: 8px 8px 0 0;
+    background: #111;
+    border: 1px solid #222;
+    border-bottom: none;
+    color: #888;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .tab.active { background: #1a1a2e; color: #00d2ff; border-color: #2a2a4a; }
+  .tab .badge-count {
+    background: #7b2ff7;
+    color: #fff;
+    font-size: 0.75em;
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-left: 6px;
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Section */
+  .section {
+    background: #111;
+    border-radius: 0 12px 12px 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 1px solid #222;
+  }
+  .section h2 { color: #00d2ff; font-size: 1.1em; margin-bottom: 16px; }
+
+  /* Cards */
+  .card {
+    background: #0d0d1a;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid #1a1a3a;
+    transition: opacity 0.3s;
+  }
+  .card.faded { opacity: 0.3; }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .card-meta { font-size: 0.8em; color: #888; }
+  .card-meta .platform {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75em;
+    font-weight: 600;
+  }
+  .card-meta .platform.ig { background: #2d1a3e; color: #c77dff; }
+  .card-meta .platform.threads { background: #1a2d1a; color: #7dff9a; }
+  .card-meta .platform.x { background: #1a1a2e; color: #7bb8ff; }
+  .card-text {
+    background: #1a1a2e;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 8px 0;
+    border-left: 3px solid #00d2ff;
+    font-size: 0.9em;
+    white-space: pre-wrap;
+    line-height: 1.7;
+  }
+  .card-score {
+    font-size: 0.8em;
+    color: #888;
+    margin-bottom: 8px;
+  }
+  .card-score .score-value { color: #00e676; font-weight: 700; }
+  .card-score .score-low { color: #ff5252; }
+
+  /* Comment/Reply */
+  .comment-text {
+    color: #aaa;
+    font-size: 0.9em;
+    margin-bottom: 8px;
+  }
+  .comment-text .author { color: #7b9fff; font-weight: 600; }
+  .reply-text {
+    background: #1a1a2e;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 8px 0;
+    border-left: 3px solid #7b2ff7;
+    font-size: 0.9em;
+  }
+
+  /* Webhook events */
+  .event-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #1a1a2e;
+    font-size: 0.85em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .event-item:last-child { border: none; }
+  .event-time { color: #555; font-size: 0.8em; }
+
+  /* Buttons */
+  .btn-group { display: flex; gap: 8px; margin-top: 10px; }
+  .btn {
+    padding: 6px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .btn-approve { background: #00e676; color: #000; }
+  .btn-approve:hover { background: #00c853; }
+  .btn-reject { background: #333; color: #888; border: 1px solid #444; }
+  .btn-reject:hover { background: #444; }
+  .btn-edit { background: #1a1a3e; color: #7bb8ff; border: 1px solid #2a2a5e; }
+  .btn-edit:hover { background: #2a2a5e; }
+
+  /* Empty state */
+  .empty { text-align: center; color: #555; padding: 40px; font-size: 0.95em; }
+
+  /* Toast notification */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #1a1a2e;
+    border: 1px solid #00d2ff;
+    color: #e0e0e0;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 0.85em;
+    display: none;
+    z-index: 1000;
+    animation: fadeIn 0.3s;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .stats-row { flex-direction: column; }
+    .header { flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1>SNS AutoControl</h1>
+      <div class="status">Instagram / Threads / X | Powered by Claude Code</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="number" id="stat-posts">{{ pending_posts|length }}</div>
+        <div class="label">投稿キュー</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="stat-replies">{{ pending_replies|length }}</div>
+        <div class="label">返信キュー</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="stat-events">{{ webhook_events|length }}</div>
+        <div class="label">新着通知</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="stat-today-posts">-</div>
+        <div class="label">今日の投稿</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="stat-likes">-</div>
+        <div class="label">今日のいいね</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="stat-eng-replies">-</div>
+        <div class="label">リプライ</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="stat-follows">-</div>
+        <div class="label">フォロー</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="stat-targets">-</div>
+        <div class="label">ターゲット</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('posts')">
+        投稿キュー<span class="badge-count" id="badge-posts">{{ pending_posts|length }}</span>
+      </div>
+      <div class="tab" onclick="switchTab('replies')">
+        返信キュー<span class="badge-count" id="badge-replies">{{ pending_replies|length }}</span>
+      </div>
+      <div class="tab" onclick="switchTab('events')">
+        通知<span class="badge-count" id="badge-events">{{ webhook_events|length }}</span>
+      </div>
+      <div class="tab" onclick="switchTab('engagement')">
+        エンゲージメント
+      </div>
+    </div>
+
+    <!-- Tab: Posts -->
+    <div class="tab-content active" id="tab-posts">
+      <div class="section">
+        {% if pending_posts %}
+          {% for post in pending_posts %}
+          <div class="card" id="post-{{ post.id }}">
+            <div class="card-header">
+              <div class="card-meta">
+                <span class="platform {% if post.platform == 'instagram' %}ig{% elif post.platform == 'threads' %}threads{% else %}x{% endif %}">
+                  {{ post.platform }}
+                </span>
+                {% if post.account %}
+                  <span style="margin-left: 8px;">@{{ post.account }}</span>
+                {% endif %}
+              </div>
+              <div class="card-meta">{{ post.created_at or '' }}</div>
+            </div>
+            {% if post.get('score') %}
+            <div class="card-score">
+              品質スコア: <span class="score-value {% if post.score < 7 %}score-low{% endif %}">{{ post.score }}/10</span>
+            </div>
+            {% endif %}
+            <div class="card-text">{{ post.text }}</div>
+            {% if post.image_path %}
+            <div class="card-meta" style="margin-bottom: 8px;">画像: {{ post.image_path }}</div>
+            {% endif %}
+            <div class="btn-group">
+              <button class="btn btn-approve" onclick="approvePost({{ post.id }})">承認して投稿</button>
+              <button class="btn btn-reject" onclick="rejectPost({{ post.id }})">却下</button>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty">承認待ちの投稿はありません</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Tab: Replies -->
+    <div class="tab-content" id="tab-replies">
+      <div class="section">
+        {% if pending_replies %}
+          {% for reply in pending_replies %}
+          <div class="card" id="reply-{{ reply.comment_id }}">
+            <div class="card-header">
+              <div class="card-meta">
+                <span class="platform {% if reply.platform == 'instagram' %}ig{% elif reply.platform == 'threads' %}threads{% else %}x{% endif %}">
+                  {{ reply.platform or '' }}
+                </span>
+                <span class="author" style="color: #7b9fff; margin-left: 8px;">@{{ reply.author or '不明' }}</span>
+              </div>
+            </div>
+            <div class="comment-text">{{ reply.comment_text }}</div>
+            <div class="reply-text">{{ reply.reply_text }}</div>
+            <div class="btn-group">
+              <button class="btn btn-approve" onclick="approveReply('{{ reply.comment_id }}')">承認して投稿</button>
+              <button class="btn btn-reject" onclick="rejectReply('{{ reply.comment_id }}')">却下</button>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty">承認待ちの返信はありません</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Tab: Events -->
+    <div class="tab-content" id="tab-events">
+      <div class="section">
+        {% if webhook_events %}
+          {% for event in webhook_events %}
+          <div class="event-item">
+            <div>
+              <span class="platform {% if event.platform == 'instagram' %}ig{% elif event.platform == 'threads' %}threads{% else %}x{% endif %}" style="display:inline-block; padding:2px 8px; border-radius:4px; font-size:0.75em; font-weight:600;">
+                {{ event.platform }}
+              </span>
+              <strong>{{ event.event_type }}</strong>
+              {% if event.sender_id %}<span style="color:#7b9fff;">@{{ event.sender_id }}</span>{% endif %}
+              {% if event.comment_text %}<span style="color:#aaa;"> — {{ event.comment_text[:80] }}</span>{% endif %}
+            </div>
+            <div class="event-time">{{ event.created_at or '' }}</div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty">新着通知はありません</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+    <!-- Tab: Engagement -->
+    <div class="tab-content" id="tab-engagement">
+      <div class="section">
+        <h2>直近のアクション</h2>
+        <div id="engagement-actions-list">
+          <div class="empty">読み込み中...</div>
+        </div>
+      </div>
+      <div class="section">
+        <h2>ターゲットアカウント</h2>
+        <div id="engagement-targets-list">
+          <div class="empty">読み込み中...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelector(`[onclick="switchTab('${name}')"]`).classList.add('active');
+      document.getElementById(`tab-${name}`).classList.add('active');
+      if (name === 'engagement') loadEngagementData();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(() => toast.style.display = 'none', 3000);
+    }
+
+    async function approvePost(postId) {
+      const res = await fetch('/api/approve-post', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({post_id: String(postId)})
+      });
+      const data = await res.json();
+      if (res.ok) {
+        document.getElementById(`post-${postId}`).classList.add('faded');
+        showToast(data.status === 'posted' ? 'Posted!' : 'Approved');
+      } else {
+        showToast('Error: ' + (data.error || 'Unknown'));
+      }
+    }
+
+    async function rejectPost(postId) {
+      const res = await fetch('/api/reject-post', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({post_id: String(postId)})
+      });
+      if (res.ok) {
+        document.getElementById(`post-${postId}`).remove();
+        showToast('Rejected');
+      }
+    }
+
+    async function approveReply(commentId) {
+      const res = await fetch('/api/approve-reply', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({comment_id: commentId})
+      });
+      if (res.ok) {
+        document.getElementById(`reply-${commentId}`).classList.add('faded');
+        showToast('Reply posted!');
+      }
+    }
+
+    async function rejectReply(commentId) {
+      const res = await fetch('/api/reject-reply', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({comment_id: commentId})
+      });
+      if (res.ok) {
+        document.getElementById(`reply-${commentId}`).remove();
+        showToast('Rejected');
+      }
+    }
+
+    // === Dashboard Stats ===
+    async function loadDashboardStats() {
+      try {
+        const res = await fetch('/api/dashboard-stats');
+        const d = await res.json();
+        document.getElementById('stat-posts').textContent = d.pending_posts;
+        document.getElementById('stat-replies').textContent = d.pending_replies;
+        document.getElementById('stat-events').textContent = d.webhook_events;
+        document.getElementById('stat-today-posts').textContent = d.today_posts;
+        document.getElementById('stat-likes').textContent = d.engagement?.likes || 0;
+        document.getElementById('stat-eng-replies').textContent = d.engagement?.replies || 0;
+        document.getElementById('stat-follows').textContent = d.engagement?.follows || 0;
+        document.getElementById('stat-targets').textContent = d.targets_count || 0;
+        document.getElementById('badge-posts').textContent = d.pending_posts;
+        document.getElementById('badge-replies').textContent = d.pending_replies;
+        document.getElementById('badge-events').textContent = d.webhook_events;
+      } catch(e) { console.error('Stats error:', e); }
+    }
+
+    // === Engagement Tab ===
+    async function loadEngagementData() {
+      // Actions
+      try {
+        const res = await fetch('/api/engagement-actions?limit=30');
+        const actions = await res.json();
+        const el = document.getElementById('engagement-actions-list');
+        if (!actions.length) { el.innerHTML = '<div class="empty">アクション履歴なし</div>'; return; }
+        const typeLabels = {like:'いいね', reply:'リプライ', follow:'フォロー', quote_rt:'引用RT', recycle:'リサイクル'};
+        const typeColors = {like:'#ff6b6b', reply:'#00d2ff', follow:'#7b2ff7', quote_rt:'#ffd93d', recycle:'#00e676'};
+        el.innerHTML = actions.map(a => `
+          <div class="event-item">
+            <div>
+              <span style="color:${typeColors[a.action_type]||'#888'};font-weight:600;">${typeLabels[a.action_type]||a.action_type}</span>
+              <span style="color:#7b9fff;margin-left:8px;">@${a.target_username}</span>
+              ${a.reply_text ? `<span style="color:#aaa;margin-left:8px;font-size:0.85em;">${a.reply_text.substring(0,60)}...</span>` : ''}
+            </div>
+            <div class="event-time">${a.created_at||''}</div>
+          </div>
+        `).join('');
+      } catch(e) { console.error('Actions error:', e); }
+
+      // Targets
+      try {
+        const res = await fetch('/api/engagement-targets');
+        const targets = await res.json();
+        const el = document.getElementById('engagement-targets-list');
+        if (!targets.length) { el.innerHTML = '<div class="empty">ターゲット未登録</div>'; return; }
+        const tierColors = {large:'#ffd93d', medium:'#00d2ff', small:'#888'};
+        el.innerHTML = targets.slice(0, 30).map(t => `
+          <div class="event-item">
+            <div>
+              <span style="color:${tierColors[t.tier]||'#888'};font-weight:600;font-size:0.75em;padding:2px 6px;border-radius:4px;border:1px solid ${tierColors[t.tier]||'#444'};">${t.tier}</span>
+              <span style="color:#7b9fff;margin-left:8px;font-weight:600;">@${t.username}</span>
+              <span style="color:#888;margin-left:8px;">${t.display_name||''}</span>
+              <span style="color:#555;margin-left:8px;font-size:0.8em;">${t.followers?.toLocaleString()||0} followers</span>
+            </div>
+            <div class="event-time">${t.category||''}</div>
+          </div>
+        `).join('');
+      } catch(e) { console.error('Targets error:', e); }
+    }
+
+    // Initial load
+    loadDashboardStats();
+
+    // Auto refresh stats every 30 seconds (no full reload)
+    setInterval(loadDashboardStats, 30000);
+  </script>
+</body>
+</html>

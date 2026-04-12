@@ -1656,7 +1656,7 @@ export default function OrderTemplatePage({
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
                     {[
                       { value: "dark", label: "ダーク", sub: "重厚感・没入感" },
-                      { value: "light", label: "ライト", sub: "明るく・爽やか" },
+                      { value: "light", label: "おまかせ", sub: "明るく・爽やか" },
                       { value: "warm", label: "ウォーム", sub: "温かみ・親しみやすさ" },
                       { value: "cool", label: "クール", sub: "シャープ・洗練" },
                       { value: "pop", label: "ポップ", sub: "元気・カラフル" },
@@ -2093,7 +2093,7 @@ export default function OrderTemplatePage({
                     <SummaryRow
                       label="雰囲気"
                       value={
-                        { dark: "ダーク", light: "ライト", warm: "ウォーム", cool: "クール", pop: "ポップ", elegant: "エレガント" }[
+                        { dark: "ダーク", light: "おまかせ", warm: "ウォーム", cool: "クール", pop: "ポップ", elegant: "エレガント" }[
                           moodTone
                         ] || moodTone
                       }

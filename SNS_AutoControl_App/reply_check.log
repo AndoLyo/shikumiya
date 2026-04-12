@@ -1,0 +1,174 @@
+2026-03-22 23:00:23,079 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-22 23:00:25,181 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-22 23:00:25,202 [ERROR] ai.claude_cli: Claude CLI not found. Is it installed and in PATH?
+2026-03-22 23:00:25,202 [WARNING] actions.auto_reply: Failed to generate reply for comment 18064189670318304
+2026-03-22 23:00:25,576 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-22 23:00:25,591 [ERROR] ai.claude_cli: Claude CLI not found. Is it installed and in PATH?
+2026-03-22 23:00:25,591 [WARNING] actions.auto_reply: Failed to generate reply for comment 18075675673867360
+2026-03-22 23:00:25,745 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-22 23:00:25,757 [ERROR] ai.claude_cli: Claude CLI not found. Is it installed and in PATH?
+2026-03-22 23:00:25,757 [WARNING] actions.auto_reply: Failed to generate reply for comment 18115379035479749
+2026-03-22 23:00:26,512 [INFO] __main__: Instagram: 0 comments processed
+2026-03-22 23:00:26,513 [INFO] __main__: === 完了: 承認待ち=0, 投稿済み=0, 失敗=0 ===
+2026-03-22 23:01:43,879 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-22 23:01:45,500 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-22 23:01:45,847 [ERROR] ai.claude_cli: Claude CLI error: Error: Claude Code cannot be launched inside another Claude Code session.
+Nested sessions share runtime resources and will crash all active sessions.
+To bypass this check, unset the CLAUDECODE environment variable.
+
+2026-03-22 23:01:45,848 [WARNING] actions.auto_reply: Failed to generate reply for comment 18064189670318304
+2026-03-22 23:01:46,251 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-22 23:01:46,553 [ERROR] ai.claude_cli: Claude CLI error: Error: Claude Code cannot be launched inside another Claude Code session.
+Nested sessions share runtime resources and will crash all active sessions.
+To bypass this check, unset the CLAUDECODE environment variable.
+
+2026-03-22 23:01:46,553 [WARNING] actions.auto_reply: Failed to generate reply for comment 18075675673867360
+2026-03-22 23:01:46,709 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-22 23:01:47,025 [ERROR] ai.claude_cli: Claude CLI error: Error: Claude Code cannot be launched inside another Claude Code session.
+Nested sessions share runtime resources and will crash all active sessions.
+To bypass this check, unset the CLAUDECODE environment variable.
+
+2026-03-22 23:01:47,025 [WARNING] actions.auto_reply: Failed to generate reply for comment 18115379035479749
+2026-03-22 23:01:47,746 [INFO] __main__: Instagram: 0 comments processed
+2026-03-22 23:01:47,746 [INFO] __main__: === 完了: 承認待ち=0, 投稿済み=0, 失敗=0 ===
+2026-03-22 23:02:18,125 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-22 23:02:19,875 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-22 23:02:20,502 [ERROR] ai.claude_cli: Claude CLI error: Claude Code on Windows requires git-bash (https://git-scm.com/downloads/win). If installed but not in PATH, set environment variable pointing to your bash.exe, similar to: CLAUDE_CODE_GIT_BASH_PATH=C:\Program Files\Git\bin\bash.exe
+
+2026-03-22 23:02:20,502 [WARNING] actions.auto_reply: Failed to generate reply for comment 18064189670318304
+2026-03-22 23:02:20,863 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-22 23:02:21,464 [ERROR] ai.claude_cli: Claude CLI error: Claude Code on Windows requires git-bash (https://git-scm.com/downloads/win). If installed but not in PATH, set environment variable pointing to your bash.exe, similar to: CLAUDE_CODE_GIT_BASH_PATH=C:\Program Files\Git\bin\bash.exe
+
+2026-03-22 23:02:21,464 [WARNING] actions.auto_reply: Failed to generate reply for comment 18075675673867360
+2026-03-22 23:02:21,621 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-22 23:02:22,221 [ERROR] ai.claude_cli: Claude CLI error: Claude Code on Windows requires git-bash (https://git-scm.com/downloads/win). If installed but not in PATH, set environment variable pointing to your bash.exe, similar to: CLAUDE_CODE_GIT_BASH_PATH=C:\Program Files\Git\bin\bash.exe
+
+2026-03-22 23:02:22,221 [WARNING] actions.auto_reply: Failed to generate reply for comment 18115379035479749
+2026-03-22 23:02:22,910 [INFO] __main__: Instagram: 0 comments processed
+2026-03-22 23:02:22,910 [INFO] __main__: === 完了: 承認待ち=0, 投稿済み=0, 失敗=0 ===
+2026-03-22 23:03:15,536 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-22 23:03:17,276 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-22 23:03:27,926 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-22 23:03:35,916 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-22 23:03:47,309 [INFO] __main__: Instagram: 3 comments processed
+2026-03-22 23:03:47,309 [INFO] __main__: === 完了: 承認待ち=3, 投稿済み=0, 失敗=0 ===
+2026-03-22 23:03:47,309 [INFO] __main__: 承認待ちの返信が3件あります。https://localhost:8081 で確認してください。
+2026-03-23 00:15:05,423 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-23 00:15:07,258 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-23 00:15:17,586 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-23 00:15:27,205 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-23 00:15:35,019 [INFO] __main__: Instagram: 3 comments processed
+2026-03-23 00:15:35,019 [INFO] __main__: === 完了: 承認待ち=3, 投稿済み=0, 失敗=0 ===
+2026-03-23 00:15:35,019 [INFO] __main__: 承認待ちの返信が3件あります。https://localhost:8081 で確認してください。
+2026-03-23 00:17:20,347 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-23 00:17:21,993 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-23 00:17:30,563 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-23 00:17:38,083 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-23 00:18:08,985 [INFO] __main__: Instagram: 3 comments processed
+2026-03-23 00:18:08,985 [INFO] __main__: === 完了: 承認待ち=3, 投稿済み=0, 失敗=0 ===
+2026-03-23 00:18:08,985 [INFO] __main__: 承認待ちの返信が3件あります。https://localhost:8081 で確認してください。
+2026-03-23 00:25:19,772 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-23 00:25:21,588 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-23 00:25:33,665 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-23 00:25:41,061 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-23 00:25:50,247 [INFO] __main__: Instagram: 3 comments processed
+2026-03-23 00:25:50,248 [INFO] __main__: === 完了: 承認待ち=3, 投稿済み=0, 失敗=0 ===
+2026-03-23 00:25:50,248 [INFO] __main__: 承認待ちの返信が3件あります。https://localhost:8081 で確認してください。
+2026-03-23 00:33:07,496 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-23 00:33:09,309 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-23 00:33:16,886 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-23 00:33:28,390 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-23 00:33:38,644 [INFO] __main__: Instagram: 3 comments processed
+2026-03-23 00:33:38,645 [INFO] __main__: === 完了: 承認待ち=3, 投稿済み=0, 失敗=0 ===
+2026-03-23 00:33:38,645 [INFO] __main__: 承認待ちの返信が3件あります。https://localhost:8081 で確認してください。
+2026-03-23 00:40:37,302 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-23 00:40:39,197 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-23 00:40:39,735 [ERROR] ai.claude_cli: Claude CLI error: error: unknown option '--no-config'
+(Did you mean --mcp-config?)
+
+2026-03-23 00:40:39,735 [WARNING] actions.auto_reply: Failed to generate reply for comment 18064189670318304
+2026-03-23 00:40:40,110 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-23 00:40:40,622 [ERROR] ai.claude_cli: Claude CLI error: error: unknown option '--no-config'
+(Did you mean --mcp-config?)
+
+2026-03-23 00:40:40,622 [WARNING] actions.auto_reply: Failed to generate reply for comment 18075675673867360
+2026-03-23 00:40:40,781 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-23 00:40:41,300 [ERROR] ai.claude_cli: Claude CLI error: error: unknown option '--no-config'
+(Did you mean --mcp-config?)
+
+2026-03-23 00:40:41,301 [WARNING] actions.auto_reply: Failed to generate reply for comment 18115379035479749
+2026-03-23 00:40:42,004 [INFO] __main__: Instagram: 0 comments processed
+2026-03-23 00:40:42,004 [INFO] __main__: === 完了: 承認待ち=0, 投稿済み=0, 失敗=0 ===
+2026-03-23 00:45:41,756 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-23 00:45:43,726 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-23 00:45:44,238 [ERROR] ai.claude_cli: Claude CLI error: error: unknown option '--no-config'
+(Did you mean --mcp-config?)
+
+2026-03-23 00:45:44,238 [WARNING] actions.auto_reply: Failed to generate reply for comment 18064189670318304
+2026-03-23 00:45:44,612 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-23 00:45:45,123 [ERROR] ai.claude_cli: Claude CLI error: error: unknown option '--no-config'
+(Did you mean --mcp-config?)
+
+2026-03-23 00:45:45,124 [WARNING] actions.auto_reply: Failed to generate reply for comment 18075675673867360
+2026-03-23 00:45:45,294 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-23 00:45:45,801 [ERROR] ai.claude_cli: Claude CLI error: error: unknown option '--no-config'
+(Did you mean --mcp-config?)
+
+2026-03-23 00:45:45,802 [WARNING] actions.auto_reply: Failed to generate reply for comment 18115379035479749
+2026-03-23 00:45:46,580 [INFO] __main__: Instagram: 0 comments processed
+2026-03-23 00:45:46,580 [INFO] __main__: === 完了: 承認待ち=0, 投稿済み=0, 失敗=0 ===
+2026-03-23 00:45:46,946 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-23 00:45:48,936 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-23 00:45:49,446 [ERROR] ai.claude_cli: Claude CLI error: error: unknown option '--no-config'
+(Did you mean --mcp-config?)
+
+2026-03-23 00:45:49,447 [WARNING] actions.auto_reply: Failed to generate reply for comment 18064189670318304
+2026-03-23 00:45:49,876 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-23 00:45:50,384 [ERROR] ai.claude_cli: Claude CLI error: error: unknown option '--no-config'
+(Did you mean --mcp-config?)
+
+2026-03-23 00:45:50,385 [WARNING] actions.auto_reply: Failed to generate reply for comment 18075675673867360
+2026-03-23 00:45:50,560 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-23 00:45:51,069 [ERROR] ai.claude_cli: Claude CLI error: error: unknown option '--no-config'
+(Did you mean --mcp-config?)
+
+2026-03-23 00:45:51,069 [WARNING] actions.auto_reply: Failed to generate reply for comment 18115379035479749
+2026-03-23 00:45:51,774 [INFO] __main__: Instagram: 0 comments processed
+2026-03-23 00:45:51,774 [INFO] __main__: === 完了: 承認待ち=0, 投稿済み=0, 失敗=0 ===
+2026-03-23 00:47:41,391 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-23 00:47:43,232 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-23 00:47:54,919 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-23 00:48:09,852 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-23 00:48:18,179 [INFO] __main__: Instagram: 3 comments processed
+2026-03-23 00:48:18,179 [INFO] __main__: === 完了: 承認待ち=3, 投稿済み=0, 失敗=0 ===
+2026-03-23 00:48:18,179 [INFO] __main__: 承認待ちの返信が3件あります。https://localhost:8081 で確認してください。
+2026-03-23 00:51:19,473 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-23 00:51:21,620 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-23 00:51:32,450 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-23 00:51:44,665 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-23 00:51:55,990 [INFO] __main__: Instagram: 3 comments processed
+2026-03-23 00:51:55,990 [INFO] __main__: === 完了: 承認待ち=3, 投稿済み=0, 失敗=0 ===
+2026-03-23 00:51:55,990 [INFO] __main__: 承認待ちの返信が3件あります。https://localhost:8081 で確認してください。
+2026-03-23 01:21:25,448 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-23 01:21:27,187 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-23 01:21:38,017 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-23 01:21:50,365 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-23 01:21:59,727 [INFO] __main__: Instagram: 3 comments processed
+2026-03-23 01:21:59,728 [INFO] __main__: === 完了: 承認待ち=3, 投稿済み=0, 失敗=0 ===
+2026-03-23 01:21:59,728 [INFO] __main__: 承認待ちの返信が3件あります。https://localhost:8081 で確認してください。
+2026-03-23 01:45:17,581 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-23 01:45:19,353 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-23 01:45:29,233 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-23 01:45:38,797 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-23 01:45:47,481 [INFO] __main__: Instagram: 3 comments processed
+2026-03-23 01:45:47,481 [INFO] __main__: === 完了: 承認待ち=3, 投稿済み=0, 失敗=0 ===
+2026-03-23 01:45:47,481 [INFO] __main__: 承認待ちの返信が3件あります。https://localhost:8081 で確認してください。
+2026-03-23 02:51:17,338 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-23 02:51:20,039 [INFO] actions.auto_reply: Liked comment 18064189670318304
+2026-03-23 02:51:31,969 [INFO] actions.auto_reply: Liked comment 18075675673867360
+2026-03-23 02:51:40,880 [INFO] actions.auto_reply: Liked comment 18115379035479749
+2026-03-23 02:51:54,470 [INFO] __main__: Instagram: 3 comments processed
+2026-03-23 02:51:54,471 [INFO] __main__: === 完了: 承認待ち=3, 投稿済み=0, 失敗=0 ===
+2026-03-23 02:51:54,471 [INFO] __main__: 承認待ちの返信が3件あります。https://localhost:8081 で確認してください。
+2026-03-23 04:03:32,567 [INFO] __main__: === コメント返信チェック開始 (platform=ig, auto_approve=False) ===
+2026-03-23 04:03:34,708 [INFO] actions.auto_reply: Liked comment 18064189670318304

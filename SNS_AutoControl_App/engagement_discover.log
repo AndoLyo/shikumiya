@@ -1,0 +1,54 @@
+04:44:22 [INFO] === discover ===
+04:44:22 [INFO] [検索] キーワード: AI画像生成
+04:44:22 [INFO] patching driver executable C:\Users\ryoya\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+04:44:42 [INFO]   [発見] @ryuya_072_3150 (適合:60点, small, 4193フォロワー)
+04:45:08 [INFO]   [スキップ] @kanamoritakashi (適合スコア:10 < 20)
+04:45:13 [INFO]   [発見] @Kavin_DDO (適合:65点, large, 1900000フォロワー)
+04:45:29 [INFO]   [発見] @ShuChan_Nel (適合:55点, small, 3フォロワー)
+04:45:45 [INFO] [検索] キーワード: AIアート 作品
+04:45:59 [INFO]   [スキップ] @AVnrVnSN2u1ngZF (適合スコア:15 < 20)
+04:46:04 [INFO]   [発見] @mediaplaning (適合:28点, large, 2000000フォロワー)
+04:46:31 [INFO]   [発見] @SokiBase (適合:44点, small, 7フォロワー)
+04:46:56 [INFO]   [発見] @retro_ai_life (適合:49点, small, 1226フォロワー)
+04:47:17 [INFO]   [発見] @gonta_sub2 (適合:30点, small, 26フォロワー)
+04:47:34 [INFO] [検索] キーワード: Stable Diffusion 生成
+04:47:45 [INFO]   [発見] @Kn5Acc (適合:25点, small, 3フォロワー)
+04:48:10 [INFO]   [発見] @BiggDaddieLuz (適合:45点, small, 43フォロワー)
+04:48:24 [INFO]   [発見] @rootport (適合:50点, large, 5100000フォロワー)
+04:48:41 [INFO]   [発見] @PoTeto_UGCCC (適合:75点, small, 148フォロワー)
+04:49:02 [INFO] [検索] キーワード: AIイラスト
+04:49:33 [INFO]   [スキップ] @Aimaiish (適合スコア:0 < 20)
+04:49:38 [INFO]   [スキップ] @Aimaiish (適合スコア:0 < 20)
+04:49:45 [INFO]   [発見] @shinfuurarico (適合:60点, small, 2273フォロワー)
+04:50:21 [INFO]   [発見] @BristowAle38594 (適合:30点, small, 16フォロワー)
+04:50:44 [INFO] [検索] キーワード: 生成AI クリエイター
+04:50:59 [INFO]   [発見] @unitl_gov (適合:45点, small, 2フォロワー)
+04:51:26 [INFO]   [発見] @k8787808624578 (適合:68点, small, 89フォロワー)
+04:51:52 [INFO]   [発見] @mononohuFH (適合:45点, small, 958フォロワー)
+04:52:06 [INFO] ==================================================
+04:52:06 [INFO] [キーワード品質レポート]
+04:52:06 [INFO]   ◎ 「生成AI クリエイター」: 検索3件 → 適合3件 (適合率100%, 平均スコア53)
+04:52:06 [INFO]   ◎ 「Stable Diffusion 生成」: 検索4件 → 適合4件 (適合率100%, 平均スコア49)
+04:52:06 [INFO]   ◎ 「AI画像生成」: 検索4件 → 適合3件 (適合率75%, 平均スコア48)
+04:52:06 [INFO]   ◎ 「AIアート 作品」: 検索5件 → 適合4件 (適合率80%, 平均スコア33)
+04:52:06 [INFO]   ◎ 「AIイラスト」: 検索4件 → 適合2件 (適合率50%, 平均スコア22)
+04:52:06 [INFO] ==================================================
+04:52:06 [INFO] [保存] キーワード品質統計 → C:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\accounts\ando_lyo\keyword_quality.json
+04:52:06 [INFO] [発見完了] 新規ターゲット: 16件
+04:52:06 [INFO] 発見完了: 16件
+04:52:06 [INFO] [分析レポート] C:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\accounts\ando_lyo\engagement_report.md
+
+=== 結果 (ando_lyo) ===
+  発見:    16件
+  いいね:  0件
+  リプライ: 0件
+  フォロー: 0件
+  引用RT:  0件
+Traceback (most recent call last):
+  File "C:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\run_engagement.py", line 406, in <module>
+    main()
+  File "C:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\run_engagement.py", line 399, in main
+    generate_analytics_report(args.account, db, result, scores)
+  File "C:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\run_engagement.py", line 184, in generate_analytics_report
+    print(f"\n\U0001f4ca 分析レポート保存: {report_path}")
+UnicodeEncodeError: 'cp932' codec can't encode character '\U0001f4ca' in position 2: illegal multibyte sequence

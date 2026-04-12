@@ -1,0 +1,29 @@
+06:38:29 [INFO] === reply ===
+06:38:30 [INFO] patching driver executable C:\Users\ryoya\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+07:10:44 [INFO] [リプライ] @kulmcorient (品質:38点): へー、マジで商用利用OKなの？！
+追加学習必須ってことは、どこまでいけるか試すの面白そうだなー。
+自...
+07:11:12 [INFO] [リプライ] @pictureh4ih4i (品質:80点): AIイラスト、マジですごい進化してるよね\U0001f633
+俺も最近触り始めたんだけど、想像以上のクオリティでビビっ...
+07:11:33 [INFO] [リプライ] @787_BMxx (品質:46点): A9でE49系作れるの、地味にすごくない？
+俺も今度やってみよ...
+07:12:03 [INFO] [リプライ] @harukage_teru (品質:44点): なるほどね！
+それめっちゃ助かるじゃん。把握しときやすくなるもんね。...
+07:12:43 [INFO] [リプライ] @HobbyFullLife (品質:61点): え、マジ？知らなかった。ジョージ・グレンが生きてるってどういうことなん？...
+07:13:04 [INFO] [リプライ完了] 5/5件
+07:13:04 [INFO] [分析レポート] c:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\accounts\ando_lyo\engagement_report.md
+
+=== 結果 (ando_lyo) ===
+  発見:    0件
+  いいね:  0件
+  リプライ: 5件
+  フォロー: 0件
+  引用RT:  0件
+Traceback (most recent call last):
+  File "c:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\run_engagement.py", line 406, in <module>
+    main()
+  File "c:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\run_engagement.py", line 399, in main
+    generate_analytics_report(args.account, db, result, scores)
+  File "c:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\run_engagement.py", line 184, in generate_analytics_report
+    print(f"\n\U0001f4ca 分析レポート保存: {report_path}")
+UnicodeEncodeError: 'cp932' codec can't encode character '\U0001f4ca' in position 2: illegal multibyte sequence

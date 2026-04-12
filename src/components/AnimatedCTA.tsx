@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 
 export default function AnimatedCTA({
-  href = "/order",
-  text = "¥980でサイトを作る →",
-  subtext = "ノーコードでOK・最短1日で完了",
+  href = "/start",
+  text = "今すぐサイトを作る →",
+  subtext = "制作費0円・写真を送るだけ",
 }: {
   href?: string;
   text?: string;

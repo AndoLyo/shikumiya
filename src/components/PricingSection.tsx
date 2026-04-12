@@ -23,52 +23,56 @@ type Plan = {
 
 const plans: Plan[] = [
   {
-    name: "テンプレートプラン",
+    name: "ライト",
     badge: "まずはここから",
-    price: "¥980",
-    priceLabel: "買い切り",
+    price: "¥3,000",
+    priceLabel: "/月",
     features: [
-      { text: "テンプレート10種から選択", included: true },
-      { text: "フォーム入力だけでサイト完成", included: true },
-      { text: "作品画像を最大10枚掲載", included: true },
-      { text: "SNSリンク設置", included: true },
-      { text: "レスポンシブ対応（スマホ対応）", included: true },
-      { text: "公開後もサイトはずっと残る", included: true },
-      { text: "初回1回のみ編集可能", included: true },
-      { text: "独自ドメイン", included: false },
-      { text: "会員コンテンツ", included: false },
+      { text: "制作費0円", included: true },
+      { text: "業種別テンプレート選択", included: true },
+      { text: "施工写真10枚掲載", included: true },
+      { text: "会社概要・お問い合わせフォーム", included: true },
+      { text: "電話タップ発信", included: true },
+      { text: "SSL・レスポンシブ対応", included: true },
+      { text: "独自ドメイン対応", included: true },
+      { text: "月1回更新", included: true },
+      { text: "施工実績詳細・お客様の声", included: false },
+      { text: "SEO強化", included: false },
     ],
-    cta: "このプランで始める",
+    cta: "今すぐサイトを作る",
   },
   {
-    name: "おまかせプラン",
+    name: "ミドル",
     badge: "おすすめ",
-    price: "¥2,980",
+    price: "¥8,000",
     priceLabel: "/月",
-    upgradeNote:
-      "¥980プランから1ヶ月以内のアップグレードで初月¥980引き",
     features: [
-      { text: "テンプレートプランの全機能", included: true },
-      { text: "独自ドメイン対応", included: true },
-      { text: "カスタマイズ月3回まで", included: true },
-      { text: "会員専用コンテンツ", included: true },
-      { text: "新テンプレート優先提供", included: true },
-      { text: "いつでも解約OK（サイトは残る）", included: true },
+      { text: "ライトの全機能", included: true },
+      { text: "施工実績詳細（Before/After）", included: true },
+      { text: "お客様の声", included: true },
+      { text: "ブログ・お知らせ機能", included: true },
+      { text: "Google Maps表示", included: true },
+      { text: "SEO強化（JSON-LD/OGP）", included: true },
+      { text: "月3回更新", included: true },
     ],
-    cta: "おまかせプランに申し込む",
+    cta: "今すぐサイトを作る",
     recommended: true,
   },
   {
     name: "プレミアム",
-    badge: "本気の方へ",
-    price: "要相談",
+    badge: "フル機能",
+    price: "¥15,000〜",
+    priceLabel: "/月",
     features: [
-      { text: "フルカスタムデザイン", included: true },
-      { text: "Lyoが直接対応", included: true },
-      { text: "ブランディング相談", included: true },
-      { text: "継続保守サポート", included: true },
+      { text: "ミドルの全機能", included: true },
+      { text: "AIチャットボット", included: true },
+      { text: "見学会・予約システム", included: true },
+      { text: "採用ページ", included: true },
+      { text: "多言語対応", included: true },
+      { text: "360°パノラマビューア", included: true },
+      { text: "PDF資料ダウンロード", included: true },
     ],
-    cta: "まずは相談する",
+    cta: "今すぐサイトを作る",
     outline: true,
   },
 ];
@@ -82,7 +86,7 @@ export default function PricingSection() {
       <div className="relative z-10 max-w-[1200px] mx-auto px-6">
         <SectionHeading
           title="料金プラン"
-          subtitle="あなたに合ったプランを選べます"
+          subtitle="制作費0円。写真を送るだけ、あとは全部おまかせ"
           number="— 03"
           align="center"
         />
@@ -180,7 +184,7 @@ export default function PricingSection() {
 
                   {/* CTA */}
                   <a
-                    href="/order"
+                    href="/start"
                     className={`block text-center py-3 rounded-xl text-xs tracking-widest transition-all duration-300 ${
                       plan.outline
                         ? "border border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50"

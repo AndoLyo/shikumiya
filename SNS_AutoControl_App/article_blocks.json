@@ -1,0 +1,66 @@
+[
+  {
+    "type": "text",
+    "html": "\n<p>AIで作品を作っていて、<b>ポートフォリオサイトがない</b>って状態、もったいなくないですか？</p>\n<p>10種類のテンプレートを全部無料で公開しています。コード不要、月額0円。</p>\n"
+  },
+  {
+    "type": "image",
+    "path": "C:\\Users\\ryoya\\OneDrive\\AI\\Claude\\note-drafts\\publish-ready\\013_テンプレート集\\画像\\section_02_problems.png"
+  },
+  {
+    "type": "text",
+    "html": "\n<h2>こんな悩みを抱えていませんか？</h2>\n<p>AIで作品を生成していて、こんな経験はありませんか？</p>\n<ul>\n<li>作品はあるのに「ポートフォリオです」と渡せるURLがない</li>\n<li>Pixivやnoteに上げてるけど、他の人の作品と混ざって埋もれる</li>\n<li>Instagramは正方形に切り取られて世界観が台無し</li>\n<li>外注すると10万〜20万。個人で出せる金額じゃない</li>\n<li>自分でコードは書けない</li>\n</ul>\n<p>実は、これらの問題には共通の原因があります。</p>\n<p>それは<b>「自分の世界観で作品を見せられる場所がない」</b>ことです。</p>\n"
+  },
+  {
+    "type": "image",
+    "path": "C:\\Users\\ryoya\\OneDrive\\AI\\Claude\\note-drafts\\publish-ready\\013_テンプレート集\\画像\\section_03_why_no_site.png"
+  },
+  {
+    "type": "text",
+    "html": "\n<h2>なぜ多くのクリエイターがサイトを持てないのか？</h2>\n<p>作品を見せる場所はたくさんある。Pixiv、note、Instagram、X。</p>\n<p>でも全部「他人の場所に間借りしてるだけ」なんですよね。</p>\n<p>1. <b>プラットフォーム依存</b> — Pixivの仕様変更で表示が崩れる。Instagramのアルゴリズムで埋もれる。</p>\n<p>2. <b>世界観が伝わらない</b> — 暗いサイバーパンク作品なのにPixivの白い背景。世界観を殺してるのはプラットフォームのUI。</p>\n<p>3. <b>サイト制作のハードルが高すぎる</b> — HTMLを学ぶ？外注に20万？そこまでして作りたいわけじゃない。でも「自分の場所」は欲しい。</p>\n"
+  },
+  {
+    "type": "image",
+    "path": "C:\\Users\\ryoya\\OneDrive\\AI\\Claude\\note-drafts\\publish-ready\\013_テンプレート集\\画像\\section_04_solution.png"
+  },
+  {
+    "type": "text",
+    "html": "\n<h2>解決策：ポートフォリオテンプレート10種セット</h2>\n<p>AIアーティスト向けに設計されたポートフォリオサイトのテンプレートを、<b>10種類まとめて</b>配布しています。</p>\n<ul>\n<li>10種類のデザインから、自分の作風に合うものを選べる</li>\n<li>コードは1行も書かない。Claude Codeに日本語で指示するだけ</li>\n<li>月額0円で公開できる（Vercel無料枠）</li>\n<li>コードは100%あなたのもの。やめてもサイトは消えない</li>\n</ul>\n"
+  },
+  {
+    "type": "image",
+    "path": "C:\\Users\\ryoya\\OneDrive\\AI\\Claude\\note-drafts\\publish-ready\\013_テンプレート集\\画像\\section_05_effects.png"
+  },
+  {
+    "type": "text",
+    "html": "\n<h2>Before / After</h2>\n<p><b>Before:</b> 作品がPixiv・note・Instagram・Xにバラバラ。世界観が伝わらない。お問い合わせ導線がない。</p>\n<p><b>After:</b> 1つのURLに全作品がまとまる。自分の世界観でデザインされた専用サイト。お問い合わせフォーム標準搭載。月額0円。</p>\n"
+  },
+  {
+    "type": "image",
+    "path": "C:\\Users\\ryoya\\OneDrive\\AI\\Claude\\note-drafts\\publish-ready\\013_テンプレート集\\画像\\section_06_features.png"
+  },
+  {
+    "type": "text",
+    "html": "\n<h2>このテンプレート集の特徴</h2>\n<p><b>圧倒的な収録量</b> — テンプレート10種。ダーク系、ナチュラル系、パステル系、モノクロ系、ブルータリスト系。あらゆる作風に対応。</p>\n<p><b>Claude Code完全対応</b> — すべてのテンプレートがNext.js + Tailwind CSSで統一構造。日本語で指示するだけでカスタマイズ可能。</p>\n<p><b>継続的なアップデート</b> — 新テンプレートの追加、アニメーション改善、レスポンシブ対応強化を継続中。</p>\n"
+  },
+  {
+    "type": "image",
+    "path": "C:\\Users\\ryoya\\OneDrive\\AI\\Claude\\note-drafts\\publish-ready\\013_テンプレート集\\画像\\section_08_demo_sites.png"
+  },
+  {
+    "type": "text",
+    "html": "\n<h2>全10種のデモサイト</h2>\n<p>言葉で説明するより、実物を見た方が早いです。全テンプレートのデモサイトを公開しています。<b>スマホでも開いてみてください。</b></p>\n<p>1. <b>Comic Panel</b> — 漫画コマ割りレイアウト</p>\n<p>2. <b>Cyber Neon</b> — ネオンカラー×深い紺黒</p>\n<p>3. <b>Dark Elegance</b> — 黒×ゴールド</p>\n<p>4. <b>Floating Gallery</b> — 3D浮遊カード</p>\n<p>5. <b>Ink Wash</b> — 和紙色×明朝体</p>\n<p>6. <b>Mosaic Bold</b> — 白×黒×オレンジ</p>\n<p>7. <b>Pastel Pop</b> — パステル4色</p>\n<p>8. <b>Retro Pop</b> — 70〜90年代ノスタルジア</p>\n<p>9. <b>Studio White</b> — 白ミニマル</p>\n<p>10. <b>Watercolor Soft</b> — 淡い水彩色</p>\n<p>デモサイト一覧はリプから👇</p>\n"
+  },
+  {
+    "type": "image",
+    "path": "C:\\Users\\ryoya\\OneDrive\\AI\\Claude\\note-drafts\\publish-ready\\013_テンプレート集\\画像\\section_09_template_intro.png"
+  },
+  {
+    "type": "text",
+    "html": "\n<h2>収録テンプレート</h2>\n<p><b>ダーク系</b>（作品を際立たせたい人向け）</p>\n<ul>\n<li>Cyber Neon: ネオンカラー、フルスクリーン・スナップスクロール</li>\n<li>Dark Elegance: 黒×ゴールド、フルスクリーンスライダー</li>\n<li>Floating Gallery: 3D浮遊カード、ホバーで傾く</li>\n</ul>\n<p><b>ライト系</b>（柔らかい世界観の人向け）</p>\n<ul>\n<li>Pastel Pop: ピンク・水色・黄・ミントの4色パステル</li>\n<li>Watercolor Soft: 水彩色の透明感</li>\n<li>Studio White: 白ミニマル、サイドナビ</li>\n</ul>\n<p><b>個性派</b>（作風が尖ってる人向け）</p>\n<ul>\n<li>Comic Panel: 漫画コマ割り、赤・青・黄のビビッド</li>\n<li>Mosaic Bold: モザイク風グリッド</li>\n<li>Retro Pop: 70〜90年代ノスタルジア</li>\n</ul>\n<p><b>和テイスト</b></p>\n<ul><li>Ink Wash: 和紙色×明朝体、墨の流れるようなグラフィック</li></ul>\n"
+  },
+  {
+    "type": "text",
+    "html": "\n<h2>ソースコードの受け取り方</h2>\n<p>テンプレート10種のソースコード一式はnoteで配布しています。</p>\n<p>受け取りはリプから👇</p>\n"
+  }
+]

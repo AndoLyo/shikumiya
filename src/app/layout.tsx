@@ -21,24 +21,24 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "しくみや｜AIアーティストのためのギャラリーサイト制作",
+  title: "しくみや｜ホームページ制作 制作費0円・月額3,000円から",
   description:
-    "AIアーティスト向けオリジナルギャラリーサイト制作。フォーム入力だけで完成、¥980から。テンプレート10種を公開中。",
-  keywords: ["AIアーティスト", "ポートフォリオサイト", "AI画像", "ギャラリーサイト", "作成", "AIアート"],
+    "全業種対応のホームページ制作SaaS。制作費0円、月額3,000円から。写真を送るだけで最短翌日完成。独自ドメイン全プラン対応。",
+  keywords: ["ホームページ制作 安い", "ホームページ制作 0円", "ウェブサイト制作 月額", "工務店 ホームページ", "建設会社 ホームページ"],
   openGraph: {
-    title: "しくみや｜AIアーティストのためのギャラリーサイト制作",
+    title: "しくみや｜ホームページ制作 制作費0円・月額3,000円から",
     description:
-      "フォーム入力だけであなただけのギャラリーサイトが完成。¥980から。テンプレート10種を公開中。",
+      "写真を送るだけでホームページが完成。制作費0円、月額3,000円から。全業種対応。",
     type: "website",
     siteName: "しくみや by Lyo Vision",
     locale: "ja_JP",
   },
   twitter: {
     card: "summary_large_image",
-    title: "しくみや｜AIアーティストのためのギャラリーサイト制作",
+    title: "しくみや｜ホームページ制作 制作費0円",
     description:
-      "フォーム入力だけであなただけのギャラリーサイトが完成。¥980から。テンプレート10種を公開中。",
-    creator: "@ando_lyo",
+      "写真を送るだけでホームページが完成。制作費0円、月額3,000円から。全業種対応。",
+    creator: "@shikumiya_ai",
   },
   metadataBase: new URL("https://lyo-vision.com"),
 };
@@ -50,31 +50,38 @@ const jsonLd = {
       "@type": "WebSite",
       name: "しくみや",
       url: "https://lyo-vision.com",
-      description: "AIアーティスト向けオリジナルギャラリーサイト制作サービス",
+      description: "建築業向けホームページ制作サービス。制作費0円、月額3,000円から。",
     },
     {
       "@type": "Service",
-      name: "しくみや ギャラリーサイト制作",
+      name: "しくみや ホームページ制作",
       provider: {
         "@type": "Organization",
         name: "しくみや by Lyo Vision",
         url: "https://lyo-vision.com",
       },
-      description: "AIアーティスト向けオリジナルギャラリーサイト制作。フォーム入力だけで完成。¥980買い切りから。",
+      description: "工務店・建設会社・設計事務所のホームページ制作。写真を送るだけで最短翌日完成。制作費0円。",
       offers: [
         {
           "@type": "Offer",
-          name: "テンプレートプラン",
-          price: "980",
+          name: "おまかせプラン",
+          price: "3000",
           priceCurrency: "JPY",
-          description: "フォーム入力→サイト自動完成。買い切り。",
+          description: "テンプレート選択、施工写真10枚、会社概要、お問い合わせフォーム、独自ドメイン対応。月額。",
         },
         {
           "@type": "Offer",
-          name: "おまかせプラン",
-          price: "2980",
+          name: "まるっとおまかせプラン",
+          price: "8000",
           priceCurrency: "JPY",
-          description: "独自ドメイン・カスタマイズ無制限・会員コンテンツ付き。月額。",
+          description: "施工実績詳細、お客様の声、ブログ、Google Maps、SEO強化。月額。",
+        },
+        {
+          "@type": "Offer",
+          name: "ぜんぶおまかせプラン",
+          price: "15000",
+          priceCurrency: "JPY",
+          description: "AIチャットボット、予約システム、採用ページ、多言語対応、360°ビューア。月額。",
         },
       ],
       areaServed: { "@type": "Country", name: "JP" },
@@ -97,10 +104,10 @@ const jsonLd = {
       mainEntity: [
         {
           "@type": "Question",
-          name: "サイトはどのくらいで完成しますか？",
+          name: "ホームページはどのくらいで完成しますか？",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "テンプレートプラン（¥980）はフォーム入力後、最短で当日〜翌日に完成します。おまかせプラン（¥2,980/月）のカスタマイズは随時対応します。",
+            text: "写真をお送りいただいてから最短翌日で完成します。制作費は0円、月額3,000円からご利用いただけます。",
           },
         },
         {
@@ -108,15 +115,15 @@ const jsonLd = {
           name: "解約したらサイトは消えますか？",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "いいえ。解約後もサイトは公開されたまま残ります。カスタマイズや会員コンテンツの利用が停止されるだけです。再開はいつでも可能です。",
+            text: "解約月末までサイトは公開されます。再開はいつでも可能です。データは一定期間保管されます。",
           },
         },
         {
           "@type": "Question",
-          name: "コードの知識は必要ですか？",
+          name: "パソコンが苦手でも大丈夫ですか？",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "一切不要です。フォームに名前・画像・SNSリンクなどを入力するだけでサイトが完成します。",
+            text: "はい。写真を送るだけで、あとは全部おまかせです。更新や変更もこちらで対応します。",
           },
         },
       ],

@@ -1,0 +1,119 @@
+{
+  "templateId": "clean-arch",
+  "plan": "lite",
+  "orderId": "",
+  "siteUrl": "",
+  "company": {
+    "name": "高橋設計事務所",
+    "nameEn": "TAKAHASHI DESIGN",
+    "tagline": "空間に、静けさを。",
+    "description": "住宅・店舗・オフィスの建築設計",
+    "phone": "03-0000-0000",
+    "email": "hello@takahashi-design.jp",
+    "address": "東京都目黒区〇〇 3-4-5 2F",
+    "hours": "",
+    "since": "2015",
+    "ceo": "高橋 健一",
+    "ceoTitle": "一級建築士 / 管理建築士",
+    "bio": "高橋設計事務所は、住宅・店舗・オフィスの建築設計を手がける一級建築士事務所です。\n\n「使う人の日常に溶け込む空間」をテーマに、素材の質感と光の入り方を丁寧に設計しています。過剰な装飾を排し、静けさの中に豊かさを感じる建築を。\n\n土地の持つ力を読み取り、周辺環境と呼応する建築をつくること。住む人が年月とともに愛着を深められる空間であること。そのために、一つひとつのプロジェクトに十分な時間をかけて向き合います。",
+    "license": "一級建築士事務所 東京都知事登録 第00000号",
+    "domain": "takahashi-design.jp"
+  },
+  "projects": [
+    {
+      "id": 1,
+      "title": "世田谷の住宅",
+      "titleEn": "House in Setagaya",
+      "category": "住宅",
+      "year": "2025",
+      "description": "南側の庭に向かって大きく開いたLDK。深い軒が夏の日差しを遮り、冬の光を奥まで導く。",
+      "size": "landscape"
+    },
+    {
+      "id": 2,
+      "title": "カフェ ルミエール",
+      "titleEn": "Café Lumière",
+      "category": "店舗",
+      "year": "2024",
+      "description": "路地裏の小さなカフェ。トップライトから落ちる光が、白い壁に時間の移ろいを描く。",
+      "size": "portrait"
+    },
+    {
+      "id": 3,
+      "title": "鎌倉の住宅",
+      "titleEn": "House in Kamakura",
+      "category": "住宅",
+      "year": "2024",
+      "description": "海を望む丘の上に建つ週末住宅。スキップフロアが、一つの空間にさまざまな居場所をつくる。",
+      "size": "landscape"
+    },
+    {
+      "id": 4,
+      "title": "オフィス モノ",
+      "titleEn": "Office MONO",
+      "category": "オフィス",
+      "year": "2024",
+      "description": "IT企業の本社オフィス。集中とコミュニケーションの切り替えを、空間のグラデーションで実現。",
+      "size": "portrait"
+    },
+    {
+      "id": 5,
+      "title": "葉山の住宅",
+      "titleEn": "House in Hayama",
+      "category": "住宅",
+      "year": "2023",
+      "description": "里山の風景に溶け込む平屋。縁側が内と外を曖昧につなぎ、四季を身近に感じる暮らし。",
+      "size": "landscape"
+    },
+    {
+      "id": 6,
+      "title": "ギャラリー 空",
+      "titleEn": "Gallery SORA",
+      "category": "店舗",
+      "year": "2023",
+      "description": "現代美術を扱うギャラリー。白い箱の中に浮かぶ作品を、均質な光が静かに照らす。",
+      "size": "square"
+    },
+    {
+      "id": 7,
+      "title": "目黒の住宅",
+      "titleEn": "House in Meguro",
+      "category": "住宅",
+      "year": "2023",
+      "description": "住宅密集地に建つ都市型住宅。中庭を囲むことで、外に閉じ内に開く静謐な空間を実現。",
+      "size": "portrait"
+    },
+    {
+      "id": 8,
+      "title": "アトリエ K",
+      "titleEn": "Atelier K",
+      "category": "オフィス",
+      "year": "2022",
+      "description": "陶芸家のアトリエ兼住居。土間からつながるアトリエ空間が、暮らしと創作を一つにする。",
+      "size": "landscape"
+    }
+  ],
+  "strengths": [],
+  "style": {
+    "colors": {
+      "primary": "#333333",
+      "accent": "#999999",
+      "background": "#FFFFFF",
+      "text": "#333333",
+      "textMuted": "#999999",
+      "border": "#E5E5E5"
+    },
+    "fonts": {
+      "heading": "'Noto Sans JP', sans-serif",
+      "body": "'Noto Sans JP', sans-serif"
+    },
+    "sizes": {
+      "heading": "lg",
+      "body": "md"
+    },
+    "weights": {
+      "heading": "light",
+      "body": "normal"
+    }
+  }
+}

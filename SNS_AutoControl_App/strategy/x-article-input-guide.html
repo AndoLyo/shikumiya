@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>X（旧Twitter）記事エディタ 入力方法ガイド</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', 'Hiragino Sans', 'Noto Sans JP', sans-serif; background: #0a0a0a; color: #e7e9ea; line-height: 1.8; padding: 40px 20px; }
+  .container { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 2em; margin-bottom: 10px; color: #ffffff; border-bottom: 3px solid #1d9bf0; padding-bottom: 12px; }
+  .subtitle { color: #8899a6; font-size: 0.95em; margin-bottom: 40px; }
+  h2 { font-size: 1.5em; margin: 50px 0 20px; color: #1d9bf0; border-left: 4px solid #1d9bf0; padding-left: 12px; }
+  h3 { font-size: 1.2em; margin: 30px 0 14px; color: #d6d9db; }
+  p { margin-bottom: 16px; color: #c4c8cc; }
+  .highlight { background: #1a2733; border: 1px solid #2a3a4a; border-radius: 12px; padding: 24px; margin: 20px 0; }
+  .highlight-title { font-weight: bold; color: #1d9bf0; font-size: 1.05em; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; }
+  th { background: #1a2733; color: #1d9bf0; padding: 12px 14px; text-align: left; font-size: 0.92em; border-bottom: 2px solid #2a3a4a; }
+  td { padding: 10px 14px; border-bottom: 1px solid #1e2a36; color: #c4c8cc; font-size: 0.92em; vertical-align: top; }
+  tr:hover td { background: #111b24; }
+  code { background: #1a2733; color: #1d9bf0; padding: 2px 8px; border-radius: 4px; font-family: 'Consolas', 'Source Code Pro', monospace; font-size: 0.9em; }
+  pre { background: #0d1117; border: 1px solid #21262d; border-radius: 8px; padding: 20px; overflow-x: auto; margin: 16px 0; font-size: 0.88em; line-height: 1.6; position: relative; }
+  pre code { background: none; padding: 0; color: #c9d1d9; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.82em; font-weight: bold; margin-left: 6px; }
+  .badge-ok { background: #0d3320; color: #3fb950; }
+  .badge-warn { background: #3b2e00; color: #d29922; }
+  .badge-ng { background: #3d1214; color: #f85149; }
+  .method-card { background: #111b24; border: 1px solid #1e2a36; border-radius: 10px; padding: 20px 24px; margin: 16px 0; }
+  .method-card h4 { color: #58a6ff; margin-bottom: 8px; font-size: 1em; }
+  .copy-btn { background: #1d9bf0; color: #fff; border: none; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85em; margin-top: 8px; }
+  .copy-btn:hover { background: #1a8cd8; }
+  .key { display: inline-block; background: #21262d; border: 1px solid #3a424a; border-radius: 5px; padding: 2px 8px; font-size: 0.88em; font-family: monospace; color: #e7e9ea; min-width: 24px; text-align: center; }
+  .summary-box { background: linear-gradient(135deg, #0d1f30 0%, #0a1520 100%); border: 1px solid #1d9bf0; border-radius: 12px; padding: 24px; margin: 24px 0; }
+  .summary-box h3 { color: #1d9bf0; margin-bottom: 12px; }
+  .arrow { color: #1d9bf0; margin: 0 4px; }
+  .note { background: #1a1a00; border-left: 4px solid #d29922; padding: 14px 18px; margin: 16px 0; border-radius: 0 8px 8px 0; color: #d2c68a; font-size: 0.92em; }
+  .toc { background: #111b24; border-radius: 10px; padding: 20px 28px; margin: 30px 0; }
+  .toc h3 { margin-bottom: 12px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 6px; }
+  .toc a { color: #58a6ff; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>X（旧Twitter）記事エディタ<br>入力方法ガイド</h1>
+<p class="subtitle">Xの記事に文字の装飾やリンクを入れるには？ 全入力方法を実際にテストした結果をまとめました。</p>
+
+<div class="toc">
+<h3>📖 もくじ</h3>
+<ol>
+<li><a href="#overview">X記事エディタでできること一覧</a></li>
+<li><a href="#toolbar">方法① ツールバー（画面上部のボタン）で入力</a></li>
+<li><a href="#shortcut">方法② キーボードショートカットで入力</a></li>
+<li><a href="#markdown">方法③ 記号を打って自動変換（Markdown風）</a></li>
+<li><a href="#paste-html">方法④ 書式つきテキストをコピペで入力</a></li>
+<li><a href="#paste-js">方法⑤ JavaScript（プログラム）で入力</a></li>
+<li><a href="#ng">対応していないもの（入れても無視されるもの）</a></li>
+<li><a href="#best">結論：おすすめの入力方法は？</a></li>
+</ol>
+</div>
+
+<!-- ========== 1. 概要 ========== -->
+<h2 id="overview">1. X記事エディタでできること一覧</h2>
+<p>X記事エディタは、普通のツイート（ポスト）とは違い、文字を<strong>太くしたり</strong>、<em>斜めにしたり</em>、<del>打ち消したり</del>できます。使える装飾の一覧がこちらです。</p>
+
+<table>
+<tr><th>装飾の名前</th><th>どういう見た目になるか</th><th>対応？</th></tr>
+<tr><td><strong>太字（ボールド）</strong></td><td>文字が<strong>太く</strong>なる</td><td><span class="badge badge-ok">✅ 対応</span></td></tr>
+<tr><td><strong>斜体（イタリック）</strong></td><td>文字が<em>斜め</em>になる</td><td><span class="badge badge-ok">✅ 対応</span></td></tr>
+<tr><td><strong>下線（アンダーライン）</strong></td><td>文字の下に線が引かれる</td><td><span class="badge badge-ok">✅ 対応</span></td></tr>
+<tr><td><strong>打ち消し線</strong></td><td>文字の上に横線が引かれる（<del>こんな感じ</del>）</td><td><span class="badge badge-ok">✅ 対応</span></td></tr>
+<tr><td><strong>見出し</strong></td><td>大きく太い文字になる（セクションのタイトル向き）</td><td><span class="badge badge-ok">✅ 対応</span></td></tr>
+<tr><td><strong>小見出し</strong></td><td>見出しより少し小さい太字</td><td><span class="badge badge-ok">✅ 対応</span></td></tr>
+<tr><td><strong>引用ブロック</strong></td><td>左に青い縦線がついた引用風の表示</td><td><span class="badge badge-ok">✅ 対応</span></td></tr>
+<tr><td><strong>箇条書き（●）</strong></td><td>先頭に「●」がつくリスト表示</td><td><span class="badge badge-ok">✅ 対応</span></td></tr>
+<tr><td><strong>番号つきリスト</strong></td><td>先頭に「1. 2. 3.」がつくリスト表示</td><td><span class="badge badge-ok">✅ 対応</span></td></tr>
+<tr><td><strong>リンク（URL）</strong></td><td>タップするとWebページに飛ぶ青い文字</td><td><span class="badge badge-ok">✅ 対応</span></td></tr>
+<tr><td><strong>コード表示</strong></td><td>プログラムのソースコードを表示する枠</td><td><span class="badge badge-ng">❌ 非対応</span></td></tr>
+<tr><td><strong>表（テーブル）</strong></td><td>エクセルのような格子状の表</td><td><span class="badge badge-ng">❌ 非対応</span></td></tr>
+</table>
+
+<!-- ========== 2. ツールバー ========== -->
+<h2 id="toolbar">2. 方法① ツールバー（画面上部のボタン）で入力</h2>
+<p>記事エディタの上部にある<strong>アイコンが並んだバー</strong>を使う方法です。マウスでボタンを押すだけなので、一番わかりやすい方法です。</p>
+
+<h3>🔤 文字の装飾ボタン（左側）</h3>
+<table>
+<tr><th>ボタンの見た目</th><th>機能</th><th>使い方</th></tr>
+<tr><td><strong>B</strong></td><td>太字にする</td><td>①ボタンを押す → ②文字を打つ → ③もう一度ボタンを押して解除</td></tr>
+<tr><td><em>I</em></td><td>斜体にする</td><td>同上</td></tr>
+<tr><td><del>S</del></td><td>打ち消し線</td><td>同上</td></tr>
+</table>
+
+<h3>📝 ブロック種類の切り替え（ドロップダウン）</h3>
+<p>ツールバーの「本文 ▼」と書かれた部分をクリックすると、メニューが開きます。</p>
+<table>
+<tr><th>選択肢</th><th>どうなるか</th></tr>
+<tr><td><strong>見出し</strong></td><td>カーソルがある行が大きな見出し文字になる</td></tr>
+<tr><td><strong>小見出し</strong></td><td>見出しより一段小さい見出し文字になる</td></tr>
+<tr><td><strong>本文</strong></td><td>通常の文字に戻る</td></tr>
+</table>
+<div class="note">💡 <strong>ポイント：</strong>ドロップダウンは「その行全体」のスタイルを変えます。行の一部分だけを見出しにすることはできません。</div>
+
+<h3>📎 その他のボタン（右側）</h3>
+<table>
+<tr><th>ボタン</th><th>機能</th><th>使い方</th></tr>
+<tr><td>❝（引用マーク）</td><td>引用ブロックにする</td><td>押すと行の左に青いバーが表示される</td></tr>
+<tr><td>● リスト</td><td>箇条書きにする</td><td>押すと行頭に「●」がつく</td></tr>
+<tr><td>1. リスト</td><td>番号つきリストにする</td><td>押すと行頭に番号がつく</td></tr>
+<tr><td>🔗 リンク</td><td>リンクを挿入する</td><td>押すとURL入力画面が出る</td></tr>
+<tr><td>😊 絵文字</td><td>絵文字を選ぶ</td><td>押すと絵文字一覧が出る</td></tr>
+<tr><td>🖼 メディア</td><td>画像・動画を挿入する</td><td>ファイルをアップロードする画面が出る</td></tr>
+</table>
+
+<!-- ========== 3. ショートカット ========== -->
+<h2 id="shortcut">3. 方法② キーボードショートカットで入力</h2>
+<p>キーボードの<strong>複数のキーを同時押し</strong>するだけで装飾できます。マウスを使わず高速に入力できるので、慣れるとこれが一番早いです。</p>
+
+<table>
+<tr><th>やりたいこと</th><th>キー操作（Windowsの場合）</th><th>覚え方のヒント</th></tr>
+<tr><td>太字にする</td><td><code>Ctrl</code> + <code>B</code></td><td>BはBold（太字）の頭文字</td></tr>
+<tr><td>斜体にする</td><td><code>Ctrl</code> + <code>I</code></td><td>IはItalic（斜体）の頭文字</td></tr>
+<tr><td>下線を引く</td><td><code>Ctrl</code> + <code>U</code></td><td>UはUnderline（下線）の頭文字</td></tr>
+<tr><td>打ち消し線</td><td><code>Ctrl</code> + <code>Shift</code> + <code>X</code></td><td>Xは×（バツ）のイメージ</td></tr>
+<tr><td>リンクを入れる</td><td><code>Ctrl</code> + <code>K</code></td><td>KはlinK（リンク）のK</td></tr>
+<tr><td>箇条書きにする</td><td><code>Ctrl</code> + <code>Shift</code> + <code>7</code></td><td>—</td></tr>
+<tr><td>番号つきリストにする</td><td><code>Ctrl</code> + <code>Shift</code> + <code>8</code></td><td>—</td></tr>
+<tr><td>引用ブロックにする</td><td><code>Ctrl</code> + <code>Shift</code> + <code>9</code></td><td>—</td></tr>
+<tr><td>文字を大きくする（見出し方向）</td><td><code>Ctrl</code> + <code>Shift</code> + <code>.</code></td><td>「.」は右矢印（大きくなる方向）</td></tr>
+<tr><td>文字を小さくする（本文方向）</td><td><code>Ctrl</code> + <code>Shift</code> + <code>,</code></td><td>「,」は左矢印（小さくなる方向）</td></tr>
+</table>
+<div class="note">💡 <strong>使い方：</strong>①装飾したい文字を打つ前にキーを押す → ②文字を打つ → ③同じキーをもう一度押して解除。<br>
+すでに打った文字を装飾する場合は、文字をドラッグ選択してからキーを押してもOKです。</div>
+
+<!-- ========== 4. Markdown風 ========== -->
+<h2 id="markdown">4. 方法③ 記号を打って自動変換（Markdown風）</h2>
+<p>行の先頭で<strong>特定の記号を打ってスペースを押す</strong>と、自動的にその行が変換されます。ブログ記事を書くときによく使われる「Markdown」という書き方に似ています。</p>
+
+<table>
+<tr><th>行の先頭に打つ記号</th><th>スペースを押すと…</th><th>補足</th></tr>
+<tr><td><code># </code>（シャープ＋スペース）</td><td>→ 見出しに変わる</td><td>「# 」を打った瞬間に記号は消えて見出しブロックに変換</td></tr>
+<tr><td><code>## </code>（シャープ2つ＋スペース）</td><td>→ 小見出しに変わる</td><td>同上</td></tr>
+<tr><td><code>- </code>（ハイフン＋スペース）</td><td>→ 箇条書きリストに変わる</td><td><code>+ </code>や<code>* </code>でもOK</td></tr>
+<tr><td><code>1. </code>（数字＋ピリオド＋スペース）</td><td>→ 番号つきリストに変わる</td><td><code>2)</code>の形でもOK</td></tr>
+<tr><td><code>&gt; </code>（大なり記号＋スペース）</td><td>→ 引用ブロックに変わる</td><td><code>&gt;&gt; </code>でもOK</td></tr>
+</table>
+<div class="note">⚠️ <strong>注意：</strong>この方法は「本文」モードの空行でのみ動作します。すでに見出しモードになっている行では記号がそのまま文字として入力されます。</div>
+
+<!-- ========== 5. コピペ ========== -->
+<h2 id="paste-html">5. 方法④ 書式つきテキストをコピペで入力</h2>
+<p>他のWebページやメモ帳アプリなどで<strong>装飾つきのテキストをコピー</strong>して、X記事エディタに<strong>Ctrl+V</strong>で貼り付ける方法です。</p>
+
+<h3>貼り付けで反映されるもの・されないもの</h3>
+<table>
+<tr><th>コピー元の装飾</th><th>貼り付け後どうなるか</th></tr>
+<tr><td><strong>太字</strong></td><td><span class="badge badge-ok">✅ そのまま太字で反映</span></td></tr>
+<tr><td><em>斜体</em></td><td><span class="badge badge-ok">✅ そのまま斜体で反映</span></td></tr>
+<tr><td><del>打ち消し線</del></td><td><span class="badge badge-ok">✅ そのまま打ち消し線で反映</span></td></tr>
+<tr><td>リンク（青い文字）</td><td><span class="badge badge-ok">✅ リンクとして反映</span></td></tr>
+<tr><td><u>下線</u></td><td><span class="badge badge-warn">⚠️ 下線は消えて普通の文字になる</span></td></tr>
+<tr><td><code>コード表示</code></td><td><span class="badge badge-ng">❌ 普通の文字になる（非対応）</span></td></tr>
+<tr><td>見出し（大きい文字）</td><td><span class="badge badge-warn">⚠️ 大きさは反映されず普通の文字になる場合あり</span></td></tr>
+</table>
+
+<div class="highlight">
+<div class="highlight-title">💡 おすすめのコピー元</div>
+<p>GoogleドキュメントやNotionなどで書式つきテキストを作成し、そこからコピーしてX記事に貼り付けると、太字・斜体・打ち消し線・リンクがまとめて反映されて便利です。</p>
+</div>
+
+<!-- ========== 6. JavaScript ========== -->
+<h2 id="paste-js">6. 方法⑤ JavaScript（プログラム）で入力</h2>
+<p>ブラウザの<strong>開発者ツール</strong>（F12キーで開くコンソール）を使い、プログラムで直接エディタに書式つきテキストを入れる方法です。自動投稿ツールを作りたい方向けです。</p>
+
+<h3>方法A: HTML形式でペーストする（一番おすすめ）</h3>
+<p>クリップボードに「HTML形式の書式データ」をセットして貼り付ける方法です。太字・斜体・打ち消し線・リンクがすべて一度に反映されます。</p>
+<pre><code id="code1">// エディタ（文章を入力するエリア）を取得
+const editor = document.querySelector('[contenteditable="true"]');
+
+// 貼り付けたいHTMLを用意
+const html = '&lt;p&gt;&lt;b&gt;太字&lt;/b&gt; &lt;i&gt;斜体&lt;/i&gt; &lt;s&gt;打ち消し線&lt;/s&gt; &lt;a href="https://x.com"&gt;リンク&lt;/a&gt;&lt;/p&gt;';
+
+// クリップボードデータを作成
+const clipboardData = new DataTransfer();
+clipboardData.setData('text/html', html);
+clipboardData.setData('text/plain', '太字 斜体 打ち消し線 リンク');
+
+// 貼り付けイベントを実行
+const pasteEvent = new ClipboardEvent('paste', {
+  bubbles: true,
+  cancelable: true,
+  clipboardData: clipboardData
+});
+editor.dispatchEvent(pasteEvent);</code></pre>
+<button class="copy-btn" onclick="copyCode('code1')">📋 このコードをコピー</button>
+
+<h3>方法B: insertHTMLコマンドを使う</h3>
+<p>もっと短いコードで入力する方法です。ただし、対応する装飾が限られます。</p>
+<pre><code id="code2">// 太字・斜体・打ち消し線はOK。下線やコードは反映されない。
+document.execCommand('insertHTML', false,
+  '&lt;b&gt;太字&lt;/b&gt; &lt;i&gt;斜体&lt;/i&gt; &lt;s&gt;打ち消し線&lt;/s&gt;'
+);</code></pre>
+<button class="copy-btn" onclick="copyCode('code2')">📋 このコードをコピー</button>
+
+<h3>方法AとBの比較</h3>
+<table>
+<tr><th></th><th>方法A（ClipboardEvent）</th><th>方法B（insertHTML）</th></tr>
+<tr><td>太字</td><td><span class="badge badge-ok">✅</span></td><td><span class="badge badge-ok">✅</span></td></tr>
+<tr><td>斜体</td><td><span class="badge badge-ok">✅</span></td><td><span class="badge badge-ok">✅</span></td></tr>
+<tr><td>打ち消し線</td><td><span class="badge badge-ok">✅</span></td><td><span class="badge badge-ok">✅</span></td></tr>
+<tr><td>リンク</td><td><span class="badge badge-ok">✅</span></td><td><span class="badge badge-warn">⚠️ 場合による</span></td></tr>
+<tr><td>下線</td><td><span class="badge badge-ng">❌</span></td><td><span class="badge badge-ng">❌</span></td></tr>
+<tr><td>コード量</td><td>やや多い</td><td>少ない</td></tr>
+<tr><td>おすすめ度</td><td>⭐⭐⭐</td><td>⭐⭐</td></tr>
+</table>
+
+<!-- ========== 7. 非対応 ========== -->
+<h2 id="ng">7. 対応していないもの（入れても無視されるもの）</h2>
+<p>以下の装飾は、どの方法で入力しても<strong>X記事エディタでは反映されません</strong>。</p>
+<table>
+<tr><th>装飾</th><th>状況</th></tr>
+<tr><td>コード表示（<code>&lt;code&gt;</code>）</td><td>プレーンテキスト（普通の文字）になる</td></tr>
+<tr><td>表（テーブル）</td><td>エディタに機能がない</td></tr>
+<tr><td>文字色の変更</td><td>エディタに機能がない</td></tr>
+<tr><td>文字サイズの自由指定</td><td>見出し／小見出し／本文の3段階のみ</td></tr>
+<tr><td>画像のインライン表示</td><td>画像は専用の挿入ボタンからのみ</td></tr>
+</table>
+<div class="note">💡 HTML貼り付けで<code>&lt;u&gt;</code>（下線）タグを入れても反映されませんが、<strong>ショートカット（Ctrl+U）なら下線が引けます</strong>。つまり下線は「ペーストでは入らないが、手動操作では使える」特殊な装飾です。</div>
+
+<!-- ========== 8. 結論 ========== -->
+<h2 id="best">8. 結論：おすすめの入力方法は？</h2>
+
+<div class="summary-box">
+<h3>🏆 手動で入力する場合</h3>
+<table>
+<tr><th>場面</th><th>おすすめの方法</th></tr>
+<tr><td>太字・斜体・打ち消し線</td><td><strong>キーボードショートカット</strong>（Ctrl+B / Ctrl+I / Ctrl+Shift+X）が最速</td></tr>
+<tr><td>見出し・小見出し</td><td>行頭で<strong><code># </code>（シャープ＋スペース）</strong>が最速</td></tr>
+<tr><td>箇条書き</td><td>行頭で<strong><code>- </code>（ハイフン＋スペース）</strong>が最速</td></tr>
+<tr><td>引用ブロック</td><td>行頭で<strong><code>&gt; </code>（大なり＋スペース）</strong>が最速</td></tr>
+<tr><td>リンク挿入</td><td><strong>Ctrl+K</strong>でURLと表示テキストを入力</td></tr>
+<tr><td>複数の装飾をまとめて入力</td><td>Googleドキュメント等で書式つきテキストを作り<strong>Ctrl+V</strong>で貼り付け</td></tr>
+</table>
+</div>
+
+<div class="summary-box">
+<h3>🤖 プログラムで自動入力する場合</h3>
+<p><strong>ClipboardEvent + text/html</strong>を使った貼り付けが、最も多くの書式を一度に反映できて確実です。</p>
+<p>使えるHTMLタグ：<code>&lt;b&gt;</code> <code>&lt;i&gt;</code> <code>&lt;s&gt;</code> <code>&lt;a href="..."&gt;</code></p>
+</div>
+
+<div class="highlight">
+<div class="highlight-title">📋 すぐ使えるHTMLテンプレート（コピペ用）</div>
+<pre><code id="code3">&lt;b&gt;太字にしたい文字&lt;/b&gt;
+&lt;i&gt;斜体にしたい文字&lt;/i&gt;
+&lt;s&gt;打ち消したい文字&lt;/s&gt;
+&lt;a href="https://example.com"&gt;リンクの表示テキスト&lt;/a&gt;</code></pre>
+<button class="copy-btn" onclick="copyCode('code3')">📋 このコードをコピー</button>
+</div>
+
+<p style="text-align:center; color:#555; margin-top:60px; font-size:0.85em;">検証日: 2026年3月26日 ｜ X記事エディタ（Draft.jsベース）</p>
+
+</div>
+
+<script>
+function copyCode(id) {
+  const code = document.getElementById(id);
+  const text = code.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = code.parentElement.querySelector('.copy-btn');
+    const orig = btn.textContent;
+    btn.textContent = '✅ コピーしました！';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+</script>
+</body>
+</html>

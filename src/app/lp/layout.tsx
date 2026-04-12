@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "あなた専用のギャラリーサイト｜しくみや",
+  title: "建築業のホームページ制作｜しくみや — 制作費0円・月額3,000円から",
   description:
-    "AIアーティスト向けギャラリーサイト制作。フォーム入力だけで完成、¥980から。ポートフォリオサイトとは何かも丁寧に解説。",
+    "工務店・建設会社・設計事務所のホームページ制作。写真を送るだけで最短翌日完成。制作費0円、月額3,000円から。",
   openGraph: {
-    title: "あなた専用のギャラリーサイト｜しくみや",
+    title: "建築業のホームページ制作｜しくみや — 制作費0円",
     description:
-      "フォーム入力だけであなただけのギャラリーサイトが完成。¥980から。",
+      "写真を送るだけでホームページが完成。制作費0円、月額3,000円から。独自ドメイン全プラン対応。",
     images: ["/lp-service.webp"],
     type: "website",
     siteName: "しくみや by Lyo Vision",
@@ -15,11 +15,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "あなた専用のギャラリーサイト｜しくみや",
+    title: "建築業のホームページ制作｜しくみや — 制作費0円",
     description:
-      "フォーム入力だけであなただけのギャラリーサイトが完成。¥980から。",
+      "写真を送るだけでホームページが完成。制作費0円、月額3,000円から。独自ドメイン全プラン対応。",
     images: ["/lp-service.webp"],
-    creator: "@ando_lyo",
+    creator: "@shikumiya_ai",
   },
 };
 

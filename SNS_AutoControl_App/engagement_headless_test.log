@@ -1,0 +1,73 @@
+02:04:24 [INFO] [クリーンアップ] 既存のchromedriverを終了しました
+02:04:27 [INFO] === エンゲージメントサイクル開始 (ando_lyo) ===
+02:04:27 [INFO] キーワード: ['AI画像生成', 'AIアート 作品', 'Stable Diffusion 生成', 'AIイラスト', '生成AI クリエイター']
+02:04:27 [INFO] --- 次のアクション: like ---
+02:05:30 [ERROR] [検索エラー] AI画像生成: Message: session not created: cannot connect to chrome at 127.0.0.1:58544
+from chrome not reachable; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+	undetected_chromedriver!GetHandleVerifier [0x12dcdf3+10b03]
+	undetected_chromedriver!GetHandleVerifier [0x12dcf24+10c34]
+	undetected_chromedriver!(No symbol) [0x10c1f5e]
+	undetected_chromedriver!(No symbol) [0x10b5758]
+	undetected_chromedriver!(No symbol) [0x10fc472]
+	undetected_chromedriver!(No symbol) [0x10f2785]
+	undetected_chromedriver!(No symbol) [0x10f25a6]
+	undetected_chromedriver!(No symbol) [0x1139cbf]
+	undetected_chromedriver!(No symbol) [0x11394d7]
+	undetected_chromedriver!(No symbol) [0x112d8a6]
+	undetected_chromedriver!(No symbol) [0x1100229]
+	undetected_chromedriver!(No symbol) [0x1100fe4]
+	undetected_chromedriver!GetHandleVerifier [0x15448b9+2785c9]
+	undetected_chromedriver!GetHandleVerifier [0x153feb5+273bc5]
+	undetected_chromedriver!GetHandleVerifier [0x155e06b+291d7b]
+	undetected_chromedriver!GetHandleVerifier [0x12f5cc8+299d8]
+	undetected_chromedriver!GetHandleVerifier [0x12fd9fd+3170d]
+	undetected_chromedriver!GetHandleVerifier [0x12e58c8+195d8]
+	undetected_chromedriver!GetHandleVerifier [0x12e5a92+197a2]
+	undetected_chromedriver!GetHandleVerifier [0x12cee9a+2baa]
+	KERNEL32!BaseThreadInitThunk [0x75b87ba9+19]
+	ntdll!RtlInitializeExceptionChain [0x77d4c3ab+6b]
+	ntdll!RtlClearBits [0x77d4c32f+bf]
+
+02:05:40 [ERROR] [検索エラー] AIアート 作品: ('Connection aborted.', ConnectionResetError(10054, '既存の接続はリモート ホストに強制的に切断されました。', None, 10054, None))
+02:05:40 [ERROR] [検索エラー] Stable Diffusion 生成: [WinError 32] プロセスはファイルにアクセスできません。別のプロセスが使用中です。: 'C:\\Users\\ryoya\\appdata\\roaming\\undetected_chromedriver\\undetected\\chromedriver-win32\\chromedriver.exe' -> 'C:\\Users\\ryoya\\appdata\\roaming\\undetected_chromedriver\\undetected_chromedriver.exe'
+02:05:40 [ERROR] [検索エラー] AIイラスト: [WinError 183] 既に存在するファイルを作成することはできません。: 'C:\\Users\\ryoya\\appdata\\roaming\\undetected_chromedriver\\undetected\\chromedriver-win32\\chromedriver.exe' -> 'C:\\Users\\ryoya\\appdata\\roaming\\undetected_chromedriver\\undetected_chromedriver.exe'
+02:06:44 [ERROR] [検索エラー] 生成AI クリエイター: Message: session not created: cannot connect to chrome at 127.0.0.1:58638
+from chrome not reachable; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+	undetected_chromedriver!GetHandleVerifier [0xadcdf3+10b03]
+	undetected_chromedriver!GetHandleVerifier [0xadcf24+10c34]
+	undetected_chromedriver!(No symbol) [0x8c1f5e]
+	undetected_chromedriver!(No symbol) [0x8b5758]
+	undetected_chromedriver!(No symbol) [0x8fc472]
+	undetected_chromedriver!(No symbol) [0x8f2785]
+	undetected_chromedriver!(No symbol) [0x8f25a6]
+	undetected_chromedriver!(No symbol) [0x939cbf]
+	undetected_chromedriver!(No symbol) [0x9394d7]
+	undetected_chromedriver!(No symbol) [0x92d8a6]
+	undetected_chromedriver!(No symbol) [0x900229]
+	undetected_chromedriver!(No symbol) [0x900fe4]
+	undetected_chromedriver!GetHandleVerifier [0xd448b9+2785c9]
+	undetected_chromedriver!GetHandleVerifier [0xd3feb5+273bc5]
+	undetected_chromedriver!GetHandleVerifier [0xd5e06b+291d7b]
+	undetected_chromedriver!GetHandleVerifier [0xaf5cc8+299d8]
+	undetected_chromedriver!GetHandleVerifier [0xafd9fd+3170d]
+	undetected_chromedriver!GetHandleVerifier [0xae58c8+195d8]
+	undetected_chromedriver!GetHandleVerifier [0xae5a92+197a2]
+	undetected_chromedriver!GetHandleVerifier [0xacee9a+2baa]
+	KERNEL32!BaseThreadInitThunk [0x75b87ba9+19]
+	ntdll!RtlInitializeExceptionChain [0x77d4c3ab+6b]
+	ntdll!RtlClearBits [0x77d4c32f+bf]
+
+02:06:50 [WARNING] [エラー] @grokのポスト取得: ('Connection aborted.', ConnectionResetError(10054, '既存の接続はリモート ホストに強制的に切断されました。', None, 10054, None))
+02:06:50 [INFO] patching driver executable C:\Users\ryoya\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+02:08:05 [WARNING] Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=57851): Failed to establish a new connection: [WinError 10061] 対象のコンピューターによって拒否されたため、接続できませんでした。")': /session/d10867134df02c6e16f677ad474ba0bc/element/f.B2C7D13CBFCAFE0CC6DFDFB7BAA2C332.d.CC17CE03B525B08D8591D4D05391FDB5.e.256/elements
+02:08:09 [WARNING] Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=57851): Failed to establish a new connection: [WinError 10061] 対象のコンピューターによって拒否されたため、接続できませんでした。")': /session/d10867134df02c6e16f677ad474ba0bc/element/f.B2C7D13CBFCAFE0CC6DFDFB7BAA2C332.d.CC17CE03B525B08D8591D4D05391FDB5.e.256/elements
+02:08:13 [WARNING] Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=57851): Failed to establish a new connection: [WinError 10061] 対象のコンピューターによって拒否されたため、接続できませんでした。")': /session/d10867134df02c6e16f677ad474ba0bc/element/f.B2C7D13CBFCAFE0CC6DFDFB7BAA2C332.d.CC17CE03B525B08D8591D4D05391FDB5.e.256/elements
+02:08:22 [WARNING] Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=57851): Failed to establish a new connection: [WinError 10061] 対象のコンピューターによって拒否されたため、接続できませんでした。")': /session/d10867134df02c6e16f677ad474ba0bc/element/f.B2C7D13CBFCAFE0CC6DFDFB7BAA2C332.d.CC17CE03B525B08D8591D4D05391FDB5.e.289/text
+02:08:26 [WARNING] Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=57851): Failed to establish a new connection: [WinError 10061] 対象のコンピューターによって拒否されたため、接続できませんでした。")': /session/d10867134df02c6e16f677ad474ba0bc/element/f.B2C7D13CBFCAFE0CC6DFDFB7BAA2C332.d.CC17CE03B525B08D8591D4D05391FDB5.e.289/text
+02:08:30 [WARNING] Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=57851): Failed to establish a new connection: [WinError 10061] 対象のコンピューターによって拒否されたため、接続できませんでした。")': /session/d10867134df02c6e16f677ad474ba0bc/element/f.B2C7D13CBFCAFE0CC6DFDFB7BAA2C332.d.CC17CE03B525B08D8591D4D05391FDB5.e.289/text
+02:08:47 [WARNING] Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=57851): Failed to establish a new connection: [WinError 10061] 対象のコンピューターによって拒否されたため、接続できませんでした。")': /session/d10867134df02c6e16f677ad474ba0bc/execute/sync
+02:08:51 [WARNING] Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=57851): Failed to establish a new connection: [WinError 10061] 対象のコンピューターによって拒否されたため、接続できませんでした。")': /session/d10867134df02c6e16f677ad474ba0bc/execute/sync
+02:08:55 [WARNING] Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=57851): Failed to establish a new connection: [WinError 10061] 対象のコンピューターによって拒否されたため、接続できませんでした。")': /session/d10867134df02c6e16f677ad474ba0bc/execute/sync
+02:08:59 [WARNING] [接続切れ] ドライバーを再起動します: https://x.com/mazzo

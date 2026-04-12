@@ -1,0 +1,4 @@
+2026-04-08 19:02:46,458 [INFO] Generating draft 1/1...
+2026-04-08 19:03:03,359 [INFO] Draft 1 accepted: score 7.7, pattern=体験報告型
+2026-04-08 19:03:03,359 [INFO] Batch complete: 1 accepted, 0 rejected → C:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\accounts\ando_lyo\drafts\batch_x_20260408_190303.json
+2026-04-08 19:03:03,359 [INFO] Generated 1 posts (score >= 7.0)

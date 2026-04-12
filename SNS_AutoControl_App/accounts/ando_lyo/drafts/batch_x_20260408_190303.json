@@ -1,0 +1,32 @@
+{
+  "accepted": [
+    {
+      "text": "Claude Codeにポートフォリオサイト作らせてみた。\n\nデザイン指示出して、コード生成して、デプロイまで1日。\n\n自分でやってたら多分2週間かかってた。\n\n非エンジニアでもサイト持てる時代、来てるなと思う。\n\n同じように作った人いる？ #ClaudeCode",
+      "pattern": "体験報告型",
+      "theme": "ポートフォリオサイト",
+      "scores": {
+        "hook": 8,
+        "usefulness": 7,
+        "specificity": 7,
+        "tempo": 8,
+        "emotion": 7,
+        "originality": 7,
+        "cta": 8,
+        "platform_fit": 8,
+        "target_fit": 9,
+        "anti_ai": 8
+      },
+      "account": "ando_lyo",
+      "platform": "x",
+      "avg_score": 7.7,
+      "similar": {
+        "is_similar": false,
+        "score": 0.0,
+        "similar_to": ""
+      },
+      "created_at": "2026-04-08T19:03:03.358211"
+    }
+  ],
+  "rejected": [],
+  "generated_at": "2026-04-08T19:03:03.359210"
+}

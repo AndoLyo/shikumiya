@@ -1,0 +1,32 @@
+02:08:17 [INFO] [クリーンアップ] 既存のchromedriverを終了しました
+02:08:20 [INFO] === エンゲージメントサイクル開始 (ando_lyo) ===
+02:08:20 [INFO] キーワード: ['AI画像生成', 'AIアート 作品', 'Stable Diffusion 生成', 'AIイラスト', '生成AI クリエイター']
+02:08:20 [INFO] --- 次のアクション: like ---
+02:08:21 [INFO] patching driver executable C:\Users\ryoya\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+02:09:24 [ERROR] [検索エラー] AI画像生成: Message: session not created: cannot connect to chrome at 127.0.0.1:54102
+from chrome not reachable; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+	undetected_chromedriver!GetHandleVerifier [0x4acdf3+10b03]
+	undetected_chromedriver!GetHandleVerifier [0x4acf24+10c34]
+	undetected_chromedriver!(No symbol) [0x291f5e]
+	undetected_chromedriver!(No symbol) [0x285758]
+	undetected_chromedriver!(No symbol) [0x2cc472]
+	undetected_chromedriver!(No symbol) [0x2c2785]
+	undetected_chromedriver!(No symbol) [0x2c25a6]
+	undetected_chromedriver!(No symbol) [0x309cbf]
+	undetected_chromedriver!(No symbol) [0x3094d7]
+	undetected_chromedriver!(No symbol) [0x2fd8a6]
+	undetected_chromedriver!(No symbol) [0x2d0229]
+	undetected_chromedriver!(No symbol) [0x2d0fe4]
+	undetected_chromedriver!GetHandleVerifier [0x7148b9+2785c9]
+	undetected_chromedriver!GetHandleVerifier [0x70feb5+273bc5]
+	undetected_chromedriver!GetHandleVerifier [0x72e06b+291d7b]
+	undetected_chromedriver!GetHandleVerifier [0x4c5cc8+299d8]
+	undetected_chromedriver!GetHandleVerifier [0x4cd9fd+3170d]
+	undetected_chromedriver!GetHandleVerifier [0x4b58c8+195d8]
+	undetected_chromedriver!GetHandleVerifier [0x4b5a92+197a2]
+	undetected_chromedriver!GetHandleVerifier [0x49ee9a+2baa]
+	KERNEL32!BaseThreadInitThunk [0x75b87ba9+19]
+	ntdll!RtlInitializeExceptionChain [0x77d4c3ab+6b]
+	ntdll!RtlClearBits [0x77d4c32f+bf]
+

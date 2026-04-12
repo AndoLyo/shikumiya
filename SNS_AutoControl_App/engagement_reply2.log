@@ -1,0 +1,30 @@
+07:23:08 [INFO] === reply ===
+07:23:09 [INFO] patching driver executable C:\Users\ryoya\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+07:55:04 [INFO] [リプライスキップ] @SokiBase: 投稿内容がターゲット外
+07:55:04 [INFO] [リプライスキップ] @aihiro_OT: 投稿内容がターゲット外
+07:55:12 [INFO] [リプライスキップ] @KuonMii_Love: 投稿内容がターゲット外
+07:55:31 [INFO] [リプライ] @alanyan_666 (品質:67点): Google AI Pro、自分も気になってました。Stable Diffusionとどう違うのか、...
+07:56:01 [INFO] [リプライ] @SoundJourneyDS (品質:38点): 自分も生成AIについては、正直まだよくわかってない部分もあります。クリエイターの方々がどう活用してい...
+07:56:17 [INFO] [リプライスキップ] @ShuChan_Nel: 投稿内容がターゲット外
+07:56:28 [INFO] [リプライ] @VerdeNaoAI (品質:61点): 生成AIの仕組み、自分も正直まだよくわかってない部分が多いです。でも、アイデアを形にするのが楽しくな...
+07:56:57 [INFO] [リプライ] @Kiyoshileo (品質:31点): AI生成画像の拡散、怖いですね。自分も気をつけようと思いました。...
+07:57:16 [INFO] [リプライスキップ] @hlm2z8: 投稿内容がターゲット外
+07:57:16 [INFO] [リプライスキップ] @manji_yuu: 投稿内容がターゲット外
+07:57:28 [INFO] [リプライ] @pictureh4ih4i (品質:73点): 自分もAIイラスト、最近始めたばかりなんです。正直まだよくわかってない部分もあるんですけど、楽しいで...
+07:57:45 [INFO] [リプライ完了] 5/5件
+07:57:45 [INFO] [分析レポート] c:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\accounts\ando_lyo\engagement_report.md
+
+=== 結果 (ando_lyo) ===
+  発見:    0件
+  いいね:  0件
+  リプライ: 5件
+  フォロー: 0件
+  引用RT:  0件
+Traceback (most recent call last):
+  File "c:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\run_engagement.py", line 406, in <module>
+    main()
+  File "c:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\run_engagement.py", line 399, in main
+    generate_analytics_report(args.account, db, result, scores)
+  File "c:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\run_engagement.py", line 184, in generate_analytics_report
+    print(f"\n\U0001f4ca 分析レポート保存: {report_path}")
+UnicodeEncodeError: 'cp932' codec can't encode character '\U0001f4ca' in position 2: illegal multibyte sequence

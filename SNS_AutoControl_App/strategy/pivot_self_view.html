@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自分視点 — ピボット戦略（みかっち共有用）</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --accent: #e17055;
+    --accent2: #fdcb6e;
+    --text: #e8e8e8;
+    --dim: #8a8fa0;
+    --border: #2d3148;
+    --blue: #0984e3;
+    --green: #00b894;
+    --purple: #6c5ce7;
+    --teal: #00cec9;
+    --gray: #636e72;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 4px;
+    color: var(--accent);
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--dim);
+    font-size: 13px;
+    margin-bottom: 32px;
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(225,112,85,0.15);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+  }
+  .section {
+    margin-bottom: 32px;
+  }
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    padding-left: 12px;
+    border-left: 4px solid var(--accent);
+  }
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 22px;
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .card h3 {
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+  .card ul { list-style: none; font-size: 14px; }
+  .card li { padding: 4px 0 4px 18px; position: relative; }
+  .card li::before { content: '•'; position: absolute; left: 0; color: var(--accent); }
+  .highlight {
+    background: rgba(225,112,85,0.1);
+    border: 1px solid rgba(225,112,85,0.3);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+  .highlight .label {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .quote {
+    border-left: 3px solid var(--accent2);
+    padding: 12px 16px;
+    background: rgba(253,203,110,0.05);
+    border-radius: 0 8px 8px 0;
+    margin: 10px 0;
+    font-size: 14px;
+    color: var(--accent2);
+  }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  /* ===== Problem ===== */
+  .problem-item {
+    background: rgba(225,112,85,0.06);
+    border: 1px solid rgba(225,112,85,0.15);
+    border-radius: 10px;
+    padding: 16px;
+    font-size: 14px;
+  }
+  .problem-item .p-label {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  /* ===== Assets ===== */
+  .asset-tag {
+    display: inline-block;
+    background: var(--border);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin: 3px 4px 3px 0;
+  }
+
+  /* ===== Funnel ===== */
+  .phase-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 22px;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    position: relative;
+    padding-left: 30px;
+  }
+  .phase-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: 4px 0 0 4px;
+  }
+  .phase-card.p0::before { background: var(--gray); }
+  .phase-card.p1::before { background: var(--blue); }
+  .phase-card.p2::before { background: var(--accent); }
+  .phase-card.p3::before { background: var(--purple); }
+  .phase-card.p4::before { background: var(--teal); }
+  .phase-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .p0 .phase-label { color: var(--gray); }
+  .p1 .phase-label { color: var(--blue); }
+  .p2 .phase-label { color: var(--accent); }
+  .p3 .phase-label { color: var(--purple); }
+  .p4 .phase-label { color: var(--teal); }
+  .phase-card h4 { font-size: 15px; margin-bottom: 8px; }
+  .phase-card ul { list-style: none; font-size: 13px; }
+  .phase-card li { padding: 3px 0 3px 16px; position: relative; }
+  .phase-card li::before { content: '›'; position: absolute; left: 0; color: var(--dim); }
+  .arrow-down { text-align: center; color: var(--dim); font-size: 20px; margin: 2px 0; }
+
+  /* ===== Account ===== */
+  .acct { border-top: 3px solid var(--dim); }
+  .acct.new { border-top: 3px solid var(--teal); }
+
+  /* ===== Pricing ===== */
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  .price-row:last-child { border: none; }
+  .price-val { color: var(--purple); font-weight: 600; }
+
+  /* ===== Todo ===== */
+  .todo-item {
+    padding: 8px 0;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .todo-item:last-child { border: none; }
+  .todo-check {
+    width: 18px; height: 18px;
+    border: 2px solid var(--dim);
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .footer {
+    text-align: center;
+    color: var(--dim);
+    font-size: 11px;
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 600px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1>自分視点 — ピボット戦略</h1>
+<p class="subtitle">みかっちコンサル + くろ子壁打ち ／ 最終更新: 2026-03-26 ／ 共有・振り返り用</p>
+
+<!-- ===== 現状認識 ===== -->
+<div class="section">
+  <div class="section-title">現状の課題</div>
+  <div class="grid2">
+    <div class="problem-item">
+      <div class="p-label">届ける先が間違ってる</div>
+      AI界隈は発信者が多すぎて埋もれる。「Claude Codeでこんなの作った！」は毎日流れてくる。同じ池で釣り糸を垂らしている状態。
+    </div>
+    <div class="problem-item">
+      <div class="p-label">自分の定義が「やってること説明」</div>
+      「AIに仕事を任せる過程を見せる人」はお客さんにとっての価値じゃない。ラーメン屋で言えば「ラーメンを作る過程を見せる人」になっている。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 持っている武器 ===== -->
+<div class="section">
+  <div class="section-title">自分の武器（棚卸し）</div>
+  <div class="card">
+    <div style="margin-bottom: 10px;">
+      <span class="asset-tag">AI画像生成歴3年</span>
+      <span class="asset-tag">Midjourney / SD / Flux 全対応</span>
+      <span class="asset-tag">プロンプト設計のプロ</span>
+      <span class="asset-tag">Claude Codeで開発できる</span>
+      <span class="asset-tag">SDプロンプト集（実績あり）</span>
+      <span class="asset-tag">SNS_AutoControl_App（稼働中）</span>
+      <span class="asset-tag">note記事の仕組み</span>
+      <span class="asset-tag">Discord運営経験</span>
+    </div>
+    <div class="quote">
+      売れた実績: SDプロンプト集 → ワンクリ入力、作業時間1/10<br>
+      → 解決したのは「プロンプト考えるのめんどい・時間かかる」
+    </div>
+  </div>
+</div>
+
+<!-- ===== ピボット方針 ===== -->
+<div class="section">
+  <div class="section-title">ピボット方針</div>
+  <div class="highlight">
+    <div class="label">核心（ラーメン屋理論）</div>
+    <div style="font-size: 15px; margin-bottom: 8px;">
+      × 「ラーメンを作る過程を見せる人」→ 何しに来るの？<br>
+      ○ 「美味いラーメンを作る人」→ 食べに来る
+    </div>
+    <div style="font-size: 14px; color: var(--accent2); font-weight: 600;">
+      → 「何が作れるか」ではなく「誰の何を解決するか」
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="card">
+      <h3>釣り場を変える</h3>
+      <ul>
+        <li>AI界隈 → クリエイター界隈へ</li>
+        <li>イラストレーター、デザイナー、ハンドメイド作家、写真家</li>
+        <li>競合が圧倒的に少ない</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>自分の定義を変える</h3>
+      <ul>
+        <li>× AIに仕事を任せる過程を見せる人</li>
+        <li>○ コードが書けない人にAIでモノの作り方を教える人</li>
+        <li>ただしこれは最終ゴール</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>今のフェーズ</h3>
+      <ul>
+        <li>「開発したい人を集める」段階</li>
+        <li>まず信頼関係を作る</li>
+        <li>有料級を無料で出す</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ブランド構造 ===== -->
+<div class="section">
+  <div class="section-title">ブランド構造</div>
+  <div class="card" style="text-align: center;">
+    <div style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">
+      <span style="color: var(--accent2);">しくみや</span>（お店・ブランド名）
+    </div>
+    <div style="font-size: 14px; color: var(--dim); margin-bottom: 8px;">↓ 管理者</div>
+    <div style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">
+      <span style="color: var(--accent);">Lyo</span>（中の人）
+    </div>
+    <div style="font-size: 14px; color: var(--dim); margin-bottom: 8px;">↓ コンテンツ</div>
+    <div style="font-size: 16px; font-weight: 700;">
+      <span style="color: var(--purple);">AI Creation Lab</span>
+    </div>
+    <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; color: var(--dim);">
+      note名もしくみや系に変更予定（画像生成＋開発系併用で継続）
+    </div>
+  </div>
+</div>
+
+<!-- ===== アカウント設計 ===== -->
+<div class="section">
+  <div class="section-title">アカウント切り分け</div>
+  <div class="grid2">
+    <div class="card acct">
+      <h3>🔹 メイン — @ando_lyo</h3>
+      <ul>
+        <li>AI×自動化の切り口</li>
+        <li>Claude Code、AI開発、自動化の裏側</li>
+        <li>AI用語OK</li>
+        <li>開発者仲間的トーン</li>
+        <li>目的: 仲間・認知</li>
+      </ul>
+    </div>
+    <div class="card acct new">
+      <h3>🔸 メイン（今注力中）— @shikumiya_ai</h3>
+      <ul>
+        <li>クリエイター向け（ポートフォリオ・SNS・仕組み化）</li>
+        <li>「こんなことできるよ」を見せる</li>
+        <li>相手の言葉で話す</li>
+        <li>教える・寄り添うトーン</li>
+        <li>目的: 信頼 → 高単価商品</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card" style="text-align: center;">
+    <div style="font-size: 13px; color: var(--dim); margin-bottom: 6px;">判断基準</div>
+    <div style="font-size: 14px;">
+      「この投稿を見て欲しいと思う人は？」<br>
+      <span style="color: var(--dim);">AIツール使いこなしたい人 → @ando_lyo</span> ／
+      <span style="color: var(--teal);">作品あるけど発信で困ってる人 → @shikumiya_ai（今注力中）</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== プロフィール ===== -->
+<div class="section">
+  <div class="section-title">新アカ プロフィール（確定案）</div>
+  <div class="card" style="max-width: 480px; margin: 0 auto;">
+    <div style="font-size: 17px; font-weight: 700; margin-bottom: 4px;">しくみや（Lyo）</div>
+    <div style="font-size: 12px; color: var(--dim); margin-bottom: 14px;">@shikumiya_ai</div>
+    <div style="font-size: 14px; line-height: 1.9; margin-bottom: 12px;">
+      <span style="color: var(--green);">クリエイターのめんどいを仕組みで消す人。</span><br>
+      AI画像生成歴3年 / ポートフォリオ・SNS・発信の自動化
+    </div>
+    <div style="color: var(--purple); font-weight: 600; font-size: 14px;">興味ある人は↓</div>
+  </div>
+</div>
+
+<!-- ===== コンテンツ導線（みかっち提案） ===== -->
+<div class="section">
+  <div class="section-title">コンテンツ導線（みかっち提案）</div>
+  <div class="card">
+    <h3>記事の自然な流れ</h3>
+    <div style="font-size: 14px; margin-top: 8px;">
+      ① 今話題のClaude Code、なんでもできるよ<br>
+      ② 画像生成もClaude Codeでできるよ<br>
+      ③ なんなら、Claude Codeでポートフォリオも作れちゃうよ<br>
+      → どう？興味ない？
+    </div>
+    <div class="quote" style="margin-top: 12px;">
+      みかっちの分析: 「ツールは問わない。開発はみんながする」は最終ゴール。<br>
+      今は「開発がしたいと思うみんなを集めるフェーズ」。
+    </div>
+  </div>
+</div>
+
+<!-- ===== ファネル ===== -->
+<div class="section">
+  <div class="section-title">ファネル段階構造</div>
+
+  <div class="phase-card p0">
+    <div class="phase-label">PHASE 0</div>
+    <h4>認知 — まず知ってもらう</h4>
+    <ul>
+      <li>クリエイター界隈のインフルエンサーをフォロー・いいね</li>
+      <li>最初の10日はシャドウバン対策（フォロー・いいねのみ）</li>
+      <li>既存noteメンバーにDMで悩みヒアリング → コンテンツのネタに</li>
+    </ul>
+  </div>
+  <div class="arrow-down">↓</div>
+
+  <div class="phase-card p1">
+    <div class="phase-label">PHASE 1</div>
+    <h4>信頼構築 — 有料級を無料公開</h4>
+    <ul>
+      <li>成果物をちゃんと見せる + 過程をわかりやすく説明</li>
+      <li>note記事 + テンプレート配布 + 作ったものの公開</li>
+      <li>引き換えにリポスト・コメント等の集客協力をもらう</li>
+      <li>「この人の情報、ガチで使える」を証明</li>
+    </ul>
+  </div>
+  <div class="arrow-down">↓</div>
+
+  <div class="phase-card p2">
+    <div class="phase-label">PHASE 2</div>
+    <h4>鬼集客 — 期間限定リーチ</h4>
+    <ul>
+      <li>noteの「期間限定無料公開」機能で時限公開</li>
+      <li>Xで「リポストしたら無料ゲット」</li>
+      <li>イベント型企画（チャレンジ等）</li>
+      <li>期限切れ → 有料に戻す → 見逃した人は次を待つ</li>
+    </ul>
+  </div>
+  <div class="arrow-down">↓</div>
+
+  <div class="phase-card p3">
+    <div class="phase-label">PHASE 3</div>
+    <h4>高単価 — 信頼がある状態で売る</h4>
+    <ul>
+      <li>ツール単体を複数出す（必要なものだけ選べる・ただし割高）</li>
+      <li>パッケージ（全部入り + 特典 = お得感）</li>
+      <li>作り切り型 → 自分の時間を売らない</li>
+    </ul>
+  </div>
+  <div class="arrow-down">↓</div>
+
+  <div class="phase-card p4">
+    <div class="phase-label">PHASE 4</div>
+    <h4>ストック収益 — 月額メンバーシップ</h4>
+    <ul>
+      <li>Discord連携コミュニティ（購入者限定チャンネル）</li>
+      <li>新ツール・テンプレートの継続配信</li>
+      <li>メンバーの悩みをDMで聞く → 次の商品のネタに</li>
+      <li>月額 1,000〜3,000円</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 価格設計 ===== -->
+<div class="section">
+  <div class="section-title">Phase 3: 価格設計（案）</div>
+  <div class="grid2">
+    <div class="card">
+      <h3>🔹 単体購入</h3>
+      <div class="price-row"><span>プロンプト集</span><span class="price-val">¥8,000</span></div>
+      <div class="price-row"><span>ポートフォリオ構築キット</span><span class="price-val">¥12,000</span></div>
+      <div class="price-row"><span>SNS自動投稿セットアップ</span><span class="price-val">¥10,000</span></div>
+      <div class="price-row"><span>画像管理・整理ツール</span><span class="price-val">¥6,000</span></div>
+      <div style="margin-top: 10px; padding-top: 10px; border-top: 2px solid var(--border); font-weight: 700; display: flex; justify-content: space-between;">
+        <span>合計</span><span class="price-val">¥36,000</span>
+      </div>
+    </div>
+    <div class="card" style="border: 2px solid var(--purple); position: relative;">
+      <div style="position: absolute; top: -10px; right: 14px; background: var(--purple); color: white; font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 5px;">おすすめ</div>
+      <h3>🔸 全部入りパッケージ</h3>
+      <div class="price-row"><span>上記4点すべて含む</span><span style="color: var(--dim);">含む</span></div>
+      <div style="margin-top: 10px; padding-top: 10px; border-top: 2px solid var(--border); font-weight: 700; display: flex; justify-content: space-between;">
+        <span>パッケージ価格</span>
+        <span><span style="text-decoration: line-through; color: var(--dim); font-size: 13px; margin-right: 6px;">¥36,000</span><span class="price-val" style="font-size: 18px;">¥25,000</span></span>
+      </div>
+      <div style="margin-top: 10px; padding: 8px 12px; background: rgba(108,92,231,0.1); border-radius: 6px; font-size: 12px; color: var(--purple);">
+        🎁 特典: 限定テンプレート集 + セットアップガイド + 優先サポート
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== プロモーション戦略 ===== -->
+<div class="section">
+  <div class="section-title">プロモーション戦略 — 認知加速</div>
+
+  <div class="card" style="border-top: 3px solid var(--accent2);">
+    <h3>🔥 Xプロモーション（オーガニック）</h3>
+    <div class="grid2" style="margin-top: 12px;">
+      <div>
+        <div style="font-size: 12px; color: var(--accent2); font-weight: 700; margin-bottom: 6px;">バズ狙い投稿パターン</div>
+        <ul>
+          <li>共感「あるある」系 →「絵は描けるのにサイトだけ3年放置してる」</li>
+          <li>Before/After → 成果物の変化を画像で見せる</li>
+          <li>数字インパクト →「作業時間1/10」「30分でサイト完成」</li>
+          <li>スレッド投稿 → 7ステップ解説（保存・ブックマークされやすい）</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size: 12px; color: var(--accent2); font-weight: 700; margin-bottom: 6px;">拡散企画</div>
+        <ul>
+          <li>「リポストで無料テンプレ配布」</li>
+          <li>「感想くれた人に〇〇プレゼント」</li>
+          <li>引用RT誘導 →「あなたのポートフォリオ、何で作ってる？」</li>
+          <li>イベント型 →「1週間チャレンジ」企画</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="border-top: 3px solid var(--blue);">
+    <h3>🔄 クロスプラットフォーム連携</h3>
+    <div style="font-size: 14px; margin-top: 8px;">
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
+        <span class="asset-tag">IG → X誘導</span>
+        <span class="asset-tag">Threads → X誘導</span>
+        <span class="asset-tag">note → Xシェア</span>
+        <span class="asset-tag">X → note誘導</span>
+      </div>
+      <ul>
+        <li>IG/Threadsの投稿をX向けにリライトして展開（コピペNG・各プラットフォーム最適化）</li>
+        <li>note記事のダイジェスト → Xスレッドで公開 → 全文はnoteへ誘導</li>
+        <li>X広告: 反応が良かった投稿をプロモポストとしてブースト（日500〜1,000円でテスト）</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="border-top: 3px solid var(--purple);">
+    <h3>📊 投稿サイクル（SNS_AutoControl_App連携）</h3>
+    <div style="font-size: 14px; margin-top: 8px;">
+      <ul>
+        <li>日常投稿（自動化）: 共感・あるある・Tips系 → SNS_AutoControl_Appで自動生成＆投稿</li>
+        <li>バズ狙い（週1〜2回）: Before/After・数字系 → 手動で仕込み、反応を観察</li>
+        <li>企画投稿（月1〜2回）: リポスト企画・チャレンジ → 手動で設計、自動で拡散追跡</li>
+        <li>note連動（週1回）: 記事ダイジェストをXスレッドで → 自動生成、手動で微調整</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="highlight">
+    <div class="label">SNS_AutoControl_Appの強み</div>
+    <div style="font-size: 14px;">
+      2アカウント（@ando_lyo / @shikumiya_ai）× 3プラットフォーム（X / IG / Threads）を<br>
+      同時運用できる。プロモーションの「量」は自動化でカバーし、「質」は手動で磨く。
+    </div>
+  </div>
+
+  <div class="card" style="border-top: 3px solid var(--green);">
+    <h3>✅ 技術基盤の完成状況（2026-03-26 更新）</h3>
+    <div style="font-size: 14px; margin-top: 8px;">
+      <ul>
+        <li><strong style="color: var(--green);">X自動化 完了</strong> — undetected-chromedriver + Chrome専用プロファイルで検出回避。テキスト/画像投稿・いいね・リプライ・フォロー・リポスト・引用リポスト・記事作成、全機能テスト済み</li>
+        <li><strong style="color: var(--green);">IG/Threads 2アカウント対応 完了</strong> — @ando_lyo_ai + @shikumiya.ai 両方のOAuthトークン取得済み。Meta Graph APIで投稿・コメント・返信・いいね対応</li>
+        <li><strong style="color: var(--green);">config統合 完了</strong> — get_account("shikumiya_ai") で全プラットフォームの認証情報を一括切り替え</li>
+        <li><strong style="color: var(--green);">プロフィール設計 完了</strong> — 両アカウントのX/IG/Threads/note用プロフィール文を確定（accounts/*/profile.md）</li>
+      </ul>
+      <div style="margin-top: 10px; padding: 8px 12px; background: rgba(0,184,148,0.1); border-radius: 6px; font-size: 12px; color: var(--green);">
+        → 2アカウント × 3プラットフォームの自動投稿インフラが稼働可能状態
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 重要方針メモ ===== -->
+<div class="section">
+  <div class="section-title">重要方針メモ</div>
+  <div class="card">
+    <ul>
+      <li>情報の価値 = 信頼関係。「誰が」発するかに価値が出てきている</li>
+      <li>無料 → 情報だけ渡す（人が介入しない）／ 有料 → 情報＋やり方を教える（人が介入する）</li>
+      <li>手順書のレベルは最初に決める（初心者→小学生、中級→中学生、上級→高校生）</li>
+      <li>ターゲットは記事ごとに設定（界隈はクリエイター界隈で固定）</li>
+      <li>低単価は不要。情報はすぐ古くなる。スピード重視</li>
+      <li>「今だけ」のリーチで集客ハードルを下げる</li>
+      <li>note × KADOKAWA 提携 → 書籍化チャンスも視野に</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 未解決 ===== -->
+<div class="section">
+  <div class="section-title">未解決の問い</div>
+  <div class="card">
+    <div class="todo-item"><div class="todo-check"></div>ターゲット界隈の具体的リサーチ</div>
+    <div class="todo-item"><div class="todo-check"></div>CTA「興味ある人は↓」の導線先を確定</div>
+    <div class="todo-item"><div class="todo-check"></div>Phase 1 で出す最初の無料記事テーマ</div>
+    <div class="todo-item"><div class="todo-check"></div>Phase 2 の「リポストで無料ゲット」の具体設計</div>
+    <div class="todo-item"><div class="todo-check"></div>Phase 3 の商品ラインナップ確定</div>
+    <div class="todo-item"><div class="todo-check" style="background: var(--green); border-color: var(--green);"></div><span style="color: var(--dim); text-decoration: line-through;">SNS_AutoControl_Appの投稿生成プロンプトへの反映</span> <span style="color: var(--green); font-size: 12px;">✓ 完了 (3/26)</span></div>
+    <div class="todo-item"><div class="todo-check"></div>アイコン・ビジュアルの仕上げ</div>
+    <div class="todo-item"><div class="todo-check"></div>IG/Threads長期トークンの自動更新（60日期限・4アカウント分）</div>
+    <div class="todo-item"><div class="todo-check"></div>ヘッダー画像の作成（エージェント組織図 or 自動化全体像）</div>
+    <div class="todo-item"><div class="todo-check"></div>固定ポストの作成（「AI社員24人で事業を回している話」）</div>
+  </div>
+</div>
+
+<div class="footer">
+  自分視点レポート — みかっち共有用<br>
+  Generated by くろ子（Claude Code）— 初版 2026-03-25 / 更新 2026-03-26
+</div>
+
+</body>
+</html>

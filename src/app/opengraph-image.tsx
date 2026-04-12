@@ -59,7 +59,7 @@ export default async function Image() {
 
         {/* Description */}
         <div style={{ fontSize: "14px", color: "#666666", marginTop: "12px" }}>
-          テンプレート10種 無料公開中 — by Lyo Vision
+          制作費0円のホームページ制作SaaS — by Lyo Vision
         </div>
       </div>
     ),

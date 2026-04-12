@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ターゲット視点 — クリエイターから見た「しくみや」</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --accent: #00b894;
+    --accent2: #55efc4;
+    --text: #e8e8e8;
+    --dim: #8a8fa0;
+    --border: #2d3148;
+    --purple: #6c5ce7;
+    --blue: #0984e3;
+    --pain: #e17055;
+    --solve: #00b894;
+    --teal: #00cec9;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 4px;
+    color: var(--accent);
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--dim);
+    font-size: 13px;
+    margin-bottom: 32px;
+  }
+  .section { margin-bottom: 32px; }
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    padding-left: 12px;
+    border-left: 4px solid var(--accent);
+  }
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 22px;
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .card h3 { font-size: 15px; margin-bottom: 10px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  /* ===== Persona ===== */
+  .persona-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 22px;
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent);
+  }
+  .persona-card .name {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .persona-card .desc {
+    font-size: 13px;
+    color: var(--dim);
+    margin-bottom: 12px;
+  }
+  .pain-tag {
+    display: inline-block;
+    background: rgba(225,112,85,0.12);
+    color: var(--pain);
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin: 2px 4px 2px 0;
+  }
+  .need-tag {
+    display: inline-block;
+    background: rgba(0,184,148,0.12);
+    color: var(--solve);
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin: 2px 4px 2px 0;
+  }
+
+  /* ===== Journey ===== */
+  .journey-step {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    position: relative;
+    padding-left: 28px;
+  }
+  .journey-step::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: 4px 0 0 4px;
+  }
+  .journey-step.j1::before { background: var(--pain); }
+  .journey-step.j2::before { background: #fdcb6e; }
+  .journey-step.j3::before { background: var(--blue); }
+  .journey-step.j4::before { background: var(--accent); }
+  .journey-step.j5::before { background: var(--purple); }
+  .journey-step.j6::before { background: var(--teal); }
+  .journey-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .j1 .journey-label { color: var(--pain); }
+  .j2 .journey-label { color: #fdcb6e; }
+  .j3 .journey-label { color: var(--blue); }
+  .j4 .journey-label { color: var(--accent); }
+  .j5 .journey-label { color: var(--purple); }
+  .j6 .journey-label { color: var(--teal); }
+  .journey-step h4 { font-size: 14px; margin-bottom: 6px; }
+  .journey-step p { font-size: 13px; color: var(--dim); }
+  .journey-step .thought {
+    font-size: 13px;
+    color: var(--text);
+    font-style: italic;
+    margin-top: 6px;
+    padding-left: 12px;
+    border-left: 2px solid var(--border);
+  }
+  .arrow-down { text-align: center; color: var(--dim); font-size: 20px; margin: 2px 0; }
+
+  /* ===== Touchpoint ===== */
+  .touch-grid {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    gap: 0;
+    font-size: 13px;
+  }
+  .touch-header {
+    padding: 10px 14px;
+    font-weight: 700;
+    font-size: 12px;
+    background: var(--card);
+    border-bottom: 2px solid var(--border);
+    color: var(--dim);
+  }
+  .touch-cell {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+  }
+  .touch-cell.pain-c { color: var(--pain); }
+  .touch-cell.solve-c { color: var(--accent); }
+
+  /* ===== Message ===== */
+  .msg-good {
+    background: rgba(0,184,148,0.08);
+    border: 1px solid rgba(0,184,148,0.25);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .msg-bad {
+    background: rgba(225,112,85,0.08);
+    border: 1px solid rgba(225,112,85,0.25);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .msg-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .msg-bad .msg-label { color: var(--pain); }
+  .msg-good .msg-label { color: var(--accent); }
+  .msg-text { font-size: 14px; }
+
+  /* ===== Profile ===== */
+  .profile-box {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px;
+    border: 1px solid var(--border);
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .profile-box .dn { font-size: 17px; font-weight: 700; margin-bottom: 3px; }
+  .profile-box .hd { font-size: 12px; color: var(--dim); margin-bottom: 14px; }
+  .profile-box .bio { font-size: 14px; line-height: 1.9; margin-bottom: 12px; }
+  .profile-box .anno {
+    font-size: 11px;
+    color: var(--dim);
+    margin-top: 4px;
+    padding-left: 8px;
+    border-left: 2px solid var(--border);
+  }
+
+  /* ===== Pricing ===== */
+  .pricing-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 22px;
+    border: 1px solid var(--border);
+  }
+  .pricing-card.best { border: 2px solid var(--purple); position: relative; }
+  .pricing-card.best::after {
+    content: 'いちばんお得';
+    position: absolute;
+    top: -10px; right: 14px;
+    background: var(--purple);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 5px;
+  }
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  .price-row:last-child { border: none; }
+  .price-val { color: var(--purple); font-weight: 600; }
+
+  .footer {
+    text-align: center;
+    color: var(--dim);
+    font-size: 11px;
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 600px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+    .touch-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1>ターゲット視点 — クリエイターから見た世界</h1>
+<p class="subtitle">「しくみや」を見つけたクリエイターは何を感じ、どう動くか ／ 2026-03-25</p>
+
+<!-- ===== ペルソナ ===== -->
+<div class="section">
+  <div class="section-title">ターゲットペルソナ（記事ごとに変わる）</div>
+  <div class="grid3">
+    <div class="persona-card">
+      <div class="name">イラストレーター</div>
+      <div class="desc">フリーランス / 副業 / 趣味でAI画像生成</div>
+      <div style="margin-bottom: 8px;">
+        <span class="pain-tag">ポートフォリオが作れない</span>
+        <span class="pain-tag">サイト構築にお金かけたくない</span>
+        <span class="pain-tag">SNS投稿が面倒</span>
+      </div>
+      <div>
+        <span class="need-tag">作品に集中したい</span>
+        <span class="need-tag">簡単にサイトが欲しい</span>
+      </div>
+    </div>
+    <div class="persona-card">
+      <div class="name">フリーランスデザイナー</div>
+      <div class="desc">グラフィック / Web / UIデザイン</div>
+      <div style="margin-bottom: 8px;">
+        <span class="pain-tag">Wixに月額払ってるけど微妙</span>
+        <span class="pain-tag">AI画像は気になるが始め方不明</span>
+        <span class="pain-tag">集客に時間を取られる</span>
+      </div>
+      <div>
+        <span class="need-tag">コスト削減</span>
+        <span class="need-tag">制作効率アップ</span>
+      </div>
+    </div>
+    <div class="persona-card">
+      <div class="name">ハンドメイド / 写真家</div>
+      <div class="desc">作品販売中 / SNS発信中</div>
+      <div style="margin-bottom: 8px;">
+        <span class="pain-tag">商品画像のバリエーション不足</span>
+        <span class="pain-tag">毎日の投稿が負担</span>
+        <span class="pain-tag">テクノロジーは苦手</span>
+      </div>
+      <div>
+        <span class="need-tag">画像を楽に量産</span>
+        <span class="need-tag">発信を自動化</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ターゲットのカスタマージャーニー ===== -->
+<div class="section">
+  <div class="section-title">カスタマージャーニー（ターゲットの旅）</div>
+
+  <div class="journey-step j1">
+    <div class="journey-label">STEP 1 — 悩んでいる状態</div>
+    <h4>「作品はあるのに、その先ができない」</h4>
+    <p>ポートフォリオを作りたい。SNSもちゃんとやりたい。でもコードは書けないし、外注は高い。</p>
+    <div class="thought">「Wixに月額払うのもったいないけど、他に選択肢ある？」</div>
+  </div>
+  <div class="arrow-down">↓</div>
+
+  <div class="journey-step j2">
+    <div class="journey-label">STEP 2 — 偶然の出会い（X / note）</div>
+    <h4>「え、これ30分でできたの？」</h4>
+    <p>Xのタイムラインで「しくみや」の投稿を見かける。<br>ポートフォリオサイトのBefore/Afterや、SNS自動投稿の実例が流れてくる。</p>
+    <div class="thought">「この人、同じクリエイターなのにこんなことできるの？」</div>
+  </div>
+  <div class="arrow-down">↓</div>
+
+  <div class="journey-step j3">
+    <div class="journey-label">STEP 3 — 信頼の蓄積（note無料記事）</div>
+    <h4>「無料でここまで教えてくれるの？」</h4>
+    <p>noteの無料記事を読む。成果物がちゃんとあって、過程もわかりやすく説明されている。<br>有料級の内容。リポストで拡散に協力する。</p>
+    <div class="thought">「この人の記事、ガチで使える。フォローしとこ。」</div>
+  </div>
+  <div class="arrow-down">↓</div>
+
+  <div class="journey-step j4">
+    <div class="journey-label">STEP 4 — 限定リーチで行動（期間限定無料）</div>
+    <h4>「今だけ無料？リポストするだけ？」</h4>
+    <p>「3日間だけ無料公開」「リポストで無料ゲット」の投稿を見て行動。<br>テンプレートやツールを実際に使ってみる。</p>
+    <div class="thought">「やばい、マジで使える。有料でも買うレベル。」</div>
+  </div>
+  <div class="arrow-down">↓</div>
+
+  <div class="journey-step j5">
+    <div class="journey-label">STEP 5 — 購入（高単価商品）</div>
+    <h4>「全部入りパッケージ、お得すぎない？」</h4>
+    <p>信頼がある状態。単体でも買えるけど、パッケージにすると圧倒的にお得。<br>特典もついてる。この人から買いたい。</p>
+    <div class="thought">「単体で3つ買うより、パッケージの方が1万円安い…全部入りにしよう。」</div>
+  </div>
+  <div class="arrow-down">↓</div>
+
+  <div class="journey-step j6">
+    <div class="journey-label">STEP 6 — ファン化（メンバーシップ）</div>
+    <h4>「新しいツールも毎月届く。コミュニティも楽しい。」</h4>
+    <p>購入者限定のDiscordで他のクリエイターと繋がる。<br>月額で新しいテンプレートやツールが届く。Lyoに直接相談もできる。</p>
+    <div class="thought">「もうこのコミュニティなしでは回らない。」</div>
+  </div>
+</div>
+
+<!-- ===== 接点ごとのメッセージ ===== -->
+<div class="section">
+  <div class="section-title">各接点で刺さるメッセージ</div>
+
+  <div class="grid2">
+    <div>
+      <div class="msg-bad">
+        <div class="msg-label">× 自分視点で書くとこうなる（刺さらない）</div>
+        <div class="msg-text">
+          「Claude Codeでポートフォリオサイト自動生成システム作りました」<br><br>
+          「SDプロンプト集、ワイルドカード対応で体系化しました」<br><br>
+          「SNS自動投稿システム、IG/Threads/X全対応で構築済み」<br><br>
+          「AI画像生成×Claude Codeの自動化レポート公開」
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="msg-good">
+        <div class="msg-label">○ 相手視点で書くとこうなる（刺さる）</div>
+        <div class="msg-text">
+          「絵は描けるのに、ポートフォリオサイトだけ3年放置してる。わかる。私もそうだった。」<br><br>
+          「プロンプト考える時間が1/10になった方法がある」<br><br>
+          「SNS投稿、毎回手動でやってない？それ、仕組みに任せられるよ」<br><br>
+          「"作品はあるのに発信できない"を30分で解決した話」
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 悩み × 解決策マッピング ===== -->
+<div class="section">
+  <div class="section-title">ターゲットの悩み × しくみやの解決策</div>
+  <div style="overflow-x: auto;">
+    <div class="touch-grid">
+      <div class="touch-header">ターゲット</div>
+      <div class="touch-header">😩 悩み（相手の言葉で）</div>
+      <div class="touch-header">✅ 解決策（しくみやが提供）</div>
+
+      <div class="touch-cell">イラストレーター</div>
+      <div class="touch-cell pain-c">「ポートフォリオ作りたいけどコード書けない」</div>
+      <div class="touch-cell solve-c">30分でポートフォリオサイト構築キット</div>
+
+      <div class="touch-cell">イラストレーター</div>
+      <div class="touch-cell pain-c">「プロンプト考えるの毎回大変」</div>
+      <div class="touch-cell solve-c">ワンクリ入力プロンプト集（作業時間1/10）</div>
+
+      <div class="touch-cell">デザイナー</div>
+      <div class="touch-cell pain-c">「Wixに毎月お金払ってるのがもったいない」</div>
+      <div class="touch-cell solve-c">無料でサイト構築する方法を教える</div>
+
+      <div class="touch-cell">デザイナー</div>
+      <div class="touch-cell pain-c">「AI画像生成やりたいけど何から始めれば」</div>
+      <div class="touch-cell solve-c">画像生成歴3年のノウハウを全公開</div>
+
+      <div class="touch-cell">ハンドメイド作家</div>
+      <div class="touch-cell pain-c">「商品写真のバリエーションが足りない」</div>
+      <div class="touch-cell solve-c">AI画像生成で素材を量産する方法</div>
+
+      <div class="touch-cell">全般</div>
+      <div class="touch-cell pain-c">「SNS投稿が毎日の負担になってる」</div>
+      <div class="touch-cell solve-c">SNS自動投稿セットアップ</div>
+
+      <div class="touch-cell">全般</div>
+      <div class="touch-cell pain-c">「作品づくり以外に時間を取られすぎ」</div>
+      <div class="touch-cell solve-c">全部入りパッケージ（作品以外、全部仕組みで）</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== プロフィール（相手から見た構造） ===== -->
+<div class="section">
+  <div class="section-title">プロフィール — ターゲットが見た時の印象</div>
+  <div class="profile-box">
+    <div class="dn">しくみや（Lyo）</div>
+    <div class="hd">@shikumiya_ai</div>
+    <div class="bio">
+      <span style="color: var(--accent);">クリエイターのめんどいを仕組みで消す人。</span><br>
+      <div class="anno">← 何をしてくれる人かが1行でわかる。相手の「めんどい」に刺さる</div>
+      <br>
+      AI画像生成歴3年 / ポートフォリオ・SNS・発信の自動化
+      <div class="anno">← 信頼の根拠 + 具体的に何ができるか</div>
+    </div>
+    <div style="color: var(--purple); font-weight: 600; font-size: 14px;">
+      興味ある人は↓
+      <div class="anno" style="color: var(--dim); font-weight: 400;">← 押し売りではなく自然な誘導</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 価格（ターゲット視点） ===== -->
+<div class="section">
+  <div class="section-title">商品ラインナップ — ターゲットの見え方</div>
+  <div class="grid2">
+    <div class="pricing-card">
+      <h3>必要なものだけ選ぶ</h3>
+      <p style="font-size: 13px; color: var(--dim); margin-bottom: 12px;">「全部はいらない。今すぐ必要なものだけ欲しい」</p>
+      <div class="price-row"><span>プロンプト集</span><span class="price-val">¥8,000</span></div>
+      <div class="price-row"><span>ポートフォリオ構築キット</span><span class="price-val">¥12,000</span></div>
+      <div class="price-row"><span>SNS自動投稿セットアップ</span><span class="price-val">¥10,000</span></div>
+      <div class="price-row"><span>画像管理・整理ツール</span><span class="price-val">¥6,000</span></div>
+    </div>
+    <div class="pricing-card best">
+      <h3>全部まとめてお得に</h3>
+      <p style="font-size: 13px; color: var(--dim); margin-bottom: 12px;">「どうせなら全部欲しい。セットなら安い？」</p>
+      <div class="price-row"><span>上記4点すべて</span><span style="color: var(--dim);">含む</span></div>
+      <div style="margin-top: 10px; padding-top: 10px; border-top: 2px solid var(--border); font-weight: 700; display: flex; justify-content: space-between;">
+        <span>パッケージ価格</span>
+        <span>
+          <span style="text-decoration: line-through; color: var(--dim); font-size: 13px; margin-right: 6px;">¥36,000</span>
+          <span class="price-val" style="font-size: 18px;">¥25,000</span>
+        </span>
+      </div>
+      <div style="margin-top: 10px; padding: 8px 12px; background: rgba(108,92,231,0.1); border-radius: 6px; font-size: 12px; color: var(--purple);">
+        🎁 特典: 限定テンプレート集 + セットアップガイド + 優先サポート
+      </div>
+      <div style="margin-top: 8px; font-size: 12px; color: var(--dim); font-style: italic;">
+        → 単品で3つ買うより1万円以上お得
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== プロモーション（ターゲットが体験する流れ） ===== -->
+<div class="section">
+  <div class="section-title">プロモーション — ターゲットが出会うタッチポイント</div>
+
+  <div class="card" style="border-top: 3px solid var(--accent);">
+    <h3>Xで見かける（タイムライン）</h3>
+    <div class="grid2" style="margin-top: 12px;">
+      <div>
+        <div style="font-size: 12px; color: var(--pain); font-weight: 600; margin-bottom: 6px;">ターゲットの状態</div>
+        <p style="font-size: 13px;">タイムラインを眺めてる。ポートフォリオ作らなきゃと思いつつ放置中。SNS投稿も気が重い。</p>
+      </div>
+      <div>
+        <div style="font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 6px;">刺さる投稿パターン</div>
+        <div style="font-size: 13px;">
+          <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">
+            <strong>共感型:</strong>「絵は描けるのにサイトだけ3年放置してる。わかる。」
+          </div>
+          <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">
+            <strong>Before/After:</strong> ポートフォリオ無し → 30分後の完成画面
+          </div>
+          <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">
+            <strong>数字:</strong>「プロンプト考える時間、1/10にした方法」
+          </div>
+          <div style="padding: 6px 0;">
+            <strong>スレッド:</strong> 7ステップ解説 → 保存したくなる
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="thought" style="margin-top: 12px; padding: 10px 14px; border-left: 2px solid var(--border); font-style: italic; font-size: 13px;">
+      「え、これ自分でもできるの？ フォローしとこ」
+    </div>
+  </div>
+
+  <div class="card" style="border-top: 3px solid #fdcb6e;">
+    <h3>リポスト企画に出会う</h3>
+    <div class="grid2" style="margin-top: 12px;">
+      <div>
+        <div style="font-size: 12px; color: var(--pain); font-weight: 600; margin-bottom: 6px;">ターゲットの状態</div>
+        <p style="font-size: 13px;">フォローした後、数日〜数週間。投稿を見てるうちに信頼が溜まってきた。</p>
+      </div>
+      <div>
+        <div style="font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 6px;">行動のきっかけ</div>
+        <div style="font-size: 13px;">
+          <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">
+            「リポストで無料テンプレ配布」→ リポストするだけでもらえる
+          </div>
+          <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">
+            「感想くれた人に〇〇プレゼント」→ 感想を書くハードルは低い
+          </div>
+          <div style="padding: 6px 0;">
+            「あなたのポートフォリオ、何で作ってる？」→ 引用RTで参加
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="thought" style="margin-top: 12px; padding: 10px 14px; border-left: 2px solid var(--border); font-style: italic; font-size: 13px;">
+      「リポストするだけで無料？ やるやる」→ 拡散に協力 → 新しい人が見る → ループ
+    </div>
+  </div>
+
+  <div class="card" style="border-top: 3px solid var(--blue);">
+    <h3>noteで深く知る</h3>
+    <div class="grid2" style="margin-top: 12px;">
+      <div>
+        <div style="font-size: 12px; color: var(--pain); font-weight: 600; margin-bottom: 6px;">ターゲットの状態</div>
+        <p style="font-size: 13px;">Xで興味を持ち、プロフィールの「興味ある人は↓」からnoteに来た。</p>
+      </div>
+      <div>
+        <div style="font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 6px;">noteで体験すること</div>
+        <div style="font-size: 13px;">
+          <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">
+            無料記事 → 有料級の内容。「え、これ無料でいいの？」
+          </div>
+          <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">
+            期間限定無料 → 「3日だけ無料」→ 今読まないと損
+          </div>
+          <div style="padding: 6px 0;">
+            成果物の宝庫 → 「この人、ガチだ」と確信
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="thought" style="margin-top: 12px; padding: 10px 14px; border-left: 2px solid var(--border); font-style: italic; font-size: 13px;">
+      「無料でここまで出すなら、有料はどれだけすごいんだろう」
+    </div>
+  </div>
+
+  <div class="card" style="border-top: 3px solid var(--purple);">
+    <h3>イベントで体験する</h3>
+    <div class="grid2" style="margin-top: 12px;">
+      <div>
+        <div style="font-size: 12px; color: var(--pain); font-weight: 600; margin-bottom: 6px;">ターゲットの状態</div>
+        <p style="font-size: 13px;">信頼がある。でも自分にできるか不安。一歩踏み出すきっかけが欲しい。</p>
+      </div>
+      <div>
+        <div style="font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 6px;">参加するイベント</div>
+        <div style="font-size: 13px;">
+          <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">
+            「1週間ポートフォリオチャレンジ」→ みんなと一緒にやる安心感
+          </div>
+          <div style="padding: 6px 0;">
+            「AI画像生成やってみよう週間」→ 初心者歓迎、しくみやがサポート
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="thought" style="margin-top: 12px; padding: 10px 14px; border-left: 2px solid var(--border); font-style: italic; font-size: 13px;">
+      「みんなやってるなら自分も。しかもしくみやが教えてくれるなら安心」
+    </div>
+  </div>
+
+  <div style="background: rgba(0,184,148,0.08); border: 1px solid rgba(0,184,148,0.25); border-radius: 10px; padding: 18px; margin-top: 12px;">
+    <div style="font-size: 12px; color: var(--accent); font-weight: 700; margin-bottom: 6px;">プロモーションの全体像（ターゲット体験）</div>
+    <div style="font-size: 14px; text-align: center;">
+      Xで共感 → フォロー → リポスト企画で行動 → noteで深掘り → 期間限定で体験 → イベントで確信 → 購入
+    </div>
+  </div>
+</div>
+
+<!-- ===== チェックリスト ===== -->
+<div class="section">
+  <div class="section-title">セルフチェック — 相手視点で書けてるか？</div>
+  <div class="card">
+    <div style="font-size: 14px;">
+      <div style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+        ☐ これを読んだ相手は「自分のことだ」と感じるか？
+      </div>
+      <div style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+        ☐ AI用語（Claude Code、バイブコーディング等）を使っていないか？
+      </div>
+      <div style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+        ☐ 相手が検索しそうな言葉（「ポートフォリオ 作り方」等）を使っているか？
+      </div>
+      <div style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+        ☐ 「自分がやったこと」ではなく「相手が得られること」を先に書いているか？
+      </div>
+      <div style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+        ☐ 煽りではなく、共感から入っているか？
+      </div>
+      <div style="padding: 8px 0;">
+        ☐ 悩み → 解決 → 信頼の根拠 → CTA の順番になっているか？
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  ターゲット視点レポート — コンテンツ制作時の参照用<br>
+  Generated by くろ子（Claude Code）— 2026-03-25
+</div>
+
+</body>
+</html>

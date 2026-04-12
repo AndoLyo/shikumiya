@@ -1,0 +1,29 @@
+05:35:38 [INFO] === like ===
+05:35:38 [INFO] patching driver executable C:\Users\ryoya\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+05:39:15 [INFO] [いいね] @otennko0061 (品質:25点)
+05:39:48 [INFO] [いいね] @DjRingino (品質:25点)
+05:40:29 [INFO] [いいね] @XEQfP6qheI20241 (品質:25点)
+05:40:56 [INFO] [いいね] @Tsuruhito979 (品質:25点)
+05:41:28 [INFO] [いいね] @PoTeto_UGCCC (品質:60点)
+05:41:57 [INFO] [いいね] @SoundJourneyDS (品質:25点)
+05:42:37 [INFO] [いいね] @unitl_gov (品質:48点)
+05:43:04 [INFO] [いいね] @kaikan_toriko (品質:25点)
+05:43:38 [INFO] [いいね] @Aoilumine7 (品質:25点)
+05:44:10 [INFO] [いいね] @AI9277331830633 (品質:25点)
+05:44:21 [INFO] [いいね完了] 10/10件
+05:44:22 [INFO] [分析レポート] C:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\accounts\ando_lyo\engagement_report.md
+
+=== 結果 (ando_lyo) ===
+  発見:    0件
+  いいね:  10件
+  リプライ: 0件
+  フォロー: 0件
+  引用RT:  0件
+Traceback (most recent call last):
+  File "C:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\run_engagement.py", line 406, in <module>
+    main()
+  File "C:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\run_engagement.py", line 399, in main
+    generate_analytics_report(args.account, db, result, scores)
+  File "C:\Users\ryoya\OneDrive\AI\Claude\SNS_AutoControl_App\run_engagement.py", line 184, in generate_analytics_report
+    print(f"\n\U0001f4ca 分析レポート保存: {report_path}")
+UnicodeEncodeError: 'cp932' codec can't encode character '\U0001f4ca' in position 2: illegal multibyte sequence

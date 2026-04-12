@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+sns_history.db
+images_to_post/*
+!images_to_post/.gitkeep
+posted_images/*
+!posted_images/.gitkeep

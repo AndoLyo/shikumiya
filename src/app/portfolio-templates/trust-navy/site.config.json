@@ -1,0 +1,127 @@
+{
+  "templateId": "trust-navy",
+  "plan": "lite",
+  "orderId": "",
+  "siteUrl": "",
+  "company": {
+    "name": "鈴木建設株式会社",
+    "nameEn": "SUZUKI CONSTRUCTION CO., LTD.",
+    "tagline": "信頼と技術で、未来をつくる。",
+    "description": "創業50年。公共施設から住宅まで、確かな技術と実績で地域社会に貢献しています。",
+    "phone": "03-0000-0000",
+    "fax": "03-0000-0001",
+    "email": "info@suzuki-kensetsu.co.jp",
+    "address": "東京都千代田区〇〇町2-3-4 鈴木ビル5F",
+    "hours": "8:30〜17:30（土日祝休）",
+    "since": "1976",
+    "ceo": "鈴木 一郎",
+    "ceoTitle": "",
+    "bio": "鈴木建設は、1976年の創業以来、半世紀にわたり首都圏を中心に建築・土木事業を展開してまいりました。\n\n公共施設、商業施設、オフィスビル、集合住宅、道路・橋梁工事など、幅広い分野でお客様の信頼にお応えし続けています。「品質第一、安全第一」の理念を全社員が共有し、最新の技術と確かな施工管理で、期待を超える品質をお届けします。\n\nこれからも、地域社会の発展とお客様の事業成功に貢献できるパートナーとして、誠心誠意努めてまいります。",
+    "license": "建設業許可 国土交通大臣（特-5）第00000号",
+    "capital": "5,000万円",
+    "employees": "48名",
+    "iso": "ISO 9001:2015 / ISO 14001:2015 認証取得",
+    "domain": "suzuki-kensetsu.co.jp"
+  },
+  "projects": [
+    {
+      "id": 1,
+      "title": "千代田区庁舎改修工事",
+      "category": "公共施設",
+      "year": "2025",
+      "description": "",
+      "specs": "RC造 地上5階 / 延床 3,200㎡"
+    },
+    {
+      "id": 2,
+      "title": "港区オフィスビル新築",
+      "category": "商業施設",
+      "year": "2024",
+      "description": "",
+      "specs": "S造 地上8階 / 延床 5,800㎡"
+    },
+    {
+      "id": 3,
+      "title": "世田谷レジデンス新築",
+      "category": "集合住宅",
+      "year": "2024",
+      "description": "",
+      "specs": "RC造 地上6階 / 42戸 / 延床 4,200㎡"
+    },
+    {
+      "id": 4,
+      "title": "渋谷メディカルモール内装",
+      "category": "医療施設",
+      "year": "2025",
+      "description": "",
+      "specs": "内装工事 / 施工面積 280㎡"
+    },
+    {
+      "id": 5,
+      "title": "品川物流倉庫改修",
+      "category": "産業施設",
+      "year": "2023",
+      "description": "",
+      "specs": "S造 / 延床 1,500㎡ / 耐震補強含む"
+    },
+    {
+      "id": 6,
+      "title": "目黒区立小学校体育館",
+      "category": "公共施設",
+      "year": "2024",
+      "description": "",
+      "specs": "RC造 / 延床 900㎡ / 耐震等級3"
+    }
+  ],
+  "strengths": [],
+  "services": [
+    {
+      "title": "建築工事",
+      "description": "オフィスビル、商業施設、集合住宅、医療施設の新築工事。設計監理から施工までワンストップで対応します。",
+      "icon": "Building2"
+    },
+    {
+      "title": "改修・リノベーション",
+      "description": "既存建物の大規模改修、耐震補強、省エネ改修。建物の長寿命化とバリューアップを実現します。",
+      "icon": "Wrench"
+    },
+    {
+      "title": "耐震・防災工事",
+      "description": "耐震診断に基づく的確な補強工事。Is値の向上で建物の安全性を確保します。",
+      "icon": "Shield"
+    },
+    {
+      "title": "土木工事",
+      "description": "道路、橋梁、上下水道、河川護岸などの社会インフラ整備。地域の安全と利便性を支えます。",
+      "icon": "Briefcase"
+    }
+  ],
+  "stats": [
+    { "num": "50", "unit": "年", "label": "創業からの歴史" },
+    { "num": "1,200", "unit": "棟+", "label": "累計施工実績" },
+    { "num": "98", "unit": "%", "label": "顧客満足度" },
+    { "num": "48", "unit": "名", "label": "技術スタッフ" }
+  ],
+  "style": {
+    "colors": {
+      "primary": "#1B3A5C",
+      "accent": "#C8A96E",
+      "background": "#F0F4F8",
+      "text": "#1B3A5C",
+      "textMuted": "#6B7B8D",
+      "border": "#D1D9E3"
+    },
+    "fonts": {
+      "heading": "'Noto Sans JP', sans-serif",
+      "body": "'Noto Sans JP', sans-serif"
+    },
+    "sizes": {
+      "heading": "lg",
+      "body": "md"
+    },
+    "weights": {
+      "heading": "bold",
+      "body": "normal"
+    }
+  }
+}

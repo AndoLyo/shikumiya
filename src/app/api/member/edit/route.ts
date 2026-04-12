@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const MAX_EDITS: Record<string, number> = {
-  template: 1,  // ¥980 plan — 初回1回のみ
-  omakase: 3,   // ¥2,980 plan — 月3回
+  lite: 1,      // ライト ¥3,000/月 — 月1回更新
+  middle: 3,    // ミドル ¥8,000/月 — 月3回更新
+  premium: 99,  // プレミアム ¥15,000~/月 — 無制限
 };
 
 export async function POST(req: NextRequest) {
