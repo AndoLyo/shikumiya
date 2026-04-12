@@ -22,11 +22,12 @@
 - 差別化: 「写真を送るだけ。あとは全部おまかせ」
 - 全CTA → `/start` に統一。「無料相談」は不要
 
-### ポートフォリオテンプレートのパス（重要）
+### テンプレートのパス（重要）
 - **正しいパス**: `src/app/portfolio-templates/` + `src/components/portfolio-templates/`
-- **URL**: `https://lyo-vision-site.vercel.app/portfolio-templates/{テンプレ名}`
-- **旧テンプレート**（`src/app/templates/`）とは完全に別物。混同注意
-- **10種**: comic-panel, cyber-neon, dark-elegance, floating-gallery, ink-wash, mosaic-bold, pastel-pop, retro-pop, studio-white, watercolor-soft
+- **本番URL**: `https://shikumiya.vercel.app/portfolio-templates/{テンプレ名}`
+- **建築パック（9種）**: warm-craft, trust-navy, clean-arch × lite/mid/pro
+- **旧テンプレート**（studio-white, pastel-pop等）は308リダイレクト済み。将来削除
+- **業種レジストリ**: `src/lib/industry-registry.ts`（35業種登録）
 
 ## 実行ファイル
 - エントリーポイント: ./ (プロジェクトルート直下)

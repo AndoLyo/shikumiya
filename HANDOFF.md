@@ -2,115 +2,137 @@
 
 > 最終更新: 2026-04-13
 
-## 最新の状況（セッション引き継ぎ用）
+## ★ 次のセッションで最初にやること
 
-### 本番稼働中
-- URL: https://shikumiya.vercel.app
-- 決済フロー: /start → Stripe → webhook → サイト生成 → メール送信 **動作確認済み**
-- GAS: 新コードデプロイ済み
+1. このファイルを読む
+2. PROJECT_STATE.md を読む
+3. plans/humming-singing-hinton.md を読む（全機能本番稼働の設計書）
+4. memory/ のMEMORY.mdを読む
 
-### ★次のセッションでやること
-全機能本番稼働に向けた詳細設計。以下を「SaaSプロダクトのプロ」として再設計:
-1. 全タスクを細かく分解
-2. チェック項目とスコアリングを再設計（機能の核+ユーザー視点）
-3. プランファイル `C:\Users\ryoya\.claude\plans\humming-singing-hinton.md` に設計書あり
+**次のタスク:** SaaSプロダクトのプロとして全機能本番稼働の詳細設計。全タスクを細かく分解し、チェック項目+スコアリングを「機能の核」と「ユーザー視点」で再設計。
 
-### 根本問題
-- `shikumiya-template` リポが旧ポートフォリオのまま → テンプレリポ更新が最優先
-- 生成されたサイトに顧客入力値が反映されてない（デモデータのまま）
-- 管理ページはデモデータ → 実データ接続が必要
-- 編集依頼フォームはUIだけ → API接続が必要
-- Claude API連携は未実装（エンドポイントだけある）
+## 本番稼働中
 
-### 完了済みのPhase
-0〜7まで全Phase完了。API 8本作成済み。プラン名変更済み。業種レジストリ作成済み
+- **URL:** https://shikumiya.vercel.app
+- **GitHub:** AndoLyo/lyo-vision-site
+- **Vercelプロジェクト名:** shikumiya
+- **Stripe:** テストモード、3プラン設定済み
 
-## 現在の状況
+## 動作確認済みフロー
 
-### ビジネスピボット完了
-- テンプレ販売 → **B2B SaaSサブスク**に転換
-- ターゲット: **建築業（工務店・建設会社・設計事務所）**
-- 価格: 制作費0円 + ライト¥3,000/ミドル¥8,000/プレミアム¥15,000~/月
-- 独自ドメイン全プラン対応
+- /start → Stripe決済 → webhook → GAS記録 + メール送信 → サイト生成 ✅
+- 決済後に /start/success ページ表示 ✅
+- Stripeテスト決済（カード 4242...）✅
 
-### 公式サイト（トップページ）
-- 明るいテーマ（白ベース+ピンク紫オレンジ）にリニューアル済み
-- 12セクション構成（世界水準のSaaS構造）
+## 根本問題（最優先で解決すべき）
 
-### テンプレート（9種完成）
-| 業態 | ライト | ミドル | プレミアム |
-|------|--------|--------|-----------|
-| 工務店 | warm-craft | warm-craft-mid | warm-craft-pro |
-| 建設会社 | trust-navy | trust-navy-mid | trust-navy-pro |
-| 設計事務所 | clean-arch | clean-arch-mid | clean-arch-pro |
+1. **`shikumiya-template` リポが旧ポートフォリオのまま**
+   - 生成されたサイトが `ai-art-portfolio` ベース
+   - Next.js 16のクリーンなシェルに更新が必要
+   - webhookの `copyTemplateFiles` は正しいテンプレをコピーする仕組みだが、ベースリポが古い
 
-### 管理ダッシュボード（完成）
+2. **生成サイトに顧客入力値が反映されない**
+   - site.config.jsonは生成されるが、テンプレのpage.tsxがまだconfigを読んでない可能性
+   - テンプレリポ更新で解決する
 
-**顧客用** (`/member/[orderId]/`):
-- サイドバー+プラン別🔒+アップグレードモーダル（A+Dハイブリッド）
-- ダッシュボード、編集依頼フォーム、依頼履歴、サイト機能一覧、アカウント設定
-- プラン管理モーダル（3プラン比較+アップグレード/ダウングレードボタン）
-- `?plan=lite|middle|premium` でプラン切替可能
+## 事業概要
 
-**Lyo用** (`/admin/`):
-- MRR/顧客数/依頼キュー/顧客一覧
-- 編集依頼の完了/修正指示（Claude API送信用）操作
+**しくみや** — 全業種対応のHP制作SaaS（建築特化ではない）
+- 制作費0円、月額3,000円〜
+- プラン名: おまかせ(lite) / まるっとおまかせ(middle) / ぜんぶおまかせ(premium)
+- 「写真を送るだけ。あとは全部おまかせ」
 
-### 編集依頼フォーム（最新版）
-- STEP 1: 複数選択可（テキスト/画像/レイアウト/機能/その他）
-- STEP 2: カテゴリ別の選択式UI
-  - テキスト → 現在のテキスト一覧からクリック選択+変更後入力
-  - 画像 → サムネ選択+react-easy-cropクロップUI（推奨アスペクト比ガイド）
-  - レイアウト → セクション選択+アクションチェックリスト
-  - 機能 → カードタップ選択
-  - その他 → 自由テキスト
-- 右側にサイトプレビュー（デスクトップ/タブレット/モバイル切替）
+## テンプレート
 
-### プレミアム機能
-- AIチャットボット（3テンプレ全て）
-- 見学会予約（ポップアップフォーム+残枠自動減少）
-- 採用サブページ（`/trust-navy-pro/recruit`、履歴書アップロード付き）
-- 多言語JA/EN（設計事務所Pro、LangContext）
-- 360°パノラマビューア（ドラッグ回転+ズーム）
-- PDFダウンロード、動画セクション
-- 管理ダッシュボード（`/warm-craft-pro/admin`はデモ用）
+- 建築パック完成済み: warm-craft / trust-navy / clean-arch × lite/mid/pro = 9テンプレ
+- 全テンプレsite.config.json分離済み
+- industry-registry.ts: 15カテゴリ35業種登録。テンプレあり=表示、なし=非表示
 
-## ★次にやるべきこと（最重要）
+## 完成済みのシステム
 
-### Phase 1: テンプレートの構造改革（最優先）
-**現状の問題:** 9テンプレートのデータがコードにハードコード。テキスト/画像パスが直書き。
-**やること:** テンプレートのデータをsite.config.tsに集約し、コードはconfigを読んで描画するだけにする。
-**これが全ての土台。これなしに先に進むと全部やり直しになる。**
+### API（8本）
+| エンドポイント | 用途 | 状態 |
+|-------------|------|:---:|
+| /api/start | 新規申込→Stripe | ✅動作確認済 |
+| /api/webhook | 決済→サイト生成 | ✅動作確認済 |
+| /api/site-content | 顧客リポのconfig取得 | ✅実装済 |
+| /api/site-update | テキスト/画像即反映 | ✅実装済（未接続） |
+| /api/plan-change | プラン変更 | ✅実装済（未接続） |
+| /api/edit-request | レイアウト/機能依頼 | ✅実装済（Claude API未実装） |
+| /api/admin | 管理データ取得 | ✅実装済（GAS依存） |
+| /api/logs | ログ取得 | ✅実装済 |
 
-### Phase 2: テキスト/画像の即反映API
-- `/api/site-update` — 変更受取→GitHub API更新→Vercel自動デプロイ
-- テキスト変更とアスペクト比対応画像差替はAI不要でシステム完結
+### フロントエンド
+- トップページ: 全業種対応、全CTA→/start
+- /start: 4ステップ申込フロー（Stripe接続済み）
+- /start/success: 決済完了ページ
+- /lp/construction: 建築向けLP
+- /portfolio-templates/*: 9テンプレデモ（DemoBanner付き）
+- /member/[orderId]/: 顧客管理（サイドバー+プラン別🔒+編集依頼+クロップUI）
+- /admin/: Lyo管理（ダッシュボード+依頼キュー+顧客一覧）
 
-### Phase 3: Claude API連携
-- `/api/edit-request` — レイアウト/機能の依頼→GAS記録→Claude API
-- Claude API用のシステムプロンプト設計（テンプレート構造・ルール・禁止事項）
+### 共通ライブラリ
+- site-config-schema.ts: 22型定義
+- industry-registry.ts: 35業種レジストリ
+- stripe.ts: Price IDマッピング、プラン名
+- github.ts: GitHub API共通ユーティリティ
+- template-config-generator.ts: フォームデータ→SiteConfig変換
+- error-handler.ts: 一元ログ+エラーパーサー+リトライ
+- member-context.ts: 会員認証Context
 
-### Phase 4: スコアリング・自動承認
-- OK/NG記録 → score >= 80で自動承認
+## 未接続・未実装（全機能本番稼働に必要）
 
-### その他未実施
-- Stripe ¥3,000/月のPrice追加
-- template-forms.tsの建築業向けラベル対応
-- 建築LP（`/lp/construction`）の最終調整
+### A. テンプレートリポ更新（最優先）
+- shikumiya-templateをNext.js 16クリーンシェルに
+
+### B. 管理ページ実データ接続
+- GASに全顧客取得・全依頼取得アクション追加
+- /member/をデモデータ→API取得に
+- /adminを実データに
+
+### C. 編集依頼API接続
+- edit-requestフォーム → /api/site-update呼出
+- 画像差替 → /api/site-update呼出
+- レイアウト/機能 → /api/edit-request呼出
+
+### D. プラン変更接続
+- settings → /api/plan-change呼出
+
+### E. /startをレジストリから読む
+- ハードコード → industry-registry.ts
+
+### F. Claude API連携
+- /api/edit-requestにClaude API実装
+- スコアリング+自動承認
+
+### G. Admin MRR計算
+- Stripe APIから実MRR
+
+## 環境変数（Vercel）
+```
+STRIPE_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_PRICE_LITE=price_1TLR8wAHGiGiMXDLR4dj9XUl
+STRIPE_PRICE_MIDDLE=price_1TLR9QAHGiGiMXDLrPmSoOm1
+STRIPE_PRICE_PREMIUM=price_1TLR9vAHGiGiMXDLmsScxJ33
+STRIPE_WEBHOOK_SECRET=whsec_...
+GITHUB_TOKEN=ghp_...
+GITHUB_OWNER=AndoLyo
+GITHUB_TEMPLATE_REPO=shikumiya-template
+VERCEL_TOKEN=vcp_...
+GAS_WEBHOOK_URL=https://script.google.com/...
+NEXT_PUBLIC_BASE_URL=https://shikumiya.vercel.app
+```
 
 ## デザイン・UXルール
 - 明るい白ベース + ピンク(#e84393)・紫(#6c5ce7)・オレンジ(#f39c12)
 - 入力より選択。選ぶだけで依頼が完成するUI
-- 顧客を迷わせない。冗長な表示（同じ文字の重複等）を排除
-- 作り込みが甘いまま残さない。ボタンを押した先まで作り切る
-- 詳細は `memory/` 配下の feedback_*.md を参照
+- 手抜き禁止。ボタン押した先まで作り切る
+- タスクごとに自己評価（1-100点）+ 振り返り必須
 
 ## 重要な参考資料
-- `lyo-vision-saas-business-plan.md` — ビジネスプラン全体
-- `site-structure-proposal.md` — SaaSサイト構造の調査
-- `architecture-website-template-guide.md` — 建築テンプレ設計ガイド
-- `claude-code-instruction-template.md` — 機能カタログ（プラン別提案テンプレ）
-
-## 管理画面の使い分け
-- `/member/[orderId]/` = 本物の顧客管理画面（全顧客共通）
-- `/portfolio-templates/warm-craft-pro/admin` = 営業デモ用ショーケース（将来削除検討）
+- PROJECT_STATE.md — 現状のスナップショット
+- plans/humming-singing-hinton.md — 全機能本番稼働の設計書
+- docs/claude-api-system-prompt.md — Claude APIシステムプロンプト
+- docs/site-data-management.md — サイトデータ管理設計
+- memory/ — フィードバック・プロジェクト記録
