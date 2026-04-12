@@ -148,7 +148,7 @@ export async function POST(request: Request) {
         },
       },
       customer_email: email,
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/order/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || "https://shikumiya.vercel.app"}/start/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/start`,
     });
 

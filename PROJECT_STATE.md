@@ -1,4 +1,8 @@
-# 現在のプロジェクト状態（最終更新: 2026-04-12）
+# 現在のプロジェクト状態（最終更新: 2026-04-13）
+
+## 本番URL
+- **https://shikumiya.vercel.app** （Vercelプロジェクト名: shikumiya）
+- GitHub: AndoLyo/lyo-vision-site
 
 ## 事業内容
 **しくみや** — **全業種対応**のホームページ制作SaaS

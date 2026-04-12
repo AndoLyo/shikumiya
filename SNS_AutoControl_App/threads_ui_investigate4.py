@@ -304,7 +304,9 @@ def main():
                 time.sleep(1)
                 result = tb[0].text[:50]
                 print(f'  ペースト結果: "{result}"')
-                print(f'  改行保持: {"\\n" in result or len(result.split(chr(10))) > 1}')
+                newline = chr(10)
+                has_newline = newline in result or len(result.split(newline)) > 1
+                print(f'  改行保持: {has_newline}')
 
                 # クリア
                 tb[0].send_keys(Keys.CONTROL, 'a')
