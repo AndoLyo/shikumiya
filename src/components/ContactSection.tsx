@@ -81,7 +81,7 @@ export default function ContactSection() {
               >
                 <option value="サイト制作の相談">サイト制作の相談</option>
                 <option value="おまかせプランの申し込み">おまかせプランの申し込み</option>
-                <option value="プレミアムプランの相談">プレミアムプランの相談</option>
+                <option value="おまかせプロプランの相談">おまかせプロプランの相談</option>
                 <option value="その他">その他</option>
               </select>
             </div>

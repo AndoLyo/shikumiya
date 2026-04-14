@@ -1,0 +1,95 @@
+{
+  "templateId": "lumiere",
+  "plan": "lite",
+  "orderId": "",
+  "siteUrl": "",
+  "company": {
+    "name": "LUMIÈRE",
+    "nameEn": "LUMIÈRE",
+    "tagline": "あなたの輪郭を、静かに整える場所",
+    "description": "完全予約制プライベートサロン",
+    "phone": "03-0000-0000",
+    "email": "hello@lumiere-hair.jp",
+    "address": "東京都渋谷区神宮前 4-XX-X 2F",
+    "hours": "10:00〜20:00（月曜定休）",
+    "since": "2018",
+    "ceo": "田中 美咲",
+    "ceoTitle": "オーナースタイリスト",
+    "bio": "好きな時間は、閉店後に一人でハサミを研ぐこと。\n\nお客様の「なんかいい感じ」を一緒に見つけます。",
+    "domain": "lumiere-hair.jp",
+    "mapEmbedUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3241.!2d139.707!3d35.665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzXCsDM5JzU0LjAiTiAxMznCsDQyJzI1LjIiRQ!5e0!3m2!1sja!2sjp!4v1"
+  },
+  "projects": [
+    {
+      "id": 1,
+      "title": "ナチュラルボブ",
+      "category": "Cut",
+      "year": "2025",
+      "description": "顎ラインの柔らかいボブ。自然乾燥でもまとまる。",
+      "image": "/images/lumiere/style-1.jpg"
+    },
+    {
+      "id": 2,
+      "title": "ハイライトカラー",
+      "category": "Color",
+      "year": "2025",
+      "description": "細めのハイライトで透明感を。光の角度で表情が変わる。",
+      "image": "/images/lumiere/style-2.jpg"
+    },
+    {
+      "id": 3,
+      "title": "レイヤーミディアム",
+      "category": "Cut",
+      "year": "2025",
+      "description": "動きのあるレイヤー。風で揺れたときに一番きれいに見える。",
+      "image": "/images/lumiere/style-3.jpg"
+    },
+    {
+      "id": 4,
+      "title": "ショートスタイル",
+      "category": "Cut",
+      "year": "2024",
+      "description": "耳まわりをすっきりと。首が長く見える計算された短さ。",
+      "image": "/images/lumiere/style-4.jpg"
+    },
+    {
+      "id": 5,
+      "title": "ベージュカラー",
+      "category": "Color",
+      "year": "2024",
+      "description": "肌馴染みのいい柔らかなベージュ。日本人の髪に映える。",
+      "image": "/images/lumiere/style-5.jpg"
+    },
+    {
+      "id": 6,
+      "title": "アレンジスタイル",
+      "category": "Arrange",
+      "year": "2024",
+      "description": "特別な日のために。崩しすぎず、作り込みすぎない。",
+      "image": "/images/lumiere/style-6.jpg"
+    }
+  ],
+  "strengths": [],
+  "style": {
+    "colors": {
+      "primary": "#3D3630",
+      "accent": "#8B6F5C",
+      "background": "#F6F3EE",
+      "text": "#3D3630",
+      "textMuted": "#8A7F73",
+      "border": "#D4CEC6"
+    },
+    "fonts": {
+      "heading": "'Cormorant Garamond', serif",
+      "body": "'Shippori Mincho', serif"
+    },
+    "sizes": {
+      "heading": "lg",
+      "body": "md"
+    },
+    "weights": {
+      "heading": "light",
+      "body": "normal"
+    }
+  }
+}

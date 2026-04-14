@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useMember, type Plan } from "@/lib/member-context";
 
-const PLAN_LEVEL: Record<Plan, number> = { lite: 1, middle: 2, premium: 3 };
+const PLAN_LEVEL: Record<Plan, number> = { otameshi: 1, omakase: 2, "omakase-pro": 3 };
 
 interface Feature {
   id: string;
@@ -19,35 +19,35 @@ interface Feature {
   desc: string;
   icon: typeof MapPin;
   minPlan: Plan;
-  category: "basic" | "middle" | "premium";
+  category: "basic" | "omakase" | "omakase-pro";
 }
 
 const FEATURES: Feature[] = [
   // Basic
-  { id: "contact-form", label: "お問い合わせフォーム", desc: "サイト訪問者からのお問い合わせを受け付けるフォーム", icon: MessageSquare, minPlan: "lite", category: "basic" },
-  { id: "sns-links", label: "SNSリンク", desc: "X、Instagram、LINE等のリンクをサイトに表示", icon: Share2, minPlan: "lite", category: "basic" },
-  { id: "gallery", label: "施工実績ギャラリー", desc: "写真をギャラリー形式で表示（最大10枚）", icon: Image, minPlan: "lite", category: "basic" },
-  // Middle
-  { id: "google-maps", label: "Google Maps埋め込み", desc: "会社の所在地をGoogleマップで表示", icon: MapPin, minPlan: "middle", category: "middle" },
-  { id: "blog", label: "ブログ/お知らせ", desc: "現場レポートや見学会の告知を掲載", icon: Newspaper, minPlan: "middle", category: "middle" },
-  { id: "testimonials", label: "お客様の声", desc: "施主様からの感想・レビューを掲載", icon: Users, minPlan: "middle", category: "middle" },
-  { id: "json-ld", label: "構造化データ (JSON-LD)", desc: "Google検索で会社情報がリッチに表示される", icon: Code2, minPlan: "middle", category: "middle" },
-  { id: "ogp", label: "OGP設定", desc: "SNSシェア時にサムネイルと説明文が表示される", icon: Share2, minPlan: "middle", category: "middle" },
-  // Premium
-  { id: "chatbot", label: "AIチャットボット", desc: "よくある質問に24時間自動で回答", icon: Bot, minPlan: "premium", category: "premium" },
-  { id: "booking", label: "予約システム", desc: "見学会・相談会のオンライン予約", icon: CalendarDays, minPlan: "premium", category: "premium" },
-  { id: "recruit", label: "採用ページ", desc: "求人情報の掲載、オンライン応募受付", icon: Briefcase, minPlan: "premium", category: "premium" },
-  { id: "i18n", label: "多言語対応", desc: "日本語/英語の切り替え", icon: Globe, minPlan: "premium", category: "premium" },
-  { id: "panorama", label: "360°ビューア", desc: "完成物件のパノラマ写真を表示", icon: Eye, minPlan: "premium", category: "premium" },
-  { id: "pdf", label: "PDF資料ダウンロード", desc: "会社案内等のPDFをサイトから配布", icon: Download, minPlan: "premium", category: "premium" },
-  { id: "video", label: "動画セクション", desc: "YouTube動画の埋め込み表示", icon: Video, minPlan: "premium", category: "premium" },
+  { id: "contact-form", label: "お問い合わせフォーム", desc: "サイト訪問者からのお問い合わせを受け付けるフォーム", icon: MessageSquare, minPlan: "otameshi", category: "basic" },
+  { id: "sns-links", label: "SNSリンク", desc: "X、Instagram、LINE等のリンクをサイトに表示", icon: Share2, minPlan: "otameshi", category: "basic" },
+  { id: "gallery", label: "施工実績ギャラリー", desc: "写真をギャラリー形式で表示（最大10枚）", icon: Image, minPlan: "otameshi", category: "basic" },
+  // Omakase
+  { id: "google-maps", label: "Google Maps埋め込み", desc: "会社の所在地をGoogleマップで表示", icon: MapPin, minPlan: "omakase", category: "omakase" },
+  { id: "blog", label: "ブログ/お知らせ", desc: "現場レポートや見学会の告知を掲載", icon: Newspaper, minPlan: "omakase", category: "omakase" },
+  { id: "testimonials", label: "お客様の声", desc: "施主様からの感想・レビューを掲載", icon: Users, minPlan: "omakase", category: "omakase" },
+  { id: "json-ld", label: "構造化データ (JSON-LD)", desc: "Google検索で会社情報がリッチに表示される", icon: Code2, minPlan: "omakase", category: "omakase" },
+  { id: "ogp", label: "OGP設定", desc: "SNSシェア時にサムネイルと説明文が表示される", icon: Share2, minPlan: "omakase", category: "omakase" },
+  // Omakase Pro
+  { id: "chatbot", label: "AIチャットボット", desc: "よくある質問に24時間自動で回答", icon: Bot, minPlan: "omakase-pro", category: "omakase-pro" },
+  { id: "booking", label: "予約システム", desc: "見学会・相談会のオンライン予約", icon: CalendarDays, minPlan: "omakase-pro", category: "omakase-pro" },
+  { id: "recruit", label: "採用ページ", desc: "求人情報の掲載、オンライン応募受付", icon: Briefcase, minPlan: "omakase-pro", category: "omakase-pro" },
+  { id: "i18n", label: "多言語対応", desc: "日本語/英語の切り替え", icon: Globe, minPlan: "omakase-pro", category: "omakase-pro" },
+  { id: "panorama", label: "360°ビューア", desc: "完成物件のパノラマ写真を表示", icon: Eye, minPlan: "omakase-pro", category: "omakase-pro" },
+  { id: "pdf", label: "PDF資料ダウンロード", desc: "会社案内等のPDFをサイトから配布", icon: Download, minPlan: "omakase-pro", category: "omakase-pro" },
+  { id: "video", label: "動画セクション", desc: "YouTube動画の埋め込み表示", icon: Video, minPlan: "omakase-pro", category: "omakase-pro" },
 ];
 
 // デモ用：現在オンになっている機能
 const ENABLED_FEATURES: Record<Plan, Set<string>> = {
-  lite: new Set(["contact-form", "sns-links", "gallery"]),
-  middle: new Set(["contact-form", "sns-links", "gallery", "google-maps", "blog", "testimonials", "json-ld", "ogp"]),
-  premium: new Set(["contact-form", "sns-links", "gallery", "google-maps", "blog", "testimonials", "json-ld", "ogp", "chatbot", "booking", "recruit", "video"]),
+  otameshi: new Set(["contact-form", "sns-links", "gallery"]),
+  omakase: new Set(["contact-form", "sns-links", "gallery", "google-maps", "blog", "testimonials", "json-ld", "ogp"]),
+  "omakase-pro": new Set(["contact-form", "sns-links", "gallery", "google-maps", "blog", "testimonials", "json-ld", "ogp", "chatbot", "booking", "recruit", "video"]),
 };
 
 export default function FeaturesPage() {
@@ -61,8 +61,8 @@ export default function FeaturesPage() {
 
   const categories = [
     { key: "basic", label: "基本機能", planLabel: "全プラン" },
-    { key: "middle", label: "拡張機能", planLabel: "まるっとおまかせプラン以上" },
-    { key: "premium", label: "高機能", planLabel: "ぜんぶおまかせプラン" },
+    { key: "omakase", label: "拡張機能", planLabel: "おまかせプラン以上" },
+    { key: "omakase-pro", label: "高機能", planLabel: "おまかせプロプラン" },
   ];
 
   return (
@@ -175,7 +175,7 @@ export default function FeaturesPage() {
                 <div className="flex items-center gap-2 mb-2">
                   <Crown className="w-5 h-5" />
                   <span className="text-sm font-medium">
-                    {upgradeModal.minPlan === "middle" ? "まるっとおまかせプラン" : "ぜんぶおまかせプラン"}
+                    {upgradeModal.minPlan === "omakase" ? "おまかせプラン" : "おまかせプロプラン"}
                   </span>
                 </div>
                 <h3 className="text-xl font-bold">{upgradeModal.label}</h3>
@@ -184,7 +184,7 @@ export default function FeaturesPage() {
                 <p className="text-gray-600 text-sm leading-relaxed mb-6">{upgradeModal.desc}</p>
                 <div className="flex items-baseline gap-2 mb-6 px-4 py-3 rounded-xl bg-purple-50 border border-purple-100">
                   <span className="text-2xl font-bold text-purple-600">
-                    {upgradeModal.minPlan === "middle" ? "¥8,000" : "¥15,000~"}
+                    {upgradeModal.minPlan === "omakase" ? "¥1,480" : "¥4,980"}
                   </span>
                   <span className="text-gray-500 text-xs">/月 から利用可能</span>
                 </div>

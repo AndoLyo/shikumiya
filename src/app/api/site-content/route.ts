@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     const repoName = verifyData.repoName || `shikumiya-${orderId.replace(/^order_/, "").slice(0, 20)}`;
 
     // 3. site.config.jsonを取得
-    const configContent = await fetchFileFromRepo(repoName, "src/site.config.json");
+    const configContent = await fetchFileFromRepo(repoName, "src/app/site.config.json");
 
     if (!configContent) {
       logger.warn("SITE_UPDATE", `site.config.json not found in ${repoName}`, { orderId });

@@ -21,7 +21,7 @@ import {
    FEATURE DATA — 40機能
    ═══════════════════════════════════════ */
 
-type Plan = "lite" | "middle" | "premium";
+type Plan = "otameshi" | "omakase" | "omakase-pro";
 type Category = "section" | "parts" | "function" | "validation";
 
 interface FeatureItem {
@@ -39,55 +39,55 @@ interface FeatureItem {
 
 const FEATURES: FeatureItem[] = [
   // === セクション系 (1-16) ===
-  { id: "hero-section", num: 1, label: "ヒーローセクション", labelEn: "Hero", desc: "ファーストビューを占有するメインビジュアル+CTA", core: "3秒で「ここは自分に関係ある」と感じてスクロールする", icon: PanelTop, plan: "lite", category: "section", demoType: "visual" },
-  { id: "news-section", num: 2, label: "ニュース/お知らせ", labelEn: "News", desc: "タブ切替式のニュースリスト", core: "日付を見て「この会社はちゃんと動いてる」と安心する", icon: Newspaper, plan: "middle", category: "section", demoType: "interactive" },
-  { id: "works-gallery", num: 3, label: "施工実績/WORKS", labelEn: "Works", desc: "カードグリッド+フィルター+ライトボックス", core: "「うちと似た案件やってる」と思える事例を見つける", icon: ImageIcon, plan: "lite", category: "section", demoType: "interactive" },
-  { id: "service-section", num: 4, label: "事業内容/サービス", labelEn: "Service", desc: "アイコン+テキストのカードグリッド", core: "「何をやってくれる会社なのか」が10秒で伝わる", icon: LayoutGrid, plan: "lite", category: "section", demoType: "visual" },
-  { id: "product-lineup", num: 5, label: "商品ラインアップ", labelEn: "Products", desc: "横スクロールスライダーで商品/サービスを一覧", core: "「こういう選択肢があるんだ」と全体像が掴める", icon: Layers, plan: "middle", category: "section", demoType: "interactive" },
-  { id: "technology-section", num: 6, label: "テクノロジー/こだわり", labelEn: "Technology", desc: "技術力や独自の強みを数字で訴求", core: "「ここは他と何が違うのか」が具体的な数字で伝わる", icon: Zap, plan: "middle", category: "section", demoType: "visual" },
-  { id: "pickup-section", num: 7, label: "ピックアップ/特集", labelEn: "Pickup", desc: "キャンペーン・イベント・季節特集のカルーセル", core: "「今やってるキャンペーン」に気づいて興味を持つ", icon: Megaphone, plan: "middle", category: "section", demoType: "visual" },
-  { id: "testimonials", num: 8, label: "お客様の声", labelEn: "Testimonials", desc: "写真+コメント+評価のカルーセル/グリッド", core: "「この会社に頼んで大丈夫」と確信する", icon: Users, plan: "middle", category: "section", demoType: "interactive" },
-  { id: "location-search", num: 9, label: "店舗・拠点検索", labelEn: "Locations", desc: "地域別検索+マップ連動", core: "「一番近い店舗」がすぐ見つかる", icon: MapPin, plan: "premium", category: "section", demoType: "interactive" },
-  { id: "company-info", num: 10, label: "会社情報", labelEn: "Company", desc: "代表メッセージ+概要テーブル+沿革", core: "「ちゃんとした会社だ」と信用する", icon: Building2, plan: "lite", category: "section", demoType: "visual" },
-  { id: "cta-section", num: 11, label: "CTAバー", labelEn: "CTA", desc: "固定/追従型のアクションボタン", core: "「聞いてみよう」と思った瞬間にボタンが目の前にある", icon: Megaphone, plan: "lite", category: "section", demoType: "visual" },
-  { id: "video-section", num: 12, label: "動画セクション", labelEn: "Video", desc: "YouTube/Vimeo埋め込み+カスタム再生ボタン", core: "「文字じゃ伝わらない雰囲気」を感じ取る", icon: Video, plan: "premium", category: "section", demoType: "visual" },
-  { id: "recruit-page", num: 13, label: "採用ページ", labelEn: "Recruit", desc: "求人情報+応募フォーム付きサブページ", core: "「ここで働きたい」と思って応募する", icon: Briefcase, plan: "premium", category: "section", demoType: "info" },
-  { id: "blog-section", num: 14, label: "ブログ/コラム", labelEn: "Blog", desc: "記事一覧+カテゴリ+ページネーション", core: "「この会社は専門知識がある」と感じる", icon: FileText, plan: "middle", category: "section", demoType: "interactive" },
-  { id: "faq-section", num: 15, label: "FAQ", labelEn: "FAQ", desc: "アコーディオン式Q&A+構造化データ", core: "「いくら？」の不安が具体的な数字で消える", icon: HelpCircle, plan: "lite", category: "section", demoType: "interactive" },
-  { id: "before-after", num: 16, label: "ビフォーアフター", labelEn: "Before/After", desc: "ドラッグ式の画像比較スライダー", core: "「こんなに変わるんだ」と効果を実感する", icon: SlidersHorizontal, plan: "middle", category: "section", demoType: "interactive" },
+  { id: "hero-section", num: 1, label: "ヒーローセクション", labelEn: "Hero", desc: "ファーストビューを占有するメインビジュアル+CTA", core: "3秒で「ここは自分に関係ある」と感じてスクロールする", icon: PanelTop, plan: "otameshi", category: "section", demoType: "visual" },
+  { id: "news-section", num: 2, label: "ニュース/お知らせ", labelEn: "News", desc: "タブ切替式のニュースリスト", core: "日付を見て「この会社はちゃんと動いてる」と安心する", icon: Newspaper, plan: "omakase", category: "section", demoType: "interactive" },
+  { id: "works-gallery", num: 3, label: "施工実績/WORKS", labelEn: "Works", desc: "カードグリッド+フィルター+ライトボックス", core: "「うちと似た案件やってる」と思える事例を見つける", icon: ImageIcon, plan: "otameshi", category: "section", demoType: "interactive" },
+  { id: "service-section", num: 4, label: "事業内容/サービス", labelEn: "Service", desc: "アイコン+テキストのカードグリッド", core: "「何をやってくれる会社なのか」が10秒で伝わる", icon: LayoutGrid, plan: "otameshi", category: "section", demoType: "visual" },
+  { id: "product-lineup", num: 5, label: "商品ラインアップ", labelEn: "Products", desc: "横スクロールスライダーで商品/サービスを一覧", core: "「こういう選択肢があるんだ」と全体像が掴める", icon: Layers, plan: "omakase", category: "section", demoType: "interactive" },
+  { id: "technology-section", num: 6, label: "テクノロジー/こだわり", labelEn: "Technology", desc: "技術力や独自の強みを数字で訴求", core: "「ここは他と何が違うのか」が具体的な数字で伝わる", icon: Zap, plan: "omakase", category: "section", demoType: "visual" },
+  { id: "pickup-section", num: 7, label: "ピックアップ/特集", labelEn: "Pickup", desc: "キャンペーン・イベント・季節特集のカルーセル", core: "「今やってるキャンペーン」に気づいて興味を持つ", icon: Megaphone, plan: "omakase", category: "section", demoType: "visual" },
+  { id: "testimonials", num: 8, label: "お客様の声", labelEn: "Testimonials", desc: "写真+コメント+評価のカルーセル/グリッド", core: "「この会社に頼んで大丈夫」と確信する", icon: Users, plan: "omakase", category: "section", demoType: "interactive" },
+  { id: "location-search", num: 9, label: "店舗・拠点検索", labelEn: "Locations", desc: "地域別検索+マップ連動", core: "「一番近い店舗」がすぐ見つかる", icon: MapPin, plan: "omakase-pro", category: "section", demoType: "interactive" },
+  { id: "company-info", num: 10, label: "会社情報", labelEn: "Company", desc: "代表メッセージ+概要テーブル+沿革", core: "「ちゃんとした会社だ」と信用する", icon: Building2, plan: "otameshi", category: "section", demoType: "visual" },
+  { id: "cta-section", num: 11, label: "CTAバー", labelEn: "CTA", desc: "固定/追従型のアクションボタン", core: "「聞いてみよう」と思った瞬間にボタンが目の前にある", icon: Megaphone, plan: "otameshi", category: "section", demoType: "visual" },
+  { id: "video-section", num: 12, label: "動画セクション", labelEn: "Video", desc: "YouTube/Vimeo埋め込み+カスタム再生ボタン", core: "「文字じゃ伝わらない雰囲気」を感じ取る", icon: Video, plan: "omakase-pro", category: "section", demoType: "visual" },
+  { id: "recruit-page", num: 13, label: "採用ページ", labelEn: "Recruit", desc: "求人情報+応募フォーム付きサブページ", core: "「ここで働きたい」と思って応募する", icon: Briefcase, plan: "omakase-pro", category: "section", demoType: "info" },
+  { id: "blog-section", num: 14, label: "ブログ/コラム", labelEn: "Blog", desc: "記事一覧+カテゴリ+ページネーション", core: "「この会社は専門知識がある」と感じる", icon: FileText, plan: "omakase", category: "section", demoType: "interactive" },
+  { id: "faq-section", num: 15, label: "FAQ", labelEn: "FAQ", desc: "アコーディオン式Q&A+構造化データ", core: "「いくら？」の不安が具体的な数字で消える", icon: HelpCircle, plan: "otameshi", category: "section", demoType: "interactive" },
+  { id: "before-after", num: 16, label: "ビフォーアフター", labelEn: "Before/After", desc: "ドラッグ式の画像比較スライダー", core: "「こんなに変わるんだ」と効果を実感する", icon: SlidersHorizontal, plan: "omakase", category: "section", demoType: "interactive" },
   // === 共通パーツ系 (17-24) ===
-  { id: "header-nav", num: 17, label: "ヘッダー+ナビ", labelEn: "Header", desc: "固定ヘッダー+グローバルナビ+ハンバーガー", core: "「どのページに何があるか」が迷わずわかる", icon: Navigation, plan: "lite", category: "parts", demoType: "visual" },
-  { id: "footer", num: 18, label: "フッター", labelEn: "Footer", desc: "サイトマップ+SNS+法的リンク", core: "住所と電話番号を見て「実在する会社だ」と安心する", icon: PanelBottom, plan: "lite", category: "parts", demoType: "visual" },
-  { id: "contact-form", num: 19, label: "お問い合わせフォーム", labelEn: "Contact", desc: "バリデーション付きフォーム+完了画面", core: "「ちょっと聞くだけ」のつもりで送信ボタンを押せる", icon: MessageSquare, plan: "lite", category: "parts", demoType: "interactive" },
-  { id: "breadcrumbs", num: 20, label: "パンくずリスト", labelEn: "Breadcrumbs", desc: "Schema.org対応の階層ナビ", core: "「今どこにいるか」がわかる", icon: ChevronRight, plan: "middle", category: "parts", demoType: "visual" },
-  { id: "google-maps", num: 21, label: "Google Maps", labelEn: "Map", desc: "iframe埋め込み+カスタムピン+遅延読み込み", core: "「うちから何分くらいか」がすぐ判断できる", icon: MapPin, plan: "middle", category: "parts", demoType: "visual" },
-  { id: "sns-integration", num: 22, label: "SNSリンク+埋め込み", labelEn: "SNS", desc: "IG/X/YouTube/LINE アイコン+フィード+シェア", core: "「SNSでも発信してるんだ」と活動感を感じる", icon: Share2, plan: "lite", category: "parts", demoType: "visual" },
-  { id: "cookie-consent", num: 23, label: "Cookie同意バナー", labelEn: "Cookie", desc: "GDPR対応の承諾/拒否/設定バナー", core: "邪魔にならずに消えて、サイト閲覧を妨げない", icon: Cookie, plan: "middle", category: "parts", demoType: "interactive" },
-  { id: "site-search", num: 24, label: "サイト内検索", labelEn: "Search", desc: "オートコンプリート+結果ハイライト", core: "「あのページどこだっけ」が3秒で見つかる", icon: Search, plan: "premium", category: "parts", demoType: "interactive" },
+  { id: "header-nav", num: 17, label: "ヘッダー+ナビ", labelEn: "Header", desc: "固定ヘッダー+グローバルナビ+ハンバーガー", core: "「どのページに何があるか」が迷わずわかる", icon: Navigation, plan: "otameshi", category: "parts", demoType: "visual" },
+  { id: "footer", num: 18, label: "フッター", labelEn: "Footer", desc: "サイトマップ+SNS+法的リンク", core: "住所と電話番号を見て「実在する会社だ」と安心する", icon: PanelBottom, plan: "otameshi", category: "parts", demoType: "visual" },
+  { id: "contact-form", num: 19, label: "お問い合わせフォーム", labelEn: "Contact", desc: "バリデーション付きフォーム+完了画面", core: "「ちょっと聞くだけ」のつもりで送信ボタンを押せる", icon: MessageSquare, plan: "otameshi", category: "parts", demoType: "interactive" },
+  { id: "breadcrumbs", num: 20, label: "パンくずリスト", labelEn: "Breadcrumbs", desc: "Schema.org対応の階層ナビ", core: "「今どこにいるか」がわかる", icon: ChevronRight, plan: "omakase", category: "parts", demoType: "visual" },
+  { id: "google-maps", num: 21, label: "Google Maps", labelEn: "Map", desc: "iframe埋め込み+カスタムピン+遅延読み込み", core: "「うちから何分くらいか」がすぐ判断できる", icon: MapPin, plan: "omakase", category: "parts", demoType: "visual" },
+  { id: "sns-integration", num: 22, label: "SNSリンク+埋め込み", labelEn: "SNS", desc: "IG/X/YouTube/LINE アイコン+フィード+シェア", core: "「SNSでも発信してるんだ」と活動感を感じる", icon: Share2, plan: "otameshi", category: "parts", demoType: "visual" },
+  { id: "cookie-consent", num: 23, label: "Cookie同意バナー", labelEn: "Cookie", desc: "GDPR対応の承諾/拒否/設定バナー", core: "邪魔にならずに消えて、サイト閲覧を妨げない", icon: Cookie, plan: "omakase", category: "parts", demoType: "interactive" },
+  { id: "site-search", num: 24, label: "サイト内検索", labelEn: "Search", desc: "オートコンプリート+結果ハイライト", core: "「あのページどこだっけ」が3秒で見つかる", icon: Search, plan: "omakase-pro", category: "parts", demoType: "interactive" },
   // === 機能系 (25-36) ===
-  { id: "ai-chatbot", num: 25, label: "AIチャットボット", labelEn: "AI Chat", desc: "FAQ自動応答+タイピング表示+クイックリプライ", core: "夜中でも自分の質問の答えが得られる", icon: Bot, plan: "premium", category: "function", demoType: "interactive" },
-  { id: "booking-system", num: 26, label: "予約システム", labelEn: "Booking", desc: "カレンダー+時間枠+残枠+確認ステップ", core: "30秒で予約が完了し、電話しなくて済む", icon: CalendarDays, plan: "premium", category: "function", demoType: "interactive" },
-  { id: "multilingual", num: 27, label: "多言語切替", labelEn: "i18n", desc: "JA/EN/ZH、LangContext+翻訳キー管理", core: "外国人が母国語で情報を理解できる", icon: Globe, plan: "premium", category: "function", demoType: "interactive" },
-  { id: "panorama-viewer", num: 28, label: "360°パノラマ", labelEn: "Panorama", desc: "ドラッグ回転+ズーム+フルスクリーン", core: "「行かなくても中が見える」感覚を得る", icon: Eye, plan: "premium", category: "function", demoType: "visual" },
-  { id: "pdf-download", num: 29, label: "PDF資料DL", labelEn: "PDF", desc: "Blob生成/プリセットPDF+プレビュー", core: "手元に資料を持ち帰って比較検討できる", icon: Download, plan: "premium", category: "function", demoType: "interactive" },
-  { id: "image-gallery", num: 30, label: "画像ギャラリー", labelEn: "Gallery", desc: "グリッド/Masonry+ライトボックス+遅延読み込み", core: "写真を大きく見て「この雰囲気が好き」と感じる", icon: Image, plan: "lite", category: "function", demoType: "interactive" },
-  { id: "file-upload", num: 31, label: "ファイルアップロード", labelEn: "Upload", desc: "ドラッグ&ドロップ+バリデーション+プログレス", core: "スマホから書類を送れる", icon: Upload, plan: "premium", category: "function", demoType: "interactive" },
-  { id: "review-rating", num: 32, label: "レビュー/評価", labelEn: "Reviews", desc: "星評価+コメントカード+ソート", core: "「みんなの評価が高い」と安心する", icon: Star, plan: "middle", category: "function", demoType: "visual" },
-  { id: "notification", num: 33, label: "通知システム", labelEn: "Notify", desc: "メール/LINE/Slack連携", core: "「ちゃんと届いた」と確認できる", icon: Bell, plan: "middle", category: "function", demoType: "info" },
-  { id: "analytics-dashboard", num: 34, label: "アクセス解析", labelEn: "Analytics", desc: "PV/UU/人気ページ/流入元+チャート", core: "どのページが見られてるかわかる", icon: BarChart3, plan: "premium", category: "function", demoType: "visual" },
-  { id: "dark-mode", num: 35, label: "ダークモード", labelEn: "Dark Mode", desc: "システム検出+localStorage+トグルUI", core: "夜に見ても眩しくない", icon: Moon, plan: "middle", category: "function", demoType: "interactive" },
-  { id: "animation", num: 36, label: "スクロールアニメーション", labelEn: "Animation", desc: "フェードイン+スタガー+パララックス", core: "スクロールが気持ちよくて「ちゃんと作ってある」と感じる", icon: Sparkles, plan: "lite", category: "function", demoType: "visual" },
+  { id: "ai-chatbot", num: 25, label: "AIチャットボット", labelEn: "AI Chat", desc: "FAQ自動応答+タイピング表示+クイックリプライ", core: "夜中でも自分の質問の答えが得られる", icon: Bot, plan: "omakase-pro", category: "function", demoType: "interactive" },
+  { id: "booking-system", num: 26, label: "予約システム", labelEn: "Booking", desc: "カレンダー+時間枠+残枠+確認ステップ", core: "30秒で予約が完了し、電話しなくて済む", icon: CalendarDays, plan: "omakase-pro", category: "function", demoType: "interactive" },
+  { id: "multilingual", num: 27, label: "多言語切替", labelEn: "i18n", desc: "JA/EN/ZH、LangContext+翻訳キー管理", core: "外国人が母国語で情報を理解できる", icon: Globe, plan: "omakase-pro", category: "function", demoType: "interactive" },
+  { id: "panorama-viewer", num: 28, label: "360°パノラマ", labelEn: "Panorama", desc: "ドラッグ回転+ズーム+フルスクリーン", core: "「行かなくても中が見える」感覚を得る", icon: Eye, plan: "omakase-pro", category: "function", demoType: "visual" },
+  { id: "pdf-download", num: 29, label: "PDF資料DL", labelEn: "PDF", desc: "Blob生成/プリセットPDF+プレビュー", core: "手元に資料を持ち帰って比較検討できる", icon: Download, plan: "omakase-pro", category: "function", demoType: "interactive" },
+  { id: "image-gallery", num: 30, label: "画像ギャラリー", labelEn: "Gallery", desc: "グリッド/Masonry+ライトボックス+遅延読み込み", core: "写真を大きく見て「この雰囲気が好き」と感じる", icon: Image, plan: "otameshi", category: "function", demoType: "interactive" },
+  { id: "file-upload", num: 31, label: "ファイルアップロード", labelEn: "Upload", desc: "ドラッグ&ドロップ+バリデーション+プログレス", core: "スマホから書類を送れる", icon: Upload, plan: "omakase-pro", category: "function", demoType: "interactive" },
+  { id: "review-rating", num: 32, label: "レビュー/評価", labelEn: "Reviews", desc: "星評価+コメントカード+ソート", core: "「みんなの評価が高い」と安心する", icon: Star, plan: "omakase", category: "function", demoType: "visual" },
+  { id: "notification", num: 33, label: "通知システム", labelEn: "Notify", desc: "メール/LINE/Slack連携", core: "「ちゃんと届いた」と確認できる", icon: Bell, plan: "omakase", category: "function", demoType: "info" },
+  { id: "analytics-dashboard", num: 34, label: "アクセス解析", labelEn: "Analytics", desc: "PV/UU/人気ページ/流入元+チャート", core: "どのページが見られてるかわかる", icon: BarChart3, plan: "omakase-pro", category: "function", demoType: "visual" },
+  { id: "dark-mode", num: 35, label: "ダークモード", labelEn: "Dark Mode", desc: "システム検出+localStorage+トグルUI", core: "夜に見ても眩しくない", icon: Moon, plan: "omakase", category: "function", demoType: "interactive" },
+  { id: "animation", num: 36, label: "スクロールアニメーション", labelEn: "Animation", desc: "フェードイン+スタガー+パララックス", core: "スクロールが気持ちよくて「ちゃんと作ってある」と感じる", icon: Sparkles, plan: "otameshi", category: "function", demoType: "visual" },
   // === 横断系 (37-40) ===
-  { id: "seo-check", num: 37, label: "SEO対策", labelEn: "SEO", desc: "メタタグ/構造化データ/OGP/sitemap", core: "検索したときにこのサイトが見つかる", icon: Search, plan: "lite", category: "validation", demoType: "info" },
-  { id: "responsive-check", num: 38, label: "レスポンシブ対応", labelEn: "Responsive", desc: "PC/タブレット/スマホ全対応", core: "スマホでもPCでも同じように使える", icon: Smartphone, plan: "lite", category: "validation", demoType: "info" },
-  { id: "accessibility-check", num: 39, label: "アクセシビリティ", labelEn: "A11y", desc: "WCAG 2.1 AA準拠", core: "目が悪くても手が不自由でも使える", icon: Shield, plan: "lite", category: "validation", demoType: "info" },
-  { id: "performance-check", num: 40, label: "パフォーマンス", labelEn: "Performance", desc: "Core Web Vitals最適化", core: "待たされずに表示される", icon: Zap, plan: "lite", category: "validation", demoType: "info" },
+  { id: "seo-check", num: 37, label: "SEO対策", labelEn: "SEO", desc: "メタタグ/構造化データ/OGP/sitemap", core: "検索したときにこのサイトが見つかる", icon: Search, plan: "otameshi", category: "validation", demoType: "info" },
+  { id: "responsive-check", num: 38, label: "レスポンシブ対応", labelEn: "Responsive", desc: "PC/タブレット/スマホ全対応", core: "スマホでもPCでも同じように使える", icon: Smartphone, plan: "otameshi", category: "validation", demoType: "info" },
+  { id: "accessibility-check", num: 39, label: "アクセシビリティ", labelEn: "A11y", desc: "WCAG 2.1 AA準拠", core: "目が悪くても手が不自由でも使える", icon: Shield, plan: "otameshi", category: "validation", demoType: "info" },
+  { id: "performance-check", num: 40, label: "パフォーマンス", labelEn: "Performance", desc: "Core Web Vitals最適化", core: "待たされずに表示される", icon: Zap, plan: "otameshi", category: "validation", demoType: "info" },
 ];
 
 const PLAN_COLORS: Record<Plan, { bg: string; text: string; border: string; label: string }> = {
-  lite: { bg: "bg-[#fdf2f8]", text: "text-[#e84393]", border: "border-[#e84393]/20", label: "おまかせ" },
-  middle: { bg: "bg-[#f3f0ff]", text: "text-[#6c5ce7]", border: "border-[#6c5ce7]/20", label: "まるっと" },
-  premium: { bg: "bg-[#fff7ed]", text: "text-[#f39c12]", border: "border-[#f39c12]/20", label: "ぜんぶ" },
+  otameshi: { bg: "bg-[#fdf2f8]", text: "text-[#e84393]", border: "border-[#e84393]/20", label: "おためし" },
+  omakase: { bg: "bg-[#f3f0ff]", text: "text-[#6c5ce7]", border: "border-[#6c5ce7]/20", label: "おまかせ" },
+  "omakase-pro": { bg: "bg-[#fff7ed]", text: "text-[#f39c12]", border: "border-[#f39c12]/20", label: "おまかせプロ" },
 };
 
 const CATEGORY_INFO: Record<Category, { label: string; labelEn: string; color: string }> = {
@@ -126,9 +126,9 @@ export default function FeaturesShowcasePage() {
 
   const stats = useMemo(() => ({
     total: FEATURES.length,
-    lite: FEATURES.filter((f) => f.plan === "lite").length,
-    middle: FEATURES.filter((f) => f.plan === "middle").length,
-    premium: FEATURES.filter((f) => f.plan === "premium").length,
+    otameshi: FEATURES.filter((f) => f.plan === "otameshi").length,
+    omakase: FEATURES.filter((f) => f.plan === "omakase").length,
+    "omakase-pro": FEATURES.filter((f) => f.plan === "omakase-pro").length,
   }), []);
 
   return (
@@ -156,9 +156,9 @@ export default function FeaturesShowcasePage() {
           <div className="flex flex-wrap gap-6">
             {[
               { num: stats.total, label: "機能", suffix: "種類", color: "text-gray-800" },
-              { num: stats.lite, label: "おまかせ", suffix: "機能", color: "text-[#e84393]" },
-              { num: stats.middle, label: "ミドル+", suffix: "機能", color: "text-[#6c5ce7]" },
-              { num: stats.premium, label: "ぜんぶ", suffix: "機能", color: "text-[#f39c12]" },
+              { num: stats.otameshi, label: "おためし", suffix: "機能", color: "text-[#e84393]" },
+              { num: stats.omakase, label: "おまかせ+", suffix: "機能", color: "text-[#6c5ce7]" },
+              { num: stats["omakase-pro"], label: "おまかせプロ", suffix: "機能", color: "text-[#f39c12]" },
             ].map((s) => (
               <div key={s.label} className="text-center">
                 <p className={`text-2xl sm:text-3xl font-bold ${s.color}`}>{s.num}</p>
@@ -207,9 +207,9 @@ export default function FeaturesShowcasePage() {
             <div className="flex gap-1.5">
               {[
                 { key: "all" as const, label: "全プラン", color: "bg-gray-50 text-gray-500" },
-                { key: "lite" as const, label: "おまかせ", color: "bg-emerald-50 text-emerald-600" },
-                { key: "middle" as const, label: "まるっと", color: "bg-blue-50 text-blue-600" },
-                { key: "premium" as const, label: "ぜんぶ", color: "bg-purple-50 text-purple-600" },
+                { key: "otameshi" as const, label: "おためし", color: "bg-emerald-50 text-emerald-600" },
+                { key: "omakase" as const, label: "おまかせ", color: "bg-blue-50 text-blue-600" },
+                { key: "omakase-pro" as const, label: "おまかせプロ", color: "bg-purple-50 text-purple-600" },
               ].map((p) => (
                 <button
                   key={p.key}

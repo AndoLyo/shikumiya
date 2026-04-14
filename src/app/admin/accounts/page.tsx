@@ -5,9 +5,9 @@ import { motion } from "framer-motion";
 import { Users, ChevronRight, Search, Loader2, AlertCircle } from "lucide-react";
 
 const planLabel: Record<string, { label: string; color: string; bg: string }> = {
-  lite: { label: "おまかせ", color: "text-gray-600", bg: "bg-gray-100" },
-  middle: { label: "まるっと", color: "text-purple-600", bg: "bg-purple-100" },
-  premium: { label: "ぜんぶ", color: "text-orange-600", bg: "bg-orange-100" },
+  otameshi: { label: "おためし", color: "text-gray-600", bg: "bg-gray-100" },
+  omakase: { label: "おまかせ", color: "text-purple-600", bg: "bg-purple-100" },
+  "omakase-pro": { label: "おまかせプロ", color: "text-orange-600", bg: "bg-orange-100" },
 };
 
 interface Account {
@@ -60,7 +60,7 @@ export default function AccountsPage() {
           <p className="text-gray-400 text-xs">制作中</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 p-4 text-center">
-          <p className="text-gray-800 text-2xl font-bold">{accounts.filter((a) => a.status === "完了").length}</p>
+          <p className="text-gray-800 text-2xl font-bold">{accounts.filter((a) => a.status === "公開中").length}</p>
           <p className="text-gray-400 text-xs">公開中</p>
         </div>
       </div>
@@ -80,7 +80,7 @@ export default function AccountsPage() {
         ) : (
           <div className="divide-y divide-gray-100">
             {filtered.map((acc) => {
-              const pl = planLabel[acc.plan] || planLabel.lite;
+              const pl = planLabel[acc.plan] || planLabel.otameshi;
               return (
                 <div key={acc.orderId} className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors">
                   <div className="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
@@ -93,7 +93,7 @@ export default function AccountsPage() {
                     </div>
                     <p className="text-gray-400 text-xs truncate">{acc.email} | {acc.date}</p>
                   </div>
-                  <span className={`text-xs ${acc.status === "完了" ? "text-green-500" : "text-blue-500"}`}>{acc.status}</span>
+                  <span className={`text-xs ${acc.status === "公開中" ? "text-green-500" : acc.status === "制作中" ? "text-blue-500" : "text-gray-400"}`}>{acc.status}</span>
                   <ChevronRight className="w-4 h-4 text-gray-300" />
                 </div>
               );

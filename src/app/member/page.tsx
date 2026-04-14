@@ -1,150 +1,93 @@
 "use client";
 
-import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { KeyRound, Mail, ArrowRight, Home, Loader2 } from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
+import LoginModal from "@/components/LoginModal";
 
 export default function MemberLoginPage() {
+  const { data: session, status } = useSession();
   const router = useRouter();
-  const [orderId, setOrderId] = useState("");
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      const res = await fetch("/api/member/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId: orderId.trim(), email: email.trim() }),
-      });
-
-      const data = await res.json();
-
-      if (data.valid) {
-        // Store email in sessionStorage for subsequent API calls
-        sessionStorage.setItem("member_email", email.trim());
-        router.push(`/member/${encodeURIComponent(orderId.trim())}`);
-      } else {
-        setError(data.error || "注文IDまたはメールアドレスが一致しません");
+  // ログイン済みなら自動遷移
+  useEffect(() => {
+    if (status === "authenticated" && session) {
+      if (session.user?.email) {
+        sessionStorage.setItem("memberEmail", session.user.email);
       }
-    } catch {
-      setError("通信エラーが発生しました。もう一度お試しください。");
-    } finally {
-      setLoading(false);
+      if (session.orderId) {
+        router.push(`/member/${encodeURIComponent(session.orderId)}`);
+        return;
+      }
     }
+    // 未ログインなら自動でモーダルを開く
+    if (status === "unauthenticated") {
+      setLoginOpen(true);
+    }
+  }, [status, session, router]);
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#fdf2f8] via-[#f3f0ff] to-[#fff7ed] flex items-center justify-center">
+        <Loader2 className="w-6 h-6 text-purple-400 animate-spin" />
+      </div>
+    );
   }
 
+  // ログイン済みだが注文なし
+  const isLoggedInNoOrder = status === "authenticated" && !session?.orderId;
+
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-            会員ページ
-          </h1>
-          <p className="text-white/50 text-sm">
-            サイトの編集・管理はこちらから
-          </p>
-        </div>
-
-        {/* Login Card */}
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6 sm:p-8 space-y-6"
-        >
-          {/* Order ID */}
-          <div>
-            <label
-              htmlFor="orderId"
-              className="block text-sm font-medium text-white/70 mb-2"
-            >
-              注文ID
-            </label>
-            <div className="relative">
-              <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-              <input
-                id="orderId"
-                type="text"
-                value={orderId}
-                onChange={(e) => setOrderId(e.target.value)}
-                placeholder="order_1234567890_abc123"
-                required
-                className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl pl-10 pr-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 transition-colors text-sm"
-              />
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#fdf2f8] via-[#f3f0ff] to-[#fff7ed] flex items-center justify-center px-4">
+      <div className="w-full max-w-md text-center">
+        <Link href="/" className="inline-flex items-center gap-2 mb-8">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-[#e84393] via-[#6c5ce7] to-[#f39c12] flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-white" />
           </div>
+          <span className="text-gray-800 font-bold">しくみや</span>
+        </Link>
 
-          {/* Email */}
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-white/70 mb-2"
+        {isLoggedInNoOrder ? (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 space-y-4">
+            <div className="w-14 h-14 rounded-full bg-orange-50 flex items-center justify-center mx-auto">
+              <span className="text-2xl">🔍</span>
+            </div>
+            <p className="text-gray-800 font-bold text-sm">注文データが見つかりません</p>
+            <p className="text-gray-400 text-xs leading-relaxed">
+              {session?.user?.email} に紐づく注文がありません。
+              <br />お申し込み時のアカウントでログインしてください。
+            </p>
+            <button
+              onClick={() => setLoginOpen(true)}
+              className="w-full py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm hover:bg-gray-50 transition-colors"
             >
-              メールアドレス
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your-email@example.com"
-                required
-                className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl pl-10 pr-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 transition-colors text-sm"
-              />
-            </div>
+              別のアカウントで試す
+            </button>
+            <Link href="/start" className="text-purple-500 text-xs hover:underline block">
+              まだ申し込んでいない方はこちら
+            </Link>
           </div>
+        ) : (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+            <p className="text-gray-500 text-sm mb-4">ログインしてサイトを管理</p>
+            <button
+              onClick={() => setLoginOpen(true)}
+              className="w-full bg-gradient-to-r from-[#e84393] via-[#6c5ce7] to-[#f39c12] text-white font-bold rounded-xl py-3.5 hover:opacity-90 transition-all text-sm"
+            >
+              ログイン
+            </button>
+          </div>
+        )}
 
-          {/* Error */}
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-sm">
-              {error}
-            </div>
-          )}
-
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#00e5ff] hover:bg-[#00c8e0] disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-xl py-3 flex items-center justify-center gap-2 transition-colors"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                確認中...
-              </>
-            ) : (
-              <>
-                ログイン
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
-
-          {/* Help text */}
-          <p className="text-white/30 text-xs text-center">
-            注文IDは完成通知メールに記載されています
-          </p>
-        </form>
-
-        {/* Back to home */}
-        <div className="text-center mt-6">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-white/40 hover:text-white/60 text-sm transition-colors"
-          >
-            <Home className="w-3.5 h-3.5" />
-            トップページに戻る
-          </Link>
-        </div>
+        <Link href="/" className="text-gray-400 hover:text-gray-600 text-sm transition-colors mt-6 inline-block">
+          トップページに戻る
+        </Link>
       </div>
+
+      <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} />
     </div>
   );
 }

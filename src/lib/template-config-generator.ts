@@ -58,14 +58,14 @@ export function generateSiteConfig(formData: OrderFormData): SiteConfig {
     projects: [],
     strengths: [],
 
-    // ミドル以上のフィールド（空配列で初期化）
-    ...(plan !== "lite" ? {
+    // おまかせ以上のフィールド（空配列で初期化）
+    ...(plan !== "otameshi" ? {
       testimonials: [],
       news: [],
     } : {}),
 
-    // プレミアムのフィールド
-    ...(plan === "premium" ? {
+    // おまかせプロのフィールド
+    ...(plan === "omakase-pro" ? {
       chatFAQs: [],
       bookingEvents: [],
     } : {}),

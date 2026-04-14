@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import DemoBanner from "@/components/portfolio-templates/DemoBanner";
 import type { SiteConfig } from "@/lib/site-config-schema";
+import { usePreviewName } from "@/lib/use-preview-name";
 import siteConfig from "./site.config.json";
 
 /* ═══════════════════════════════════════
@@ -155,6 +156,7 @@ function HeroIllustration() {
    Header — 固定ヘッダー + 電話ボタン
    ═══════════════════════════════════════ */
 function Header() {
+  const displayName = usePreviewName(COMPANY.name);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -182,7 +184,7 @@ function Header() {
               <Home className="w-4.5 h-4.5 text-white" strokeWidth={2} />
             </div>
             <div>
-              <p className={`font-bold text-sm tracking-wide transition-colors ${scrolled ? "text-[#3D3226]" : "text-white"}`}>{COMPANY.name}</p>
+              <p className={`font-bold text-sm tracking-wide transition-colors ${scrolled ? "text-[#3D3226]" : "text-white"}`}>{displayName}</p>
               <p className={`text-[9px] tracking-wider transition-colors ${scrolled ? "text-[#8B7D6B]" : "text-white/60"}`}>since {COMPANY.since}</p>
             </div>
           </a>
@@ -513,6 +515,7 @@ function StrengthsSection() {
    About (会社案内) — 代表挨拶 + 会社概要
    ═══════════════════════════════════════ */
 function AboutSection() {
+  const displayName = usePreviewName(COMPANY.name);
   return (
     <section id="about" className="py-20 sm:py-28 bg-[#FAF7F2]">
       <div className="max-w-[1000px] mx-auto px-5">
@@ -566,7 +569,7 @@ function AboutSection() {
           </div>
           <div className="divide-y divide-[#E8DFD3]">
             {[
-              ["商号", COMPANY.name],
+              ["商号", displayName],
               ["代表者", COMPANY.ceo],
               ["設立", `${COMPANY.since}年`],
               ["所在地", COMPANY.address],
@@ -753,6 +756,7 @@ function ContactSection() {
    Footer
    ═══════════════════════════════════════ */
 function Footer() {
+  const displayName = usePreviewName(COMPANY.name);
   return (
     <footer className="py-10 bg-[#3D3226] pb-24 md:pb-10">
       <div className="max-w-[1200px] mx-auto px-5">
@@ -762,7 +766,7 @@ function Footer() {
               <Home className="w-4 h-4 text-white" />
             </div>
             <div>
-              <p className="text-white font-bold text-sm">{COMPANY.name}</p>
+              <p className="text-white font-bold text-sm">{displayName}</p>
               <p className="text-white/40 text-[9px] tracking-wider">since {COMPANY.since}</p>
             </div>
           </div>
@@ -778,7 +782,7 @@ function Footer() {
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-white/30 text-xs">
           <p>〒000-0000 {COMPANY.address}</p>
-          <p>© {new Date().getFullYear()} {COMPANY.name}. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {displayName}. All rights reserved.</p>
         </div>
       </div>
     </footer>

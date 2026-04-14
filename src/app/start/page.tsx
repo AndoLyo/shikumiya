@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import {
   Building2, Palette, Globe, ArrowRight, ArrowLeft, Check,
   Sparkles, Search, AlertCircle, ExternalLink, Mail, Phone,
-  ChevronRight, Loader2, X, Eye, Heart,
+  ChevronRight, Loader2, X, Eye, Heart, Maximize2, Monitor,
 } from "lucide-react";
+import LoginModal from "@/components/LoginModal";
 
 /* ═══════════════════════════════════════
    業種データ
@@ -21,19 +23,19 @@ const INDUSTRIES = [
 
 const TEMPLATES: Record<string, { id: string; name: string; desc: string; preview: string }[]> = {
   construction: [
-    { id: "warm-craft", name: "ウォームクラフト（おまかせ）", desc: "温もりのある、地域密着型の工務店に", preview: "/portfolio-templates/warm-craft" },
-    { id: "warm-craft-mid", name: "ウォームクラフト（まるっと）", desc: "ブログ・お客様の声・Maps付き", preview: "/portfolio-templates/warm-craft-mid" },
-    { id: "warm-craft-pro", name: "ウォームクラフト（ぜんぶ）", desc: "AIチャット・予約システム搭載", preview: "/portfolio-templates/warm-craft-pro" },
+    { id: "warm-craft", name: "ウォームクラフト（おためし）", desc: "温もりのある、地域密着型の工務店に", preview: "/portfolio-templates/warm-craft" },
+    { id: "warm-craft-mid", name: "ウォームクラフト（おまかせ）", desc: "ブログ・お客様の声・Maps付き", preview: "/portfolio-templates/warm-craft-mid" },
+    { id: "warm-craft-pro", name: "ウォームクラフト（おまかせプロ）", desc: "AIチャット・予約システム搭載", preview: "/portfolio-templates/warm-craft-pro" },
   ],
   builder: [
-    { id: "trust-navy", name: "トラストネイビー（おまかせ）", desc: "信頼感のあるネイビー×ゴールド", preview: "/portfolio-templates/trust-navy" },
-    { id: "trust-navy-mid", name: "トラストネイビー（まるっと）", desc: "ニュース・実績詳細・Maps付き", preview: "/portfolio-templates/trust-navy-mid" },
-    { id: "trust-navy-pro", name: "トラストネイビー（ぜんぶ）", desc: "採用ページ・動画・AI搭載", preview: "/portfolio-templates/trust-navy-pro" },
+    { id: "trust-navy", name: "トラストネイビー（おためし）", desc: "信頼感のあるネイビー×ゴールド", preview: "/portfolio-templates/trust-navy" },
+    { id: "trust-navy-mid", name: "トラストネイビー（おまかせ）", desc: "ニュース・実績詳細・Maps付き", preview: "/portfolio-templates/trust-navy-mid" },
+    { id: "trust-navy-pro", name: "トラストネイビー（おまかせプロ）", desc: "採用ページ・動画・AI搭載", preview: "/portfolio-templates/trust-navy-pro" },
   ],
   architect: [
-    { id: "clean-arch", name: "クリーンアーチ（おまかせ）", desc: "余白を活かしたミニマルデザイン", preview: "/portfolio-templates/clean-arch" },
-    { id: "clean-arch-mid", name: "クリーンアーチ（まるっと）", desc: "受賞歴・ニュース・詳細ページ付き", preview: "/portfolio-templates/clean-arch-mid" },
-    { id: "clean-arch-pro", name: "クリーンアーチ（ぜんぶ）", desc: "多言語・360°ビュー・PDF搭載", preview: "/portfolio-templates/clean-arch-pro" },
+    { id: "clean-arch", name: "クリーンアーチ（おためし）", desc: "余白を活かしたミニマルデザイン", preview: "/portfolio-templates/clean-arch" },
+    { id: "clean-arch-mid", name: "クリーンアーチ（おまかせ）", desc: "受賞歴・ニュース・詳細ページ付き", preview: "/portfolio-templates/clean-arch-mid" },
+    { id: "clean-arch-pro", name: "クリーンアーチ（おまかせプロ）", desc: "多言語・360°ビュー・PDF搭載", preview: "/portfolio-templates/clean-arch-pro" },
   ],
   other: [
     { id: "warm-craft", name: "ウォームクラフト", desc: "温かみのあるデザイン", preview: "/portfolio-templates/warm-craft" },
@@ -41,6 +43,16 @@ const TEMPLATES: Record<string, { id: string; name: string; desc: string; previe
     { id: "clean-arch", name: "クリーンアーチ", desc: "洗練されたデザイン", preview: "/portfolio-templates/clean-arch" },
   ],
 };
+
+/* ═══════════════════════════════════════
+   プラン情報ヘルパー
+   ═══════════════════════════════════════ */
+function getPlanInfo(templateId: string | null): { label: string; price: string; planKey: string } {
+  if (!templateId) return { label: "おためし", price: "¥0", planKey: "otameshi" };
+  if (templateId.endsWith("-pro")) return { label: "おまかせプロ", price: "¥4,980", planKey: "omakase-pro" };
+  if (templateId.endsWith("-mid")) return { label: "おまかせ", price: "¥1,480", planKey: "omakase" };
+  return { label: "おためし", price: "¥0", planKey: "otameshi" };
+}
 
 /* ═══════════════════════════════════════
    ドメイン検索（デモ用）
@@ -94,6 +106,9 @@ function ProgressBar({ step, total }: { step: number; total: number }) {
    Main Page
    ═══════════════════════════════════════ */
 export default function StartPage() {
+  const { data: session, status: authStatus } = useSession();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   const [step, setStep] = useState(0);
   const [industry, setIndustry] = useState<string | null>(null);
   const [template, setTemplate] = useState<string | null>(null);
@@ -108,12 +123,37 @@ export default function StartPage() {
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
   const [useSubdomain, setUseSubdomain] = useState(false);
 
+  // 未ログインの場合、3秒後にLoginModalを自動表示
+  useEffect(() => {
+    if (authStatus === "unauthenticated") {
+      const timer = setTimeout(() => setShowAuthModal(true), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [authStatus]);
+
   // 申込
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [fullscreen, setFullscreen] = useState(false);
+
+  // プレビュー iframe への postMessage 送信
+  const previewRef = useRef<HTMLIFrameElement>(null);
+  const fullscreenRef = useRef<HTMLIFrameElement>(null);
+
+  const sendPreviewName = useCallback((name: string) => {
+    const msg = { type: "shikumiya-preview-name", name };
+    previewRef.current?.contentWindow?.postMessage(msg, "*");
+    fullscreenRef.current?.contentWindow?.postMessage(msg, "*");
+  }, []);
+
+  useEffect(() => {
+    if (step === 2 && companyName.trim()) {
+      sendPreviewName(companyName.trim());
+    }
+  }, [companyName, step, sendPreviewName]);
 
   const searchDomain = () => {
     if (!domainSearch.trim()) return;
@@ -168,8 +208,12 @@ export default function StartPage() {
               <span className="text-gray-700 font-medium text-xs">{selectedDomain || existingDomain || subdomain}</span>
             </div>
             <div className="flex justify-between text-sm">
+              <span className="text-gray-400">プラン</span>
+              <span className="text-gray-700">{getPlanInfo(template).label}</span>
+            </div>
+            <div className="flex justify-between text-sm">
               <span className="text-gray-400">月額</span>
-              <span className={`font-bold ${gradientText}`}>¥3,000/月〜</span>
+              <span className={`font-bold ${gradientText}`}>{getPlanInfo(template).price}/月</span>
             </div>
           </div>
 
@@ -327,20 +371,37 @@ export default function StartPage() {
           {/* ═══════════════════════════════════════
              STEP 2: 会社名 → デモサイト即表示
              ═══════════════════════════════════════ */}
-          {step === 2 && (
+          {step === 2 && (() => {
+            const planInfo = getPlanInfo(template);
+            const tplInfo = Object.values(TEMPLATES).flat().find((t) => t.id === template);
+            const nameValid = companyName.trim().length >= 2;
+            return (
             <motion.div key="step2" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}>
               <div className="text-center mb-8">
                 <h1 className="text-gray-800 text-2xl sm:text-3xl font-bold mb-2">
                   会社名を入力してください
                 </h1>
-                <p className="text-gray-400 text-sm">入力するとプレビューに反映されます</p>
+                <p className="text-gray-400 text-sm">入力した名前がプレビューにリアルタイムで反映されます</p>
               </div>
 
               <div className="flex flex-col lg:flex-row gap-8">
                 {/* 入力エリア */}
-                <div className="flex-1">
-                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
-                    <label className="block text-sm text-gray-700 font-medium mb-2">会社名・屋号</label>
+                <div className="flex-1 space-y-5">
+                  {/* 選択済みテンプレ情報 */}
+                  <div className="bg-purple-50/60 rounded-2xl p-4 border border-purple-100 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0">
+                      <Monitor className="w-5 h-5 text-purple-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-gray-800 text-sm font-medium truncate">{tplInfo?.name || "テンプレート"}</p>
+                      <p className="text-purple-500 text-xs font-bold">{planInfo.label}プラン — 月額{planInfo.price}</p>
+                    </div>
+                    <button onClick={back} className="text-purple-400 text-xs hover:text-purple-600 flex-shrink-0">変更</button>
+                  </div>
+
+                  {/* 会社名入力 */}
+                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <label className="block text-sm text-gray-700 font-medium mb-2">会社名・屋号 <span className="text-red-400">*</span></label>
                     <input
                       type="text"
                       value={companyName}
@@ -349,30 +410,48 @@ export default function StartPage() {
                       className="w-full px-5 py-4 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-lg placeholder:text-gray-300 focus:outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100 transition-all"
                       autoFocus
                     />
+                    {companyName.trim().length > 0 && companyName.trim().length < 2 && (
+                      <p className="text-orange-500 text-xs mt-2 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" /> 2文字以上入力してください
+                      </p>
+                    )}
                   </div>
 
-                  {companyName && (
+                  {/* 入力後のフィードバック */}
+                  {nameValid && (
                     <motion.div
-                      className="bg-green-50 rounded-2xl p-5 border border-green-100"
+                      className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-3"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                     >
-                      <div className="flex items-center gap-2 mb-2">
-                        <Heart className="w-4 h-4 text-green-500" fill="#22c55e" />
-                        <p className="text-green-700 text-sm font-medium">いい名前ですね！</p>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center">
+                          <Check className="w-3.5 h-3.5 text-green-500" />
+                        </div>
+                        <p className="text-gray-700 text-sm font-medium">プレビューに反映済み</p>
                       </div>
-                      <p className="text-green-600 text-xs">
-                        右のプレビューに「{companyName}」が反映されています。
-                        <br />こんなサイトが、月3,000円で持てます。
-                      </p>
+                      <div className="space-y-2 pl-8">
+                        <div className="flex items-center gap-2 text-xs">
+                          <Globe className="w-3.5 h-3.5 text-gray-400" />
+                          <span className="text-gray-500">サイトURL:</span>
+                          <span className="text-gray-700 font-mono text-[11px]">{subdomain}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs">
+                          <Sparkles className="w-3.5 h-3.5 text-gray-400" />
+                          <span className="text-gray-500">制作費:</span>
+                          <span className="text-green-600 font-bold">¥0（無料）</span>
+                          <span className="text-gray-400">+ 月額{planInfo.price}</span>
+                        </div>
+                      </div>
                     </motion.div>
                   )}
                 </div>
 
                 {/* プレビュー */}
                 {previewTemplate && (
-                  <div className="lg:w-[400px] flex-shrink-0">
+                  <div className="lg:w-[420px] flex-shrink-0">
                     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-lg sticky top-20">
+                      {/* ブラウザバー */}
                       <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border-b border-gray-100">
                         <div className="flex gap-1">
                           <div className="w-2 h-2 rounded-full bg-red-300" />
@@ -380,23 +459,44 @@ export default function StartPage() {
                           <div className="w-2 h-2 rounded-full bg-green-300" />
                         </div>
                         <div className="flex-1 mx-2 px-2 py-0.5 rounded bg-white border border-gray-200 text-[9px] text-gray-400 font-mono truncate">
-                          {companyName ? subdomain : "your-site.vercel.app"}
+                          {companyName.trim() ? subdomain : "your-site.vercel.app"}
                         </div>
+                        <button
+                          onClick={() => setFullscreen(true)}
+                          className="p-1 rounded hover:bg-gray-200 transition-colors"
+                          title="フルスクリーンで見る"
+                        >
+                          <Maximize2 className="w-3 h-3 text-gray-400" />
+                        </button>
                       </div>
-                      <div className="relative h-[400px] overflow-hidden">
+                      {/* iframe */}
+                      <div className="relative h-[420px] overflow-hidden bg-gray-50">
                         <iframe
+                          ref={previewRef}
                           src={previewTemplate}
                           title="プレビュー"
-                          className="absolute top-0 left-0 w-[1200px] h-[800px] origin-top-left border-0 pointer-events-none"
-                          style={{ transform: "scale(0.34)" }}
+                          className="absolute top-0 left-0 w-[1200px] h-[900px] origin-top-left border-0 pointer-events-none"
+                          style={{ transform: "scale(0.35)" }}
                           loading="lazy"
                           tabIndex={-1}
+                          onLoad={() => { if (companyName.trim()) sendPreviewName(companyName.trim()); }}
                         />
                       </div>
-                      <div className="px-4 py-2.5 border-t border-gray-100 bg-purple-50 text-center">
-                        <p className="text-purple-500 text-xs font-medium">
-                          {companyName ? `「${companyName}」のサイトイメージ` : "サイトプレビュー"}
+                      {/* キャプション */}
+                      <div className="px-4 py-2.5 border-t border-gray-100 flex items-center justify-between">
+                        <p className="text-gray-500 text-xs">
+                          {nameValid ? (
+                            <><span className="text-green-500 font-medium">●</span> 「{companyName.trim()}」を反映中</>
+                          ) : (
+                            "会社名を入力するとここに反映されます"
+                          )}
                         </p>
+                        <button
+                          onClick={() => setFullscreen(true)}
+                          className="text-purple-500 text-xs font-medium hover:text-purple-700 flex items-center gap-1"
+                        >
+                          <Eye className="w-3 h-3" /> 拡大
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -407,7 +507,7 @@ export default function StartPage() {
                 <button onClick={back} className="px-6 py-3 rounded-full border border-gray-200 text-gray-500 text-sm hover:bg-white transition-colors">
                   <ArrowLeft className="w-4 h-4 inline mr-1" /> 戻る
                 </button>
-                {companyName.trim() && (
+                {nameValid && (
                   <motion.button
                     onClick={next}
                     className={`px-10 py-3 rounded-full ${gradientBg} text-white font-bold text-sm hover:opacity-90 transition-all shadow-lg shadow-purple-200/50`}
@@ -419,7 +519,52 @@ export default function StartPage() {
                 )}
               </div>
             </motion.div>
-          )}
+            );
+          })()}
+
+          {/* フルスクリーンプレビューモーダル */}
+          <AnimatePresence>
+            {fullscreen && previewTemplate && (
+              <motion.div
+                className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setFullscreen(false)}
+              >
+                <motion.div
+                  className="bg-white rounded-2xl overflow-hidden shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col"
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
+                    <div className="flex items-center gap-3">
+                      <div className="flex gap-1">
+                        <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+                      </div>
+                      <span className="text-gray-500 text-xs font-mono">{companyName.trim() ? subdomain : "your-site.vercel.app"}</span>
+                    </div>
+                    <button onClick={() => setFullscreen(false)} className="p-1.5 rounded-lg hover:bg-gray-200 transition-colors">
+                      <X className="w-4 h-4 text-gray-500" />
+                    </button>
+                  </div>
+                  <div className="flex-1 overflow-hidden" style={{ height: "75vh" }}>
+                    <iframe
+                      ref={fullscreenRef}
+                      src={previewTemplate}
+                      title="フルスクリーンプレビュー"
+                      className="w-full h-full border-0"
+                      onLoad={() => { if (companyName.trim()) sendPreviewName(companyName.trim()); }}
+                    />
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* ═══════════════════════════════════════
              STEP 3: ドメイン + 連絡先 → 申込完了
@@ -574,7 +719,8 @@ export default function StartPage() {
                   <h3 className="text-gray-800 font-bold text-sm mb-4">お申し込み内容</h3>
                   <div className="space-y-2 mb-4">
                     <div className="flex justify-between text-sm"><span className="text-gray-400">初期制作費</span><span className="text-green-500 font-bold">¥0（無料）</span></div>
-                    <div className="flex justify-between text-sm"><span className="text-gray-400">月額利用料</span><span className="text-gray-800 font-bold">¥3,000/月〜</span></div>
+                    <div className="flex justify-between text-sm"><span className="text-gray-400">月額利用料</span><span className="text-gray-800 font-bold">{getPlanInfo(template).price}/月</span></div>
+                    <div className="flex justify-between text-sm"><span className="text-gray-400">プラン</span><span className="text-gray-700">{getPlanInfo(template).label}</span></div>
                     {selectedDomain && <div className="flex justify-between text-sm"><span className="text-gray-400">ドメイン費用</span><span className="text-gray-600">{domainResults.find((r) => r.domain === selectedDomain)?.price}</span></div>}
                   </div>
                   <div className="flex items-center gap-2 text-xs text-gray-400">
@@ -647,6 +793,24 @@ export default function StartPage() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* 未ログイン時の認証モーダル */}
+      <LoginModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode="register"
+        callbackUrl="/start"
+      />
+
+      {/* 未ログイン時のフローティングボタン（モーダルを閉じた後でも再表示可能） */}
+      {authStatus === "unauthenticated" && !showAuthModal && (
+        <button
+          onClick={() => setShowAuthModal(true)}
+          className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-full ${gradientBg} text-white font-bold text-sm shadow-lg shadow-purple-300/40 hover:opacity-90 transition-all flex items-center gap-2`}
+        >
+          <Mail className="w-4 h-4" /> ログイン / 新規登録
+        </button>
+      )}
     </div>
   );
 }

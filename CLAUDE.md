@@ -17,7 +17,7 @@
 - **テンプレート販売は終了。B2B SaaSサブスクに完全移行**
 - ターゲット: **全業種の中小零細企業**（建築業がv1パック。今後、無形商材・飲食・士業等に展開）
 - 制作費: **0円**（初期費用ゼロ）
-- 月額: おまかせ¥3,000 / まるっとおまかせ¥8,000 / ぜんぶおまかせ¥15,000~
+- 月額: おためし¥0 / おまかせ¥1,480 / おまかせプロ¥4,980
 - 独自ドメイン: 全プラン対応
 - 差別化: 「写真を送るだけ。あとは全部おまかせ」
 - 全CTA → `/start` に統一。「無料相談」は不要
@@ -25,7 +25,7 @@
 ### テンプレートのパス（重要）
 - **正しいパス**: `src/app/portfolio-templates/` + `src/components/portfolio-templates/`
 - **本番URL**: `https://shikumiya.vercel.app/portfolio-templates/{テンプレ名}`
-- **建築パック（9種）**: warm-craft, trust-navy, clean-arch × lite/mid/pro
+- **建築パック（9種）**: warm-craft, trust-navy, clean-arch × otameshi/omakase/omakase-pro (URL: base/base-mid/base-pro)
 - **旧テンプレート**（studio-white, pastel-pop等）は308リダイレクト済み。将来削除
 - **業種レジストリ**: `src/lib/industry-registry.ts`（35業種登録）
 

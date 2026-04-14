@@ -172,7 +172,7 @@ export interface StyleConfig {
 export interface SiteConfig {
   // メタ情報
   templateId: string;         // warm-craft | trust-navy | clean-arch
-  plan: "lite" | "middle" | "premium";
+  plan: "otameshi" | "omakase" | "omakase-pro";
   orderId: string;
   siteUrl: string;
 
@@ -185,12 +185,12 @@ export interface SiteConfig {
   services?: Service[];       // trust-navy用
   stats?: Stat[];             // trust-navy用
 
-  // ミドル以上
+  // おまかせ以上
   testimonials?: Testimonial[];
   news?: NewsItem[];
   awards?: Award[];           // clean-arch用
 
-  // プレミアム
+  // おまかせプロ
   bookingEvents?: BookingEvent[];
   chatFAQs?: ChatFAQ[];
   jobs?: JobPosting[];        // trust-navy-pro用

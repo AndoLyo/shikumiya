@@ -889,7 +889,7 @@ export default function MemberEditPage() {
 
   const getEmail = useCallback(() => {
     if (typeof window !== "undefined") {
-      return sessionStorage.getItem("member_email") || "";
+      return sessionStorage.getItem("memberEmail") || "";
     }
     return "";
   }, []);
@@ -936,13 +936,13 @@ export default function MemberEditPage() {
   }, [orderId, router, getEmail]);
 
   // ─── Derived state ────────────────────────────────────
-  const maxEdits = orderData?.plan === "omakase" ? 3 : 1;
+  const maxEdits = orderData?.plan === "omakase-pro" ? 999 : orderData?.plan === "omakase" ? 3 : 0;
   const editsUsed = orderData?.editsUsed || 0;
   const editsRemaining = maxEdits - editsUsed;
   const canEdit = editsRemaining > 0;
   const changedCount = Object.keys(changes).length;
   const hasAiRequest = aiRequest.trim().length > 0;
-  const isOmakase = orderData?.plan === "omakase";
+  const isOmakase = orderData?.plan === "omakase" || orderData?.plan === "omakase-pro";
 
   const templateForm = orderData ? getTemplateForm(orderData.template) : null;
   const sections: SectionDef[] = templateForm?.sectionDefs || [];

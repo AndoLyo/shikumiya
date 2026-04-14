@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from "react";
 
-export type Plan = "lite" | "middle" | "premium";
+export type Plan = "otameshi" | "omakase" | "omakase-pro";
 
 export interface MemberContextType {
   plan: Plan;
@@ -12,7 +12,7 @@ export interface MemberContextType {
 }
 
 export const MemberCtx = createContext<MemberContextType>({
-  plan: "lite",
+  plan: "otameshi",
   companyName: "",
   orderId: "",
   siteUrl: "",

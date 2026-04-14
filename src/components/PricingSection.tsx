@@ -23,9 +23,9 @@ type Plan = {
 
 const plans: Plan[] = [
   {
-    name: "ライト",
+    name: "おためし",
     badge: "まずはここから",
-    price: "¥3,000",
+    price: "¥0",
     priceLabel: "/月",
     features: [
       { text: "制作費0円", included: true },
@@ -35,19 +35,19 @@ const plans: Plan[] = [
       { text: "電話タップ発信", included: true },
       { text: "SSL・レスポンシブ対応", included: true },
       { text: "独自ドメイン対応", included: true },
-      { text: "月1回更新", included: true },
+      { text: "手動編集のみ", included: true },
       { text: "施工実績詳細・お客様の声", included: false },
       { text: "SEO強化", included: false },
     ],
     cta: "今すぐサイトを作る",
   },
   {
-    name: "ミドル",
+    name: "おまかせ",
     badge: "おすすめ",
-    price: "¥8,000",
+    price: "¥1,480",
     priceLabel: "/月",
     features: [
-      { text: "ライトの全機能", included: true },
+      { text: "おためしの全機能", included: true },
       { text: "施工実績詳細（Before/After）", included: true },
       { text: "お客様の声", included: true },
       { text: "ブログ・お知らせ機能", included: true },
@@ -59,12 +59,12 @@ const plans: Plan[] = [
     recommended: true,
   },
   {
-    name: "プレミアム",
+    name: "おまかせプロ",
     badge: "フル機能",
-    price: "¥15,000〜",
+    price: "¥4,980",
     priceLabel: "/月",
     features: [
-      { text: "ミドルの全機能", included: true },
+      { text: "おまかせの全機能", included: true },
       { text: "AIチャットボット", included: true },
       { text: "見学会・予約システム", included: true },
       { text: "採用ページ", included: true },

@@ -13,18 +13,18 @@ import {
    ═══════════════════════════════════════ */
 
 const planColor: Record<string, string> = {
-  "おまかせ": "text-gray-600 bg-gray-100",
-  "まるっと": "text-purple-600 bg-purple-100",
-  "ぜんぶ": "text-orange-600 bg-orange-100",
-  "lite": "text-gray-600 bg-gray-100",
-  "middle": "text-purple-600 bg-purple-100",
-  "premium": "text-orange-600 bg-orange-100",
+  "おためし": "text-gray-600 bg-gray-100",
+  "おまかせ": "text-purple-600 bg-purple-100",
+  "おまかせプロ": "text-orange-600 bg-orange-100",
+  "otameshi": "text-gray-600 bg-gray-100",
+  "omakase": "text-purple-600 bg-purple-100",
+  "omakase-pro": "text-orange-600 bg-orange-100",
 };
 
 const planLabels: Record<string, string> = {
-  lite: "おまかせ",
-  middle: "まるっと",
-  premium: "ぜんぶ",
+  otameshi: "おためし",
+  omakase: "おまかせ",
+  "omakase-pro": "おまかせプロ",
 };
 
 interface DashboardData {

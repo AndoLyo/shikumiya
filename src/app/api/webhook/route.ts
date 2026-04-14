@@ -5,12 +5,12 @@ import {
   deleteGist,
   createRepoFromTemplate,
   fetchFileFromRepo,
-  listFilesInRepo,
   pushFileToRepo,
   pushBinaryFileToRepo,
 } from "@/lib/github";
 import { generateSiteConfig, stringifySiteConfig } from "@/lib/template-config-generator";
 import { logger, retryGasWebhook } from "@/lib/error-handler";
+import { normalizePlanId } from "@/lib/stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2025-04-30.basil" as Stripe.LatestApiVersion,
@@ -132,7 +132,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       phone: orderMeta.phone || "",
       industry: orderMeta.industry || "other",
       template: orderMeta.templateId,
-      plan: orderMeta.plan || "lite",
+      plan: normalizePlanId(orderMeta.plan || "otameshi"),
       site_url: siteUrl,
       domain: orderMeta.domain || "",
       stripe_session_id: session.id,
@@ -207,7 +207,7 @@ async function createSite(orderMeta: OrderData, imageFiles: Record<string, strin
     siteSlug: slug,
   });
 
-  await pushFileToRepo(repoName, "src/site.config.json", stringifySiteConfig(config), "Setup: サイト設定");
+  await pushFileToRepo(repoName, "src/app/site.config.json", stringifySiteConfig(config), "Setup: サイト設定");
 
   // 5. Vercelデプロイ
   const siteUrl = await deployToVercel(repoName);
@@ -220,48 +220,32 @@ async function createSite(orderMeta: OrderData, imageFiles: Record<string, strin
    メインリポ → 顧客リポ
    ═══════════════════════════════════════ */
 async function copyTemplateFiles(targetRepo: string, templateId: string): Promise<void> {
-  const sourceRepo = process.env.GITHUB_OWNER ? "lyo-vision-site" : "lyo-vision-site";
+  const sourceRepo = "lyo-vision-site";
   const baseTemplateId = templateId.replace(/-(?:mid|pro)$/, "");
 
-  // 1. page.tsxをコピー
+  // 1. page.tsxをコピー（全コンポーネントはpage.tsx内にインライン定義済み）
   const pageContent = await fetchFileFromRepo(sourceRepo, `src/app/portfolio-templates/${templateId}/page.tsx`);
   if (pageContent) {
-    // import パスを書き換え（ネスト解除）
+    // import パスを書き換え
     const rewritten = pageContent
+      // DemoBanner の import を除去
+      .replace(/import\s+DemoBanner\s+from\s+["']@\/components\/portfolio-templates\/DemoBanner["'];?\s*\n?/g, "")
+      // DemoBanner の JSX を除去
+      .replace(/<DemoBanner\s*\/>/g, "")
+      // コンポーネントパスの書き換え（万が一外部コンポーネントがある場合）
       .replace(new RegExp(`@/components/portfolio-templates/${templateId}/`, "g"), "@/components/")
-      .replace(new RegExp(`@/components/portfolio-templates/${baseTemplateId}/`, "g"), "@/components/")
-      .replace(/from "@\/components\/portfolio-templates\/DemoBanner"/g, "// DemoBanner removed for production")
-      .replace(/<DemoBanner\s*\/>/g, "");
+      .replace(new RegExp(`@/components/portfolio-templates/${baseTemplateId}/`, "g"), "@/components/");
 
     await pushFileToRepo(targetRepo, "src/app/page.tsx", rewritten, `Setup: page.tsx (${templateId})`);
+    logger.info("GITHUB_API", `page.tsx コピー完了: ${templateId}`, { details: { targetRepo } });
+  } else {
+    logger.error("GITHUB_API", `page.tsx が見つかりません: ${templateId}`, { details: { sourceRepo } });
   }
 
-  // 2. site.config.jsonをコピー（デモデータとして）
-  const configContent = await fetchFileFromRepo(sourceRepo, `src/app/portfolio-templates/${templateId}/site.config.json`);
-  if (configContent) {
-    // デモデータとして一旦コピー（後でcreatesite内で上書きされる）
-    await pushFileToRepo(targetRepo, "src/site.config.json", configContent, "Setup: site.config.json (demo)");
-  }
-
-  // 3. コンポーネントファイルをコピー
-  const componentDir = `src/components/portfolio-templates/${templateId}`;
-  const files = await listFilesInRepo(sourceRepo, componentDir);
-
-  for (const file of files) {
-    if (!file.name.endsWith(".tsx") && !file.name.endsWith(".ts")) continue;
-    const content = await fetchFileFromRepo(sourceRepo, file.path);
-    if (content) {
-      await pushFileToRepo(targetRepo, `src/components/${file.name}`, content, `Setup: ${file.name}`);
-    }
-  }
-
-  // 4. 共通コンポーネント（SiteDataContext等）もコピー
-  const sharedFiles = ["SiteDataContext.tsx", "site-data.ts", "site-config-schema.ts"];
-  for (const sf of sharedFiles) {
-    const content = await fetchFileFromRepo(sourceRepo, `src/lib/${sf}`);
-    if (content) {
-      await pushFileToRepo(targetRepo, `src/lib/${sf}`, content, `Setup: ${sf}`);
-    }
+  // 2. site-config-schema.ts をコピー（型定義）
+  const schemaContent = await fetchFileFromRepo(sourceRepo, "src/lib/site-config-schema.ts");
+  if (schemaContent) {
+    await pushFileToRepo(targetRepo, "src/lib/site-config-schema.ts", schemaContent, "Setup: site-config-schema.ts");
   }
 
   logger.info("GITHUB_API", `テンプレートコピー完了: ${templateId}`, { details: { targetRepo } });

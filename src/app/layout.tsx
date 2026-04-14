@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Noto_Sans_JP, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
 const playfair = Playfair_Display({
   variable: "--font-serif",
@@ -21,14 +22,14 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "しくみや｜ホームページ制作 制作費0円・月額3,000円から",
+  title: "しくみや｜ホームページ制作 制作費0円・月額0円から",
   description:
-    "全業種対応のホームページ制作SaaS。制作費0円、月額3,000円から。写真を送るだけで最短翌日完成。独自ドメイン全プラン対応。",
+    "全業種対応のホームページ制作SaaS。制作費0円、月額0円から。写真を送るだけで最短翌日完成。独自ドメイン全プラン対応。",
   keywords: ["ホームページ制作 安い", "ホームページ制作 0円", "ウェブサイト制作 月額", "工務店 ホームページ", "建設会社 ホームページ"],
   openGraph: {
-    title: "しくみや｜ホームページ制作 制作費0円・月額3,000円から",
+    title: "しくみや｜ホームページ制作 制作費0円・月額0円から",
     description:
-      "写真を送るだけでホームページが完成。制作費0円、月額3,000円から。全業種対応。",
+      "写真を送るだけでホームページが完成。制作費0円、月額0円から。全業種対応。",
     type: "website",
     siteName: "しくみや by Lyo Vision",
     locale: "ja_JP",
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "しくみや｜ホームページ制作 制作費0円",
     description:
-      "写真を送るだけでホームページが完成。制作費0円、月額3,000円から。全業種対応。",
+      "写真を送るだけでホームページが完成。制作費0円、月額0円から。全業種対応。",
     creator: "@shikumiya_ai",
   },
   metadataBase: new URL("https://lyo-vision.com"),
@@ -50,7 +51,7 @@ const jsonLd = {
       "@type": "WebSite",
       name: "しくみや",
       url: "https://lyo-vision.com",
-      description: "建築業向けホームページ制作サービス。制作費0円、月額3,000円から。",
+      description: "建築業向けホームページ制作サービス。制作費0円、月額0円から。",
     },
     {
       "@type": "Service",
@@ -64,22 +65,22 @@ const jsonLd = {
       offers: [
         {
           "@type": "Offer",
-          name: "おまかせプラン",
-          price: "3000",
+          name: "おためしプラン",
+          price: "0",
           priceCurrency: "JPY",
-          description: "テンプレート選択、施工写真10枚、会社概要、お問い合わせフォーム、独自ドメイン対応。月額。",
+          description: "テンプレート選択、施工写真10枚、会社概要、お問い合わせフォーム、独自ドメイン対応。無料。",
         },
         {
           "@type": "Offer",
-          name: "まるっとおまかせプラン",
-          price: "8000",
+          name: "おまかせプラン",
+          price: "1480",
           priceCurrency: "JPY",
           description: "施工実績詳細、お客様の声、ブログ、Google Maps、SEO強化。月額。",
         },
         {
           "@type": "Offer",
-          name: "ぜんぶおまかせプラン",
-          price: "15000",
+          name: "おまかせプロプラン",
+          price: "4980",
           priceCurrency: "JPY",
           description: "AIチャットボット、予約システム、採用ページ、多言語対応、360°ビューア。月額。",
         },
@@ -107,7 +108,7 @@ const jsonLd = {
           name: "ホームページはどのくらいで完成しますか？",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "写真をお送りいただいてから最短翌日で完成します。制作費は0円、月額3,000円からご利用いただけます。",
+            text: "写真をお送りいただいてから最短翌日で完成します。制作費は0円、月額0円からご利用いただけます。",
           },
         },
         {
@@ -146,7 +147,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

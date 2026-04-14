@@ -27,6 +27,7 @@ import {
 import Script from "next/script";
 import DemoBanner from "@/components/portfolio-templates/DemoBanner";
 import type { SiteConfig } from "@/lib/site-config-schema";
+import { usePreviewName } from "@/lib/use-preview-name";
 import siteConfig from "./site.config.json";
 
 /* ═══════════════════════════════════════
@@ -171,6 +172,7 @@ function HeroIllustration() {
    Header
    ═══════════════════════════════════════ */
 function Header() {
+  const displayName = usePreviewName(COMPANY.name);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -204,7 +206,7 @@ function Header() {
 
       <div className="max-w-[1200px] mx-auto px-5 h-14 flex items-center justify-between">
         <a href="#" className="flex flex-col">
-          <span className={`font-bold text-sm tracking-wide transition-colors ${scrolled ? "text-[#1B3A5C]" : "text-white"}`}>{COMPANY.name}</span>
+          <span className={`font-bold text-sm tracking-wide transition-colors ${scrolled ? "text-[#1B3A5C]" : "text-white"}`}>{displayName}</span>
           <span className={`text-[8px] tracking-[0.15em] transition-colors ${scrolled ? "text-gray-400" : "text-white/40"}`}>{COMPANY.nameEn}</span>
         </a>
 
@@ -508,6 +510,7 @@ function ProjectsSection() {
    About (会社概要)
    ═══════════════════════════════════════ */
 function AboutSection() {
+  const displayName = usePreviewName(COMPANY.name);
   return (
     <section id="about" className="py-20 sm:py-28 bg-white">
       <div className="max-w-[1000px] mx-auto px-5">
@@ -540,7 +543,7 @@ function AboutSection() {
           viewport={{ once: true }}
         >
           {[
-            ["商号", COMPANY.name],
+            ["商号", displayName],
             ["英文社名", COMPANY.nameEn],
             ["代表者", `代表取締役 ${COMPANY.ceo}`],
             ["設立", `${COMPANY.since}年`],
@@ -802,12 +805,13 @@ const jsonLd = {
    Footer
    ═══════════════════════════════════════ */
 function Footer() {
+  const displayName = usePreviewName(COMPANY.name);
   return (
     <footer className="bg-[#0D2440] py-10 px-5">
       <div className="max-w-[1200px] mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8 pb-8 border-b border-white/10">
           <div>
-            <p className="text-white font-bold text-sm">{COMPANY.name}</p>
+            <p className="text-white font-bold text-sm">{displayName}</p>
             <p className="text-white/25 text-[9px] tracking-[0.15em]">{COMPANY.nameEn}</p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-5 text-white/40 text-xs">
@@ -818,7 +822,7 @@ function Footer() {
         </div>
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-white/25 text-[10px]">
           <p>{COMPANY.address}　TEL: {COMPANY.phone}</p>
-          <p>© {new Date().getFullYear()} {COMPANY.name}</p>
+          <p>© {new Date().getFullYear()} {displayName}</p>
         </div>
       </div>
     </footer>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -43,7 +44,7 @@ interface NavItem {
   upgradePrice?: string;
 }
 
-const PLAN_LEVEL: Record<Plan, number> = { lite: 1, middle: 2, premium: 3 };
+const PLAN_LEVEL: Record<Plan, number> = { otameshi: 1, omakase: 2, "omakase-pro": 3 };
 
 function hasAccess(userPlan: Plan, minPlan: Plan): boolean {
   return PLAN_LEVEL[userPlan] >= PLAN_LEVEL[minPlan];
@@ -53,28 +54,28 @@ function getNavItems(orderId: string): NavItem[] {
   const base = `/member/${orderId}`;
   return [
     // 全プラン共通
-    { id: "dashboard", label: "ダッシュボード", icon: LayoutDashboard, href: base, minPlan: "lite" },
-    { id: "edit-request", label: "サイト編集依頼", icon: FileEdit, href: `${base}/edit-request`, minPlan: "lite" },
-    { id: "history", label: "依頼履歴", icon: ClipboardList, href: `${base}/history`, minPlan: "lite" },
-    // ミドル以上
-    { id: "analytics", label: "アクセス解析", icon: BarChart3, href: `${base}/analytics`, minPlan: "middle",
-      upgradeTitle: "アクセス解析", upgradeDesc: "サイトのPV数、検索キーワード、問い合わせ数などをグラフで確認できます。「どのページが見られているか」が一目でわかります。", upgradePlan: "まるっとおまかせプラン", upgradePrice: "¥8,000/月" },
-    { id: "inquiries", label: "お問い合わせ一覧", icon: MessageSquare, href: `${base}/analytics`, minPlan: "middle",
-      upgradeTitle: "お問い合わせ管理", upgradeDesc: "サイト経由の問い合わせを一覧で確認。対応状況の管理もできます。見逃し防止に。", upgradePlan: "まるっとおまかせプラン", upgradePrice: "¥8,000/月" },
-    { id: "blog", label: "ブログ/お知らせ", icon: Newspaper, href: `${base}/analytics`, minPlan: "middle",
-      upgradeTitle: "ブログ/お知らせ", upgradeDesc: "施工レポートや見学会の告知を掲載。更新するほど検索に強いサイトに育ちます。", upgradePlan: "まるっとおまかせプラン", upgradePrice: "¥8,000/月" },
-    // プレミアム
-    { id: "chatbot", label: "AIチャットボット", icon: Bot, href: `${base}/analytics`, minPlan: "premium",
-      upgradeTitle: "AIチャットボット", upgradeDesc: "よくある質問に24時間自動対応。「費用は？」「対応エリアは？」にも即座に回答します。", upgradePlan: "ぜんぶおまかせプラン", upgradePrice: "¥15,000~/月" },
-    { id: "bookings", label: "予約管理", icon: CalendarDays, href: `${base}/analytics`, minPlan: "premium",
-      upgradeTitle: "予約システム", upgradeDesc: "見学会や相談会のオンライン予約。残枠管理、自動メール通知まで対応。電話対応を減らせます。", upgradePlan: "ぜんぶおまかせプラン", upgradePrice: "¥15,000~/月" },
-    { id: "recruit", label: "採用ページ管理", icon: Users, href: `${base}/analytics`, minPlan: "premium",
-      upgradeTitle: "採用ページ", upgradeDesc: "募集要項の掲載、履歴書のオンライン受付。人手不足の建設業界に必須の機能。", upgradePlan: "ぜんぶおまかせプラン", upgradePrice: "¥15,000~/月" },
-    { id: "i18n", label: "多言語設定", icon: Globe, href: `${base}/analytics`, minPlan: "premium",
-      upgradeTitle: "多言語対応", upgradeDesc: "サイトの日本語/英語切替。海外クライアントやインバウンド対応に。", upgradePlan: "ぜんぶおまかせプラン", upgradePrice: "¥15,000~/月" },
+    { id: "dashboard", label: "ダッシュボード", icon: LayoutDashboard, href: base, minPlan: "otameshi" },
+    { id: "edit-request", label: "サイト編集依頼", icon: FileEdit, href: `${base}/edit-request`, minPlan: "otameshi" },
+    { id: "history", label: "依頼履歴", icon: ClipboardList, href: `${base}/history`, minPlan: "otameshi" },
+    // おまかせ以上
+    { id: "analytics", label: "アクセス解析", icon: BarChart3, href: `${base}/analytics`, minPlan: "omakase",
+      upgradeTitle: "アクセス解析", upgradeDesc: "サイトのPV数、検索キーワード、問い合わせ数などをグラフで確認できます。「どのページが見られているか」が一目でわかります。", upgradePlan: "おまかせプラン", upgradePrice: "¥1,480/月" },
+    { id: "inquiries", label: "お問い合わせ一覧", icon: MessageSquare, href: `${base}/analytics`, minPlan: "omakase",
+      upgradeTitle: "お問い合わせ管理", upgradeDesc: "サイト経由の問い合わせを一覧で確認。対応状況の管理もできます。見逃し防止に。", upgradePlan: "おまかせプラン", upgradePrice: "¥1,480/月" },
+    { id: "blog", label: "ブログ/お知らせ", icon: Newspaper, href: `${base}/analytics`, minPlan: "omakase",
+      upgradeTitle: "ブログ/お知らせ", upgradeDesc: "施工レポートや見学会の告知を掲載。更新するほど検索に強いサイトに育ちます。", upgradePlan: "おまかせプラン", upgradePrice: "¥1,480/月" },
+    // おまかせプロ
+    { id: "chatbot", label: "AIチャットボット", icon: Bot, href: `${base}/analytics`, minPlan: "omakase-pro",
+      upgradeTitle: "AIチャットボット", upgradeDesc: "よくある質問に24時間自動対応。「費用は？」「対応エリアは？」にも即座に回答します。", upgradePlan: "おまかせプロプラン", upgradePrice: "¥4,980/月" },
+    { id: "bookings", label: "予約管理", icon: CalendarDays, href: `${base}/analytics`, minPlan: "omakase-pro",
+      upgradeTitle: "予約システム", upgradeDesc: "見学会や相談会のオンライン予約。残枠管理、自動メール通知まで対応。電話対応を減らせます。", upgradePlan: "おまかせプロプラン", upgradePrice: "¥4,980/月" },
+    { id: "recruit", label: "採用ページ管理", icon: Users, href: `${base}/analytics`, minPlan: "omakase-pro",
+      upgradeTitle: "採用ページ", upgradeDesc: "募集要項の掲載、履歴書のオンライン受付。人手不足の建設業界に必須の機能。", upgradePlan: "おまかせプロプラン", upgradePrice: "¥4,980/月" },
+    { id: "i18n", label: "多言語設定", icon: Globe, href: `${base}/analytics`, minPlan: "omakase-pro",
+      upgradeTitle: "多言語対応", upgradeDesc: "サイトの日本語/英語切替。海外クライアントやインバウンド対応に。", upgradePlan: "おまかせプロプラン", upgradePrice: "¥4,980/月" },
     // 全プラン共通（下部）
-    { id: "features", label: "サイト機能管理", icon: Settings2, href: `${base}/features`, minPlan: "lite" },
-    { id: "settings", label: "アカウント設定", icon: User, href: `${base}/settings`, minPlan: "lite" },
+    { id: "features", label: "サイト機能管理", icon: Settings2, href: `${base}/features`, minPlan: "otameshi" },
+    { id: "settings", label: "アカウント設定", icon: User, href: `${base}/settings`, minPlan: "otameshi" },
   ];
 }
 
@@ -159,6 +160,7 @@ function Sidebar({
   onLockedClick,
   isOpen,
   onClose,
+  siteUrl,
 }: {
   navItems: NavItem[];
   plan: Plan;
@@ -166,11 +168,12 @@ function Sidebar({
   onLockedClick: (item: NavItem) => void;
   isOpen: boolean;
   onClose: () => void;
+  siteUrl: string;
 }) {
   const planLabels: Record<Plan, { label: string; color: string; bg: string }> = {
-    lite: { label: "おまかせ", color: "text-gray-600", bg: "bg-gray-100" },
-    middle: { label: "まるっと", color: "text-purple-600", bg: "bg-purple-100" },
-    premium: { label: "ぜんぶ", color: "text-orange-600", bg: "bg-orange-100" },
+    otameshi: { label: "おためし", color: "text-gray-600", bg: "bg-gray-100" },
+    omakase: { label: "おまかせ", color: "text-purple-600", bg: "bg-purple-100" },
+    "omakase-pro": { label: "おまかせプロ", color: "text-orange-600", bg: "bg-orange-100" },
   };
 
   const mainItems = navItems.filter((n) => !["features", "settings"].includes(n.id));
@@ -230,7 +233,7 @@ function Sidebar({
       {/* Plan badge */}
       <div className="px-5 py-3 border-b border-gray-100">
         <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${planLabels[plan].bg} ${planLabels[plan].color}`}>
-          {plan === "premium" && <Crown className="w-3 h-3" />}
+          {plan === "omakase-pro" && <Crown className="w-3 h-3" />}
           {planLabels[plan].label}プラン
         </div>
       </div>
@@ -247,8 +250,9 @@ function Sidebar({
       {/* Site link */}
       <div className="px-4 py-3 border-t border-gray-100">
         <a
-          href="#"
+          href={siteUrl || "#"}
           target="_blank"
+          rel="noopener noreferrer"
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-gray-400 text-xs hover:text-purple-500 hover:bg-purple-50 transition-all"
         >
           サイトを表示 <ArrowRight className="w-3 h-3" />
@@ -307,23 +311,26 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [upgradeModal, setUpgradeModal] = useState<NavItem | null>(null);
 
-  // Demo: プランを URL パラメータで切り替え可能（?plan=middle）
-  // 本番では GAS から取得
-  const [plan, setPlan] = useState<Plan>("lite");
+  const { data: session } = useSession();
 
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    const p = url.searchParams.get("plan");
-    if (p === "middle" || p === "premium") setPlan(p);
-  }, []);
+  const plan: Plan = (() => {
+    const p = session?.plan;
+    if (p === "omakase" || p === "omakase-pro") return p;
+    // Legacy compatibility
+    if (p === "middle") return "omakase";
+    if (p === "premium") return "omakase-pro";
+    return "otameshi";
+  })();
+  const companyName = session?.companyName || "";
+  const siteUrl = session?.siteUrl || `https://shikumiya-${orderId}.vercel.app`;
 
   const navItems = getNavItems(orderId);
 
   const memberCtx: MemberContextType = {
     plan,
-    companyName: "サンプル会社",
+    companyName,
     orderId,
-    siteUrl: `https://shikumiya-${orderId}.vercel.app`,
+    siteUrl,
   };
 
   // /edit ページはフルスクリーンエディタなのでサイドバーなし
@@ -342,6 +349,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
           onLockedClick={(item) => setUpgradeModal(item)}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
+          siteUrl={siteUrl}
         />
 
         <div className="flex-1 flex flex-col min-w-0">

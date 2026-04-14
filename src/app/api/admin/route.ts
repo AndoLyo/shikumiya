@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { logger } from "@/lib/error-handler";
+import { normalizePlanId } from "@/lib/stripe";
 
 /**
  * GET /api/admin?action=dashboard|accounts|requests
@@ -35,45 +36,45 @@ export async function GET(request: Request) {
 }
 
 async function getDashboard(gasUrl: string) {
-  // GASから全注文取得
-  const ordersRes = await fetch(`${gasUrl}?action=pending`);
-  const ordersData = await ordersRes.json();
-  const pendingOrders = ordersData.orders || [];
+  const allRes = await fetch(`${gasUrl}?action=get_all_customers`);
+  const allData = await allRes.json();
+  const customers = allData.customers || [];
 
-  // MRR計算（全アクティブ顧客の月額合計）
-  // 現時点ではpending ordersしか取れないので、簡易的にカウント
-  const planPrices: Record<string, number> = { lite: 3000, middle: 8000, premium: 15000 };
+  const planPrices: Record<string, number> = { otameshi: 0, omakase: 1480, "omakase-pro": 4980 };
+  const active = customers.filter((c: Record<string, string>) => c.status === "公開中");
+  const pending = customers.filter((c: Record<string, string>) => c.status === "制作中");
+  const mrr = active.reduce((sum: number, c: Record<string, string>) => sum + (planPrices[normalizePlanId(c.plan)] || 0), 0);
 
   return NextResponse.json({
-    pendingCount: pendingOrders.length,
-    pendingOrders: pendingOrders.slice(0, 5).map((o: Record<string, string>) => ({
-      id: o["注文ID"] || "",
-      company: o["会社名"] || o["アーティスト名"] || "",
-      plan: o["プラン"] || "lite",
-      date: o["日時"] || "",
-      template: o["テンプレート"] || "",
+    totalCustomers: customers.length,
+    activeCount: active.length,
+    pendingCount: pending.length,
+    mrr,
+    pendingOrders: pending.slice(0, 5).map((o: Record<string, string>) => ({
+      id: o.orderId || "",
+      company: o.companyName || "",
+      plan: normalizePlanId(o.plan || "otameshi"),
+      date: o.createdAt || "",
+      template: o.template || "",
     })),
-    // TODO: 全顧客の一覧取得アクションをGASに追加して正確なMRR計算
-    note: "現在はpendingのみ取得。全顧客取得はGAS側にアクション追加後に実装",
   });
 }
 
 async function getAccounts(gasUrl: string) {
-  // TODO: GASに全顧客取得アクションを追加
-  // 現時点ではpending ordersを返す
-  const ordersRes = await fetch(`${gasUrl}?action=pending`);
-  const ordersData = await ordersRes.json();
+  const allRes = await fetch(`${gasUrl}?action=get_all_customers`);
+  const allData = await allRes.json();
+  const customers = allData.customers || [];
 
   return NextResponse.json({
-    accounts: (ordersData.orders || []).map((o: Record<string, string>) => ({
-      orderId: o["注文ID"] || "",
-      company: o["会社名"] || o["アーティスト名"] || "",
-      email: o["メールアドレス"] || "",
-      plan: o["プラン"] || "lite",
-      template: o["テンプレート"] || "",
-      siteUrl: o["サイトURL"] || "",
-      status: o["ステータス"] || "",
-      date: o["日時"] || "",
+    accounts: customers.map((c: Record<string, string>) => ({
+      orderId: c.orderId || "",
+      company: c.companyName || "",
+      email: c.email || "",
+      plan: normalizePlanId(c.plan || "otameshi"),
+      template: c.template || "",
+      siteUrl: c.siteUrl || "",
+      status: c.status || "",
+      date: c.createdAt || "",
     })),
   });
 }

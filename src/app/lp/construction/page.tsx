@@ -42,12 +42,17 @@ function Header() {
           </div>
         </Link>
 
-        <a
-          href="/start"
-          className={`px-5 py-2 rounded-full ${gradientBg} text-white text-sm font-medium hover:opacity-90 transition-opacity`}
-        >
-          今すぐサイトを作る
-        </a>
+        <div className="flex items-center gap-4">
+          <Link href="/member" className="text-sm text-gray-400 hover:text-purple-600 transition-colors hidden sm:block">
+            ログイン
+          </Link>
+          <a
+            href="/start"
+            className={`px-5 py-2 rounded-full ${gradientBg} text-white text-sm font-medium hover:opacity-90 transition-opacity`}
+          >
+            今すぐサイトを作る
+          </a>
+        </div>
       </div>
     </header>
   );
@@ -111,7 +116,7 @@ function HeroSection() {
           transition={{ duration: 0.5, delay: 0.45 }}
         >
           <span>✓ 初期費用0円</span>
-          <span>✓ 月3,000円で全部込み</span>
+          <span>✓ 月額0円から始められる</span>
           <span>✓ 最短翌日公開</span>
         </motion.div>
 
@@ -403,10 +408,10 @@ function PricingSection() {
             <span className="text-pink-600 text-xs font-medium">制作費 0円</span>
           </div>
 
-          <p className="text-gray-800 font-bold text-lg mb-1 relative">おまかせプラン</p>
+          <p className="text-gray-800 font-bold text-lg mb-1 relative">おためしプラン</p>
 
           <div className="flex items-baseline gap-1.5 mb-1 relative">
-            <span className={`text-4xl sm:text-5xl font-bold ${gradientText}`}>¥3,000</span>
+            <span className={`text-4xl sm:text-5xl font-bold ${gradientText}`}>¥0</span>
             <span className="text-gray-400 text-base">/月（税込）</span>
           </div>
 
@@ -474,7 +479,7 @@ const faqs = [
   },
   {
     q: "本当に制作費は無料ですか？",
-    a: "はい。初期制作費、サーバー費用、SSL証明書、すべて月額3,000円に含まれています。追加費用は一切ありません。",
+    a: "はい。おためしプランなら月額0円で始められます。サーバー費用、SSL証明書もすべて含まれています。",
   },
   {
     q: "どのくらいで完成しますか？",
@@ -489,8 +494,8 @@ const faqs = [
     a: "いいえ。解約後もサイトはそのまま残ります。更新サポートが停止されるだけです。再開もいつでも可能です。",
   },
   {
-    q: "本当に月3,000円だけですか？",
-    a: "はい。途中で料金が上がることもありません。安心してご利用ください。",
+    q: "本当に月額0円から使えますか？",
+    a: "はい。おためしプランは月額0円です。おまかせプラン（¥1,480/月）にアップグレードすると、ブログやお客様の声などの機能が使えます。",
   },
 ];
 

@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { normalizePlanId, PLAN_EDIT_LIMITS } from "@/lib/stripe";
+
 const MAX_EDITS: Record<string, number> = {
-  lite: 1,      // ライト ¥3,000/月 — 月1回更新
-  middle: 3,    // ミドル ¥8,000/月 — 月3回更新
-  premium: 99,  // プレミアム ¥15,000~/月 — 無制限
+  otameshi: 0,       // おためし ¥0/月 — AI編集不可
+  omakase: 3,        // おまかせ ¥1,480/月 — 月3回更新
+  "omakase-pro": 999, // おまかせプロ ¥4,980/月 — 無制限
 };
 
 export async function POST(req: NextRequest) {
@@ -56,8 +58,8 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Check remaining edits
-    const plan = orderData.plan || "template";
-    const maxEdits = MAX_EDITS[plan] || 1;
+    const plan = normalizePlanId(orderData.plan || "otameshi");
+    const maxEdits = MAX_EDITS[plan] || 0;
     const editsUsed = orderData.editsUsed || 0;
 
     if (editsUsed >= maxEdits) {

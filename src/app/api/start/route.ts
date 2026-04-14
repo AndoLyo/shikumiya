@@ -108,13 +108,41 @@ export async function POST(request: Request) {
     logger.info("GITHUB_API", `Gist作成成功: ${gistId}`, { orderId });
 
     // ─── Stripe Checkout Session作成（月額サブスクリプション） ───
-    let priceId: string;
-    try {
-      priceId = getStripePriceId(plan);
-    } catch {
-      // Price IDが未設定の場合（開発中）
-      logger.warn("STRIPE", `Price ID未設定 (${plan})。テストモードでスキップ`, { orderId });
-      // 開発中はStripeをスキップして直接成功扱いにする
+    const priceId = getStripePriceId(plan);
+    if (!priceId) {
+      // おためし（無料）プラン → Stripeスキップ、GASに直接登録
+      logger.info("STRIPE", `無料プラン (${plan})。Stripeスキップ → GAS直接登録`, { orderId });
+
+      // GASに注文データを書き込む（Stripe webhookの代わり）
+      const gasUrl = process.env.GAS_WEBHOOK_URL;
+      if (gasUrl) {
+        try {
+          const siteUrl = useSubdomain
+            ? `shikumiya-${companyName.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() || "sample"}.vercel.app`
+            : domain || "";
+
+          await fetch(gasUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              order_id: orderId,
+              company_name: companyName,
+              email,
+              phone: phone || "",
+              industry: industry || "other",
+              plan,
+              template: templateId,
+              site_url: siteUrl,
+              domain: domain || siteUrl,
+              _status: "制作中",
+            }),
+          });
+          logger.info("GITHUB_API", `無料プラン注文をGASに登録: ${orderId}`, { orderId });
+        } catch (gasErr) {
+          logger.warn("GITHUB_API", "GAS登録に失敗（続行）", { orderId, error: gasErr });
+        }
+      }
+
       return NextResponse.json({
         url: `/order/success?orderId=${orderId}&gistId=${gistId}&dev=true`,
         orderId,

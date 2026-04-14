@@ -65,11 +65,26 @@ export default function StartSuccessPage() {
           </p>
         </div>
 
+        {/* 会員ページ案内 */}
+        <div className="bg-purple-50 border border-purple-100 rounded-2xl p-5 text-left mb-6">
+          <h3 className="text-purple-700 font-bold text-sm mb-2">サイト完成後のご案内</h3>
+          <p className="text-purple-600 text-xs leading-relaxed mb-3">
+            完成メールに記載される「注文ID」と「メールアドレス」で会員ページにログインできます。
+            サイトの編集依頼や機能管理はそちらから行えます。
+          </p>
+          <Link
+            href="/member"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500 text-white text-xs font-medium hover:bg-purple-600 transition-colors"
+          >
+            会員ページはこちら <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
+
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-purple-500 text-sm font-medium hover:text-purple-600 transition-colors"
+          className="inline-flex items-center gap-2 text-gray-400 text-sm hover:text-gray-600 transition-colors"
         >
-          トップページに戻る <ArrowRight className="w-4 h-4" />
+          トップページに戻る
         </Link>
       </motion.div>
     </div>

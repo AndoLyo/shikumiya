@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
+import LoginModal from "@/components/LoginModal";
 import {
   Check,
   ChevronDown,
@@ -38,8 +39,10 @@ const gradientBgSoft =
    ═══════════════════════════════════════ */
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
 
   return (
+    <>
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-purple-100/50">
       <div className="max-w-[1200px] mx-auto px-5 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5 group">
@@ -65,12 +68,17 @@ function Header() {
           ))}
         </nav>
 
-        <a
-          href="/start"
-          className={`hidden md:flex items-center gap-2 px-5 py-2 rounded-full ${gradientBg} text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-lg shadow-purple-200/30`}
-        >
-          今すぐサイトを作る
-        </a>
+        <div className="hidden md:flex items-center gap-4">
+          <button onClick={() => setLoginOpen(true)} className="text-sm text-gray-400 hover:text-purple-600 transition-colors cursor-pointer">
+            ログイン
+          </button>
+          <a
+            href="/start"
+            className={`flex items-center gap-2 px-5 py-2 rounded-full ${gradientBg} text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-lg shadow-purple-200/30`}
+          >
+            今すぐサイトを作る
+          </a>
+        </div>
 
         {/* Mobile */}
         <button onClick={() => setIsOpen(!isOpen)} className="md:hidden flex flex-col gap-1.5 w-6" aria-label="メニュー">
@@ -86,6 +94,9 @@ function Header() {
             {[["サービス","#services"],["テンプレート","#templates"],["料金","#pricing"],["よくある質問","#faq"]].map(([l,h])=>(
               <a key={h} href={h} onClick={()=>setIsOpen(false)} className="text-gray-600 text-base">{l}</a>
             ))}
+            <button onClick={()=>{ setIsOpen(false); setLoginOpen(true); }} className="text-gray-400 text-base text-left cursor-pointer">
+              ログイン
+            </button>
             <a href="/start" onClick={()=>setIsOpen(false)} className={`mt-2 text-center px-5 py-3 rounded-full ${gradientBg} text-white font-medium`}>
               今すぐサイトを作る
             </a>
@@ -93,6 +104,9 @@ function Header() {
         </div>
       )}
     </header>
+
+    <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} />
+    </>
   );
 }
 
@@ -146,7 +160,7 @@ function HeroSection() {
             >
               写真を送るだけで、プロ品質のサイトが完成。
               <br />
-              月々3,000円で、デザインも更新もすべておまかせ。
+              月々0円から、デザインも更新もすべておまかせ。
             </motion.p>
 
             {/* Trust */}
@@ -735,10 +749,10 @@ function PricingSection() {
               <span className="text-pink-600 text-xs font-medium">制作費 0円</span>
             </div>
 
-            <p className="text-gray-800 font-bold text-lg mb-1">おまかせプラン</p>
+            <p className="text-gray-800 font-bold text-lg mb-1">おためしプラン</p>
 
             <div className="flex items-baseline gap-1.5 mb-1">
-              <span className={`text-4xl sm:text-5xl font-bold ${gradientText}`}>¥3,000</span>
+              <span className={`text-4xl sm:text-5xl font-bold ${gradientText}`}>¥0</span>
               <span className="text-gray-400 text-base">/月（税込）</span>
             </div>
 
@@ -802,7 +816,7 @@ function PricingSection() {
    ═══════════════════════════════════════ */
 const faqs = [
   { q: "パソコンが苦手ですが大丈夫ですか？", a: "大丈夫です。写真をスマホで送っていただくだけ。サイトの作成・公開はすべてこちらで行います。" },
-  { q: "本当に制作費は無料ですか？", a: "はい。初期制作費、サーバー費用、SSL証明書、すべて月額3,000円に含まれています。追加費用は一切ありません。" },
+  { q: "本当に制作費は無料ですか？", a: "はい。おためしプランなら月額0円で始められます。初期制作費、サーバー費用、SSL証明書もすべて含まれています。" },
   { q: "どのくらいで完成しますか？", a: "写真とお打ち合わせ内容をいただいてから、最短翌日〜3営業日で公開できます。" },
   { q: "途中で写真や文章を変えたい場合は？", a: "月1回まで無料で更新いたします。お気軽にご連絡ください。" },
   { q: "解約したらサイトは消えますか？", a: "いいえ。解約後もサイトはそのまま残ります。更新サポートが停止されるだけです。再開もいつでも可能です。" },
@@ -919,10 +933,12 @@ function FooterSection() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-5 text-xs text-gray-400">
+            <Link href="/member" className="hover:text-purple-500 transition-colors">ログイン</Link>
             <Link href="/privacy" className="hover:text-purple-500 transition-colors">プライバシーポリシー</Link>
             <Link href="/legal" className="hover:text-purple-500 transition-colors">特定商取引法</Link>
             <a href="https://x.com/ando_lyo" target="_blank" rel="noopener noreferrer" className="hover:text-purple-500 transition-colors">X (Twitter)</a>
             <a href="https://note.com/ando_lyo_ai" target="_blank" rel="noopener noreferrer" className="hover:text-purple-500 transition-colors">note</a>
+            <Link href="/admin" className="hover:text-gray-500 transition-colors text-gray-300">管理</Link>
           </div>
         </div>
         <p className="text-center text-gray-300 text-[10px] mt-6">© {new Date().getFullYear()} Lyo Vision. All rights reserved.</p>

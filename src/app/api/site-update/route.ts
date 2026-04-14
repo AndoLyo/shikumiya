@@ -31,10 +31,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "認証に失敗しました" }, { status: 401 });
     }
 
-    // 編集回数チェック
-    const maxEdits: Record<string, number> = { lite: 1, middle: 3, premium: 99 };
-    const plan = verifyData.plan || "lite";
-    const max = maxEdits[plan] || 1;
+    // 編集回数チェック（新旧プランID両対応）
+    const { normalizePlanId, PLAN_EDIT_LIMITS } = await import("@/lib/stripe");
+    const plan = normalizePlanId(verifyData.plan || "otameshi");
+    const max = PLAN_EDIT_LIMITS[plan] || 0;
 
     if (verifyData.editsUsed >= max) {
       return NextResponse.json({
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       if (change.type === "text" && change.configPath && change.newValue !== undefined) {
         // テキスト変更: site.config.jsonのフィールドを書き換え
         const result = await safeExecute("SITE_UPDATE", `テキスト変更: ${change.configPath}`, async () => {
-          const configContent = await fetchFileFromRepo(repoName, "src/site.config.json");
+          const configContent = await fetchFileFromRepo(repoName, "src/app/site.config.json");
           if (!configContent) throw new Error("site.config.json not found");
 
           const config = JSON.parse(configContent);
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
 
           await pushFileToRepo(
             repoName,
-            "src/site.config.json",
+            "src/app/site.config.json",
             JSON.stringify(config, null, 2),
             `Update: ${change.configPath}`
           );
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
       } else if (change.type === "style" && change.styleChanges) {
         // スタイル変更: site.config.jsonのstyleフィールドを書き換え
         const result = await safeExecute("SITE_UPDATE", "スタイル変更", async () => {
-          const configContent = await fetchFileFromRepo(repoName, "src/site.config.json");
+          const configContent = await fetchFileFromRepo(repoName, "src/app/site.config.json");
           if (!configContent) throw new Error("site.config.json not found");
 
           const config = JSON.parse(configContent);
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
 
           await pushFileToRepo(
             repoName,
-            "src/site.config.json",
+            "src/app/site.config.json",
             JSON.stringify(config, null, 2),
             "Update: style"
           );

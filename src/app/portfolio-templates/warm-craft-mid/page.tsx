@@ -10,6 +10,7 @@ import {
 import Script from "next/script";
 import DemoBanner from "@/components/portfolio-templates/DemoBanner";
 import type { SiteConfig } from "@/lib/site-config-schema";
+import { usePreviewName } from "@/lib/use-preview-name";
 import siteConfig from "./site.config.json";
 
 /* ═══════════════════════════════════════
@@ -101,6 +102,7 @@ function HeroIllustration() {
    Header
    ═══════════════════════════════════════ */
 function Header() {
+  const displayName = usePreviewName(COMPANY.name);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -128,7 +130,7 @@ function Header() {
               <Home className="w-4.5 h-4.5 text-white" strokeWidth={2} />
             </div>
             <div>
-              <p className={`font-bold text-sm tracking-wide transition-colors ${scrolled ? "text-[#3D3226]" : "text-white"}`}>{COMPANY.name}</p>
+              <p className={`font-bold text-sm tracking-wide transition-colors ${scrolled ? "text-[#3D3226]" : "text-white"}`}>{displayName}</p>
               <p className={`text-[9px] tracking-wider transition-colors ${scrolled ? "text-[#8B7D6B]" : "text-white/60"}`}>since {COMPANY.since}</p>
             </div>
           </a>
@@ -429,6 +431,7 @@ function NewsSection() {
    About — ライトと同じ（代表挨拶 + 会社概要）
    ═══════════════════════════════════════ */
 function AboutSection() {
+  const displayName = usePreviewName(COMPANY.name);
   return (
     <section id="about" className="py-20 sm:py-28 bg-[#FAF7F2]">
       <div className="max-w-[1000px] mx-auto px-5">
@@ -452,7 +455,7 @@ function AboutSection() {
         <motion.div className="bg-white rounded-2xl border border-[#E8DFD3] overflow-hidden" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <div className="p-5 bg-[#FAF7F2] border-b border-[#E8DFD3]"><h3 className="text-[#3D3226] font-bold text-base">会社概要</h3></div>
           <div className="divide-y divide-[#E8DFD3]">
-            {[["商号", COMPANY.name],["代表者", COMPANY.ceo],["設立", `${COMPANY.since}年`],["所在地", COMPANY.address],["電話番号", COMPANY.phone],["メール", COMPANY.email],["営業時間", COMPANY.hours],["許認可", COMPANY.license],["Webサイト", COMPANY.domain]].map(([label, value]) => (
+            {[["商号", displayName],["代表者", COMPANY.ceo],["設立", `${COMPANY.since}年`],["所在地", COMPANY.address],["電話番号", COMPANY.phone],["メール", COMPANY.email],["営業時間", COMPANY.hours],["許認可", COMPANY.license],["Webサイト", COMPANY.domain]].map(([label, value]) => (
               <div key={label} className="flex flex-col sm:flex-row">
                 <div className="sm:w-40 px-6 py-3 sm:py-4 bg-[#FDFCFA] text-[#8B7D6B] text-sm font-medium">{label}</div>
                 <div className="flex-1 px-6 py-3 sm:py-4 text-[#3D3226] text-sm">{value}</div>
@@ -542,13 +545,14 @@ function ContactSection() {
    Footer
    ═══════════════════════════════════════ */
 function Footer() {
+  const displayName = usePreviewName(COMPANY.name);
   return (
     <footer className="py-10 bg-[#3D3226] pb-24 md:pb-10">
       <div className="max-w-[1200px] mx-auto px-5">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8 pb-8 border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-[#7BA23F] flex items-center justify-center"><Home className="w-4 h-4 text-white" /></div>
-            <div><p className="text-white font-bold text-sm">{COMPANY.name}</p><p className="text-white/40 text-[9px] tracking-wider">since {COMPANY.since}</p></div>
+            <div><p className="text-white font-bold text-sm">{displayName}</p><p className="text-white/40 text-[9px] tracking-wider">since {COMPANY.since}</p></div>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-5">
             {[["施工実績","works"],["お客様の声","testimonials"],["私たちの強み","strength"],["お知らせ","news"],["会社案内","about"],["お問い合わせ","contact"]].map(([label, id]) => (
@@ -558,7 +562,7 @@ function Footer() {
         </div>
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-white/30 text-xs">
           <p>{COMPANY.address}　TEL: {COMPANY.phone}</p>
-          <p>© {new Date().getFullYear()} {COMPANY.name}. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {displayName}. All rights reserved.</p>
         </div>
       </div>
     </footer>
@@ -568,28 +572,32 @@ function Footer() {
 /* ═══════════════════════════════════════
    ★ JSON-LD 構造化データ — ミドル限定
    ═══════════════════════════════════════ */
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "GeneralContractor",
-  "name": COMPANY.name,
-  "url": `https://${COMPANY.domain}`,
-  "telephone": COMPANY.phone,
-  "email": COMPANY.email,
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "世田谷区",
-    "addressRegion": "東京都",
-    "addressCountry": "JP",
-  },
-  "openingHours": "Mo-Sa 09:00-18:00",
-  "foundingDate": COMPANY.since,
-  "description": COMPANY.description,
-};
+function buildJsonLd(displayName: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "GeneralContractor",
+    "name": displayName,
+    "url": `https://${COMPANY.domain}`,
+    "telephone": COMPANY.phone,
+    "email": COMPANY.email,
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "世田谷区",
+      "addressRegion": "東京都",
+      "addressCountry": "JP",
+    },
+    "openingHours": "Mo-Sa 09:00-18:00",
+    "foundingDate": COMPANY.since,
+    "description": COMPANY.description,
+  };
+}
 
 /* ═══════════════════════════════════════
    Page
    ═══════════════════════════════════════ */
 export default function WarmCraftMidPage() {
+  const displayName = usePreviewName(COMPANY.name);
+  const jsonLd = buildJsonLd(displayName);
   return (
     <>
       <DemoBanner />

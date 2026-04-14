@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Cropper from "react-easy-crop";
@@ -14,89 +14,86 @@ import {
   Crop, ZoomIn, RotateCw,
 } from "lucide-react";
 import { useMember } from "@/lib/member-context";
+import { useSession } from "next-auth/react";
 
 /* ═══════════════════════════════════════
-   現在のサイトデータ（デモ）
-   本番ではAPIから取得
+   site.config.json → 編集UI用セクションに変換
    ═══════════════════════════════════════ */
-const CURRENT_SITE = {
-  sections: [
+interface TextItem { id: string; label: string; value: string; configPath: string }
+interface ImageItem { id: string; label: string; current: string; aspect: number; aspectLabel: string }
+interface SiteSection { id: string; label: string; texts: TextItem[]; images: ImageItem[] }
+
+function buildSectionsFromConfig(config: Record<string, unknown>): SiteSection[] {
+  const c = config.company as Record<string, string> || {};
+  const strengths = (config.strengths || []) as { title: string; description: string }[];
+  const projects = (config.projects || []) as { title: string }[];
+
+  const sections: SiteSection[] = [
     {
-      id: "hero",
-      label: "トップ（ヒーロー）",
+      id: "hero", label: "トップ（ヒーロー）",
       texts: [
-        { id: "hero-tagline", label: "キャッチコピー", value: "家族の暮らしに寄り添う家づくり" },
-        { id: "hero-desc", label: "説明文", value: "創業30年、世田谷区を中心に500棟以上の施工実績。自然素材と自社大工にこだわり、地域に根ざした住まいづくりを続けています。" },
+        { id: "hero-tagline", label: "キャッチコピー", value: c.tagline || "", configPath: "company.tagline" },
+        { id: "hero-desc", label: "説明文", value: c.description || "", configPath: "company.description" },
       ],
-      images: [
-        { id: "hero-bg", label: "メイン背景画像", current: "ヒーロー背景（山と家のイラスト）", aspect: 12 / 5, aspectLabel: "12:5（横長バナー）" },
-      ],
+      images: [{ id: "hero-bg", label: "メイン背景画像", current: "ヒーロー背景", aspect: 12 / 5, aspectLabel: "12:5（横長バナー）" }],
     },
     {
-      id: "works",
-      label: "施工実績",
+      id: "about", label: "会社案内",
       texts: [
-        { id: "works-title", label: "セクション見出し", value: "施工実績" },
-        { id: "works-sub", label: "サブテキスト", value: "心を込めてつくりあげた、家族の住まい。" },
+        { id: "about-ceo", label: "代表挨拶", value: c.bio || "", configPath: "company.bio" },
+        { id: "about-name", label: "会社名", value: c.name || "", configPath: "company.name" },
+        { id: "about-address", label: "所在地", value: c.address || "", configPath: "company.address" },
+        { id: "about-phone", label: "電話番号", value: c.phone || "", configPath: "company.phone" },
+        { id: "about-hours", label: "営業時間", value: c.hours || "", configPath: "company.hours" },
       ],
-      images: [
-        { id: "work-1", label: "世田谷の家", current: "世田谷の家のサムネイル", aspect: 16 / 9, aspectLabel: "16:9（横長）" },
-        { id: "work-2", label: "杉並リノベーション", current: "杉並リノベのサムネイル", aspect: 16 / 9, aspectLabel: "16:9（横長）" },
-        { id: "work-3", label: "練馬の二世帯住宅", current: "練馬二世帯のサムネイル", aspect: 16 / 9, aspectLabel: "16:9（横長）" },
-        { id: "work-4", label: "目黒キッチンリフォーム", current: "目黒キッチンのサムネイル", aspect: 16 / 9, aspectLabel: "16:9（横長）" },
-        { id: "work-5", label: "調布の平屋", current: "調布平屋のサムネイル", aspect: 16 / 9, aspectLabel: "16:9（横長）" },
-        { id: "work-6", label: "中野マンションリノベ", current: "中野マンションのサムネイル", aspect: 16 / 9, aspectLabel: "16:9（横長）" },
-      ],
+      images: [{ id: "about-ceo-photo", label: "代表写真", current: "代表者の写真", aspect: 3 / 4, aspectLabel: "3:4（縦長）" }],
     },
-    {
-      id: "strength",
-      label: "私たちの強み",
-      texts: [
-        { id: "str-1-title", label: "強み①タイトル", value: "自然素材へのこだわり" },
-        { id: "str-1-desc", label: "強み①説明", value: "無垢材、漆喰、珪藻土。体にやさしい素材だけを厳選し…" },
-        { id: "str-2-title", label: "強み②タイトル", value: "全棟 耐震等級3" },
-        { id: "str-2-desc", label: "強み②説明", value: "消防署や警察署と同等レベルの耐震性能を…" },
-        { id: "str-3-title", label: "強み③タイトル", value: "自社大工による一貫施工" },
-        { id: "str-4-title", label: "強み④タイトル", value: "建てた後も、ずっと。" },
-      ],
+  ];
+
+  // 強みセクション
+  if (strengths.length > 0) {
+    sections.splice(1, 0, {
+      id: "strength", label: "私たちの強み",
+      texts: strengths.flatMap((s, i) => [
+        { id: `str-${i}-title`, label: `強み${i + 1}タイトル`, value: s.title || "", configPath: `strengths.${i}.title` },
+        { id: `str-${i}-desc`, label: `強み${i + 1}説明`, value: s.description || "", configPath: `strengths.${i}.description` },
+      ]),
       images: [],
-    },
-    {
-      id: "about",
-      label: "会社案内",
-      texts: [
-        { id: "about-ceo", label: "代表挨拶", value: "「この家に住んでよかった」。そう言っていただける家づくりが…" },
-        { id: "about-name", label: "会社名", value: "山田工務店" },
-        { id: "about-address", label: "所在地", value: "東京都世田谷区〇〇町1-2-3" },
-        { id: "about-phone", label: "電話番号", value: "0120-000-000" },
-        { id: "about-hours", label: "営業時間", value: "9:00〜18:00（日曜・祝日定休）" },
-      ],
-      images: [
-        { id: "about-ceo-photo", label: "代表写真", current: "代表者の写真", aspect: 3 / 4, aspectLabel: "3:4（縦長）" },
-      ],
-    },
-    {
-      id: "contact",
-      label: "お問い合わせ",
-      texts: [
-        { id: "contact-heading", label: "見出し", value: "お問い合わせ" },
-        { id: "contact-desc", label: "説明文", value: "まずはお気軽にご相談ください。お見積りは無料です。" },
-      ],
-      images: [],
-    },
+    });
+  }
+
+  // 施工実績の画像
+  if (projects.length > 0) {
+    sections.splice(1, 0, {
+      id: "works", label: "施工実績",
+      texts: [],
+      images: projects.map((p, i) => ({
+        id: `work-${i}`, label: p.title || `実績${i + 1}`, current: p.title || "", aspect: 16 / 9, aspectLabel: "16:9（横長）",
+      })),
+    });
+  }
+
+  return sections;
+}
+
+const FALLBACK_SECTIONS: SiteSection[] = [{
+  id: "hero", label: "トップ（ヒーロー）",
+  texts: [
+    { id: "hero-tagline", label: "キャッチコピー", value: "（読み込み中）", configPath: "company.tagline" },
   ],
-};
+  images: [],
+}];
 
 const FEATURES_TO_ADD = [
-  { id: "google-maps", label: "Google Maps", icon: MapPin, plan: "middle" },
-  { id: "blog", label: "ブログ/お知らせ", icon: Newspaper, plan: "middle" },
-  { id: "testimonials", label: "お客様の声", icon: Users, plan: "middle" },
-  { id: "chatbot", label: "AIチャットボット", icon: Bot, plan: "premium" },
-  { id: "booking", label: "予約システム", icon: CalendarDays, plan: "premium" },
-  { id: "recruit", label: "採用ページ", icon: Users, plan: "premium" },
-  { id: "i18n", label: "多言語対応", icon: Globe, plan: "premium" },
-  { id: "video", label: "動画セクション", icon: Video, plan: "premium" },
-  { id: "pdf", label: "PDF資料DL", icon: Download, plan: "premium" },
+  { id: "google-maps", label: "Google Maps", icon: MapPin, plan: "omakase" },
+  { id: "blog", label: "ブログ/お知らせ", icon: Newspaper, plan: "omakase" },
+  { id: "testimonials", label: "お客様の声", icon: Users, plan: "omakase" },
+  { id: "chatbot", label: "AIチャットボット", icon: Bot, plan: "omakase-pro" },
+  { id: "booking", label: "予約システム", icon: CalendarDays, plan: "omakase-pro" },
+  { id: "recruit", label: "採用ページ", icon: Users, plan: "omakase-pro" },
+  { id: "i18n", label: "多言語対応", icon: Globe, plan: "omakase-pro" },
+  { id: "video", label: "動画セクション", icon: Video, plan: "omakase-pro" },
+  { id: "pdf", label: "PDF資料DL", icon: Download, plan: "omakase-pro" },
 ];
 
 const LAYOUT_ACTIONS = [
@@ -136,12 +133,12 @@ const STYLE_SECTIONS = [
 ];
 
 const CATEGORIES = [
-  { id: "text", label: "テキストを変える", icon: Type },
-  { id: "style", label: "フォント・色を変える", icon: Pencil },
-  { id: "image", label: "画像を変える", icon: Image },
-  { id: "layout", label: "レイアウトを変える", icon: Layout },
-  { id: "feature", label: "機能を追加する", icon: Puzzle },
-  { id: "other", label: "その他", icon: MoreHorizontal },
+  { id: "text", label: "テキストを変える", icon: Type, ready: true },
+  { id: "style", label: "フォント・色を変える", icon: Pencil, ready: false },
+  { id: "image", label: "画像を変える", icon: Image, ready: false },
+  { id: "layout", label: "レイアウトを変える", icon: Layout, ready: false },
+  { id: "feature", label: "機能を追加する", icon: Puzzle, ready: false },
+  { id: "other", label: "その他", icon: MoreHorizontal, ready: false },
 ];
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -309,6 +306,35 @@ export default function EditRequestPage() {
   const params = useParams();
   const orderId = params.orderId as string;
   const { plan } = useMember();
+  const { data: session } = useSession();
+
+  // サイトデータ取得
+  const [siteSections, setSiteSections] = useState<SiteSection[]>(FALLBACK_SECTIONS);
+  const [siteLoading, setSiteLoading] = useState(true);
+  const [siteError, setSiteError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const email = session?.user?.email || "";
+    if (!email) { setSiteLoading(false); setSiteError("ログインが必要です"); return; }
+
+    fetch(`/api/site-content?orderId=${orderId}&email=${encodeURIComponent(email)}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (data.config) {
+          setSiteSections(buildSectionsFromConfig(data.config));
+        } else if (data.error) {
+          setSiteError(data.error);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load site content:", err);
+        setSiteError("サイトデータの読み込みに失敗しました");
+      })
+      .finally(() => setSiteLoading(false));
+  }, [orderId]);
 
   const [categories, setCategories] = useState<Set<string>>(new Set());
   const toggleCategory = (id: string) => {
@@ -319,6 +345,8 @@ export default function EditRequestPage() {
     });
   };
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitResult, setSubmitResult] = useState<{ success: boolean; message: string; editsRemaining?: number } | null>(null);
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
 
   // テキスト変更
@@ -413,18 +441,84 @@ export default function EditRequestPage() {
     return false;
   };
 
-  const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); setSubmitted(true); };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+    setSubmitResult(null);
+
+    const email = session?.user?.email || "";
+    if (!email) { setSubmitResult({ success: false, message: "ログインが必要です" }); setSubmitting(false); return; }
+
+    // テキスト変更をAPIに送信
+    const changes: { type: string; configPath: string; newValue: string }[] = [];
+    for (const [textId, newValue] of selectedTexts) {
+      if (!newValue.trim()) continue;
+      // textIdからconfigPathを見つける
+      const textItem = siteSections.flatMap((s) => s.texts).find((t) => t.id === textId);
+      if (textItem?.configPath) {
+        changes.push({ type: "text", configPath: textItem.configPath, newValue });
+      }
+    }
+
+    if (changes.length === 0) {
+      setSubmitResult({ success: false, message: "変更したいテキストを選んで、新しい内容を入力してください" });
+      setSubmitting(false);
+      return;
+    }
+
+    // 変更前と同じ値は除外
+    const actualChanges = changes.filter((ch) => {
+      const orig = siteSections.flatMap((s) => s.texts).find((t) => t.configPath === ch.configPath);
+      return !orig || orig.value !== ch.newValue;
+    });
+    if (actualChanges.length === 0) {
+      setSubmitResult({ success: false, message: "現在の値と同じです。変更したい箇所を修正してください" });
+      setSubmitting(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/site-update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, email, changes: actualChanges }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSubmitResult({ success: false, message: data.error || "エラーが発生しました" });
+      } else {
+        setSubmitResult({ success: true, message: data.message || "変更を適用しました", editsRemaining: data.editsRemaining });
+        setSubmitted(true);
+      }
+    } catch (err) {
+      console.error("Submit failed:", err);
+      setSubmitResult({ success: false, message: "通信エラーが発生しました" });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   if (submitted) {
     return (
       <div className="max-w-[600px] mx-auto">
         <motion.div className="bg-white rounded-2xl border border-gray-100 p-10 text-center" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4"><Check className="w-8 h-8 text-green-500" /></div>
-          <h2 className="text-gray-800 text-xl font-bold mb-2">依頼を送信しました</h2>
-          <p className="text-gray-500 text-sm mb-2">内容を確認のうえ、対応いたします。</p>
-          <p className="text-gray-400 text-xs mb-6">通常1〜2営業日で対応完了します。</p>
+          <h2 className="text-gray-800 text-xl font-bold mb-2">
+            {submitResult?.success ? "変更を適用しました" : "依頼を送信しました"}
+          </h2>
+          <p className="text-gray-500 text-sm mb-2">{submitResult?.message || "内容を確認のうえ、対応いたします。"}</p>
+          {submitResult?.editsRemaining !== undefined && (
+            <p className="text-purple-500 text-xs font-medium mb-2">今月の残り編集回数: {submitResult.editsRemaining}回</p>
+          )}
+          <p className="text-gray-400 text-xs mb-6">数分以内にサイトに反映されます。</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href={`/member/${orderId}/history`} className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#e84393] via-[#6c5ce7] to-[#f39c12] text-white text-sm font-medium hover:opacity-90 text-center">依頼履歴を確認する</a>
+            <button
+              onClick={() => { setSubmitted(false); setSubmitResult(null); setSelectedTexts(new Map()); setCategories(new Set()); }}
+              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#e84393] via-[#6c5ce7] to-[#f39c12] text-white text-sm font-medium hover:opacity-90 text-center"
+            >
+              続けて編集する
+            </button>
             <a href={`/member/${orderId}`} className="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm hover:bg-gray-50 text-center">管理画面に戻る</a>
           </div>
         </motion.div>
@@ -453,9 +547,15 @@ export default function EditRequestPage() {
                   const Icon = cat.icon;
                   const selected = categories.has(cat.id);
                   return (
-                    <button key={cat.id} type="button" onClick={() => toggleCategory(cat.id)}
-                      className={`flex flex-col items-center gap-2 p-4 rounded-xl border text-center transition-all relative ${selected ? "border-purple-300 bg-purple-50 text-purple-600" : "border-gray-100 text-gray-500 hover:border-purple-100"}`}>
-                      {selected && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center"><Check className="w-3 h-3 text-white" strokeWidth={3} /></div>}
+                    <button key={cat.id} type="button"
+                      onClick={() => cat.ready ? toggleCategory(cat.id) : undefined}
+                      disabled={!cat.ready}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-xl border text-center transition-all relative ${
+                        !cat.ready ? "border-gray-100 text-gray-300 cursor-not-allowed opacity-60" :
+                        selected ? "border-purple-300 bg-purple-50 text-purple-600" : "border-gray-100 text-gray-500 hover:border-purple-100"
+                      }`}>
+                      {!cat.ready && <span className="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[9px] bg-gray-100 text-gray-400 font-medium">準備中</span>}
+                      {selected && cat.ready && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center"><Check className="w-3 h-3 text-white" strokeWidth={3} /></div>}
                       <Icon className="w-5 h-5" strokeWidth={1.5} />
                       <span className="text-xs font-medium">{cat.label}</span>
                     </button>
@@ -469,48 +569,97 @@ export default function EditRequestPage() {
               {/* ═══ テキスト変更 ═══ */}
               {categories.has("text") && (
                 <motion.div key="text" className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                  <p className="text-xs text-purple-500 font-medium">STEP 2 — 変更するテキストを選んでください</p>
+                  <div>
+                    <p className="text-xs text-purple-500 font-medium mb-0.5">STEP 2</p>
+                    <p className="text-gray-700 text-sm font-medium">変更するテキストを選んでください</p>
+                  </div>
 
-                  {CURRENT_SITE.sections.filter((s) => s.texts.length > 0).map((section) => (
-                    <div key={section.id}>
-                      <p className="text-gray-700 text-sm font-medium mb-2">{section.label}</p>
-                      <div className="space-y-1.5">
-                        {section.texts.map((t) => {
-                          const isSelected = selectedTexts.has(t.id);
-                          return (
-                            <div key={t.id}>
-                              <button type="button" onClick={() => toggleText(t.id)}
-                                className={`w-full flex items-start gap-3 p-3 rounded-xl border text-left transition-all ${isSelected ? "border-purple-200 bg-purple-50/50" : "border-gray-100 hover:border-purple-100"}`}>
-                                <div className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 mt-0.5 ${isSelected ? "bg-purple-500 border-purple-500" : "border-gray-300"}`}>
-                                  {isSelected && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-xs text-gray-400 mb-0.5">{t.label}</p>
-                                  <p className={`text-sm ${isSelected ? "text-purple-700" : "text-gray-700"} truncate`}>{t.value}</p>
-                                </div>
-                                <Pencil className={`w-3.5 h-3.5 flex-shrink-0 mt-1 ${isSelected ? "text-purple-400" : "text-gray-300"}`} />
-                              </button>
-
-                              {/* 変更後テキスト入力 */}
-                              <AnimatePresence>
-                                {isSelected && (
-                                  <motion.div className="ml-8 mt-2 mb-2" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
-                                    <input
-                                      type="text"
-                                      value={selectedTexts.get(t.id) || ""}
-                                      onChange={(e) => updateTextValue(t.id, e.target.value)}
-                                      placeholder="変更後のテキストを入力"
-                                      className="w-full px-4 py-2.5 rounded-lg bg-white border border-purple-200 text-gray-800 text-sm placeholder:text-gray-300 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
-                                    />
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            </div>
-                          );
-                        })}
-                      </div>
+                  {siteLoading ? (
+                    <div className="space-y-3">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="animate-pulse bg-gray-100 rounded-xl h-16" />
+                      ))}
                     </div>
-                  ))}
+                  ) : siteError ? (
+                    <div className="flex items-center gap-2 p-4 rounded-xl bg-red-50 border border-red-100 text-red-500 text-sm">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      {siteError}
+                    </div>
+                  ) : (
+                    siteSections.filter((s) => s.texts.length > 0).map((section) => (
+                      <div key={section.id}>
+                        <p className="text-gray-700 text-sm font-medium mb-2">{section.label}</p>
+                        <div className="space-y-1.5">
+                          {section.texts.map((t) => {
+                            const isSelected = selectedTexts.has(t.id);
+                            const isLong = t.value.length > 60 || t.value.includes("\n");
+                            const newValue = selectedTexts.get(t.id) || "";
+                            const hasChange = isSelected && newValue.trim().length > 0 && newValue !== t.value;
+                            return (
+                              <div key={t.id}>
+                                <button type="button" onClick={() => toggleText(t.id)}
+                                  className={`w-full flex items-start gap-3 p-3 rounded-xl border text-left transition-all ${isSelected ? "border-purple-200 bg-purple-50/50" : "border-gray-100 hover:border-purple-100"}`}>
+                                  <div className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 mt-0.5 ${isSelected ? "bg-purple-500 border-purple-500" : "border-gray-300"}`}>
+                                    {isSelected && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs text-gray-400 mb-0.5">{t.label}</p>
+                                    <p className={`text-sm ${isSelected ? "text-purple-700" : "text-gray-700"} ${isLong ? "line-clamp-2" : "truncate"}`}>
+                                      {t.value || <span className="text-gray-300 italic">（未設定）</span>}
+                                    </p>
+                                  </div>
+                                  <Pencil className={`w-3.5 h-3.5 flex-shrink-0 mt-1 ${isSelected ? "text-purple-400" : "text-gray-300"}`} />
+                                </button>
+
+                                <AnimatePresence>
+                                  {isSelected && (
+                                    <motion.div className="ml-8 mt-2 mb-2 space-y-2" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
+                                      {/* 現在値コピーボタン */}
+                                      {t.value && !newValue && (
+                                        <button
+                                          type="button"
+                                          onClick={() => updateTextValue(t.id, t.value)}
+                                          className="text-purple-500 text-xs hover:text-purple-700 flex items-center gap-1"
+                                        >
+                                          <Replace className="w-3 h-3" /> 現在の値をコピーして編集
+                                        </button>
+                                      )}
+                                      {/* 入力フィールド: 長文は textarea */}
+                                      {isLong ? (
+                                        <textarea
+                                          value={newValue}
+                                          onChange={(e) => updateTextValue(t.id, e.target.value)}
+                                          placeholder="変更後のテキストを入力"
+                                          rows={4}
+                                          className="w-full px-4 py-2.5 rounded-lg bg-white border border-purple-200 text-gray-800 text-sm placeholder:text-gray-300 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 resize-y"
+                                        />
+                                      ) : (
+                                        <input
+                                          type="text"
+                                          value={newValue}
+                                          onChange={(e) => updateTextValue(t.id, e.target.value)}
+                                          placeholder="変更後のテキストを入力"
+                                          className="w-full px-4 py-2.5 rounded-lg bg-white border border-purple-200 text-gray-800 text-sm placeholder:text-gray-300 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
+                                        />
+                                      )}
+                                      {/* 変更プレビュー */}
+                                      {hasChange && (
+                                        <div className="rounded-lg bg-gray-50 border border-gray-100 p-3 text-xs space-y-1">
+                                          <p className="text-gray-400 font-medium">変更プレビュー:</p>
+                                          <p className="text-red-400 line-through">{t.value.length > 80 ? t.value.slice(0, 80) + "…" : t.value}</p>
+                                          <p className="text-green-600">{newValue.length > 80 ? newValue.slice(0, 80) + "…" : newValue}</p>
+                                        </div>
+                                      )}
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </motion.div>
               )}
 
@@ -620,7 +769,7 @@ export default function EditRequestPage() {
                   <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
                     <p className="text-xs text-purple-500 font-medium">STEP 2 — 変更する画像を選んでください</p>
 
-                    {CURRENT_SITE.sections.filter((s) => s.images.length > 0).map((section) => (
+                    {siteSections.filter((s) => s.images.length > 0).map((section) => (
                       <div key={section.id}>
                         <p className="text-gray-700 text-sm font-medium mb-2">{section.label}</p>
                         <div className="grid grid-cols-2 gap-2">
@@ -645,7 +794,7 @@ export default function EditRequestPage() {
 
                   {/* 画像ごとにアップロード+クロップ */}
                   {Array.from(selectedImages).map((imgId) => {
-                    const imgDef = CURRENT_SITE.sections.flatMap((s) => s.images).find((i) => i.id === imgId);
+                    const imgDef = siteSections.flatMap((s) => s.images).find((i) => i.id === imgId);
                     if (!imgDef) return null;
                     return (
                       <ImageCropCard
@@ -677,7 +826,7 @@ export default function EditRequestPage() {
                   <div>
                     <p className="text-gray-700 text-sm font-medium mb-2">対象セクション</p>
                     <div className="flex flex-wrap gap-2">
-                      {CURRENT_SITE.sections.map((s) => (
+                      {siteSections.map((s) => (
                         <button key={s.id} type="button" onClick={() => setSelectedLayoutSection(s.id)}
                           className={`px-4 py-2 rounded-full text-xs transition-all ${selectedLayoutSection === s.id ? "bg-purple-500 text-white" : "bg-gray-50 border border-gray-200 text-gray-600 hover:border-purple-200"}`}>
                           {s.label}
@@ -733,7 +882,7 @@ export default function EditRequestPage() {
                           </div>
                           <div>
                             <p className={`text-xs font-medium ${isSelected ? "text-purple-700" : "text-gray-600"}`}>{f.label}</p>
-                            <p className="text-[10px] text-gray-400">{f.plan === "middle" ? "ミドル〜" : "ぜんぶ"}</p>
+                            <p className="text-[10px] text-gray-400">{f.plan === "omakase" ? "おまかせ〜" : "おまかせプロ"}</p>
                           </div>
                         </button>
                       );
@@ -761,10 +910,13 @@ export default function EditRequestPage() {
             {/* 送信 */}
             {categories.size > 0 && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                <button type="submit" disabled={!canSubmit()} className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-gradient-to-r from-[#e84393] via-[#6c5ce7] to-[#f39c12] text-white font-bold text-sm tracking-wider hover:opacity-90 transition-all shadow-lg shadow-purple-200/30 disabled:opacity-40 disabled:cursor-not-allowed">
-                  <Send className="w-4 h-4" /> 依頼を送信する
+                <button type="submit" disabled={!canSubmit() || submitting} className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-gradient-to-r from-[#e84393] via-[#6c5ce7] to-[#f39c12] text-white font-bold text-sm tracking-wider hover:opacity-90 transition-all shadow-lg shadow-purple-200/30 disabled:opacity-40 disabled:cursor-not-allowed">
+                  <Send className="w-4 h-4" /> {submitting ? "送信中..." : "変更を送信する"}
                 </button>
-                <p className="text-gray-400 text-xs text-center mt-3">通常1〜2営業日で対応いたします</p>
+                {submitResult && !submitResult.success && (
+                  <p className="text-red-500 text-xs text-center mt-2">{submitResult.message}</p>
+                )}
+                <p className="text-gray-400 text-xs text-center mt-3">テキスト変更は即座にサイトに反映されます</p>
               </motion.div>
             )}
           </form>

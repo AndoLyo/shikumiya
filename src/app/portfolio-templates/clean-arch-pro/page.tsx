@@ -26,6 +26,7 @@ import {
 import Script from "next/script";
 import DemoBanner from "@/components/portfolio-templates/DemoBanner";
 import type { SiteConfig } from "@/lib/site-config-schema";
+import { usePreviewName } from "@/lib/use-preview-name";
 import siteConfig from "./site.config.json";
 
 /* ═══════════════════════════════════════
@@ -199,6 +200,7 @@ function ArchIllustration({ index, className }: { index: number; className?: str
    Header — Ultra minimal
    ═══════════════════════════════════════ */
 function Header() {
+  const displayName = usePreviewName(OFFICE.name);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -215,7 +217,7 @@ function Header() {
       }`}>
         <div className="max-w-[1400px] mx-auto px-6 sm:px-10 h-14 flex items-center justify-between">
           <a href="#" className={`text-sm font-light tracking-[0.25em] transition-colors ${scrolled ? "text-black" : "text-gray-400"}`}>
-            {OFFICE.name}
+            {displayName}
           </a>
 
           <nav className="hidden md:flex items-center gap-8 text-xs tracking-[0.15em]">
@@ -751,11 +753,12 @@ const jsonLd = {
    Footer
    ═══════════════════════════════════════ */
 function Footer() {
+  const displayName = usePreviewName(OFFICE.name);
   return (
     <footer className="py-10 border-t border-gray-100 bg-white">
       <div className="max-w-[1400px] mx-auto px-6 sm:px-10 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-light tracking-[0.25em] text-gray-400">{OFFICE.name}</p>
+          <p className="text-xs font-light tracking-[0.25em] text-gray-400">{displayName}</p>
           <p className="text-[10px] text-gray-300 tracking-wider mt-0.5">{OFFICE.address}</p>
         </div>
         <p className="text-[10px] text-gray-300 tracking-wider">

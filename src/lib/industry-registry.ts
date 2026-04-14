@@ -9,7 +9,7 @@
 
 export interface TemplateEntry {
   id: string;           // warm-craft, warm-craft-mid, warm-craft-pro
-  plan: "lite" | "middle" | "premium";
+  plan: "otameshi" | "omakase" | "omakase-pro";
   name: string;         // ウォームクラフト（おまかせ）
   description: string;  // 温もりのある、地域密着型の工務店に
   previewPath: string;  // /portfolio-templates/warm-craft
@@ -57,9 +57,9 @@ export const INDUSTRIES: IndustryEntry[] = [
     description: "施工実績を魅力的に見せるサイト",
     icon: "Building2",
     templates: [
-      { id: "warm-craft", plan: "lite", name: "ウォームクラフト（おまかせ）", description: "温もりのある、地域密着型の工務店に", previewPath: "/portfolio-templates/warm-craft" },
-      { id: "warm-craft-mid", plan: "middle", name: "ウォームクラフト（まるっと）", description: "ブログ・お客様の声・Maps付き", previewPath: "/portfolio-templates/warm-craft-mid" },
-      { id: "warm-craft-pro", plan: "premium", name: "ウォームクラフト（ぜんぶ）", description: "AIチャット・予約システム搭載", previewPath: "/portfolio-templates/warm-craft-pro" },
+      { id: "warm-craft", plan: "otameshi", name: "ウォームクラフト（おためし）", description: "温もりのある、地域密着型の工務店に", previewPath: "/portfolio-templates/warm-craft" },
+      { id: "warm-craft-mid", plan: "omakase", name: "ウォームクラフト（おまかせ）", description: "ブログ・お客様の声・Maps付き", previewPath: "/portfolio-templates/warm-craft-mid" },
+      { id: "warm-craft-pro", plan: "omakase-pro", name: "ウォームクラフト（おまかせプロ）", description: "AIチャット・予約システム搭載", previewPath: "/portfolio-templates/warm-craft-pro" },
     ],
   },
   {
@@ -69,9 +69,9 @@ export const INDUSTRIES: IndustryEntry[] = [
     description: "信頼と実績を伝えるコーポレートサイト",
     icon: "Building2",
     templates: [
-      { id: "trust-navy", plan: "lite", name: "トラストネイビー（おまかせ）", description: "信頼感のあるネイビー×ゴールド", previewPath: "/portfolio-templates/trust-navy" },
-      { id: "trust-navy-mid", plan: "middle", name: "トラストネイビー（まるっと）", description: "ニュース・実績詳細・Maps付き", previewPath: "/portfolio-templates/trust-navy-mid" },
-      { id: "trust-navy-pro", plan: "premium", name: "トラストネイビー（ぜんぶ）", description: "採用ページ・動画・AI搭載", previewPath: "/portfolio-templates/trust-navy-pro" },
+      { id: "trust-navy", plan: "otameshi", name: "トラストネイビー（おためし）", description: "信頼感のあるネイビー×ゴールド", previewPath: "/portfolio-templates/trust-navy" },
+      { id: "trust-navy-mid", plan: "omakase", name: "トラストネイビー（おまかせ）", description: "ニュース・実績詳細・Maps付き", previewPath: "/portfolio-templates/trust-navy-mid" },
+      { id: "trust-navy-pro", plan: "omakase-pro", name: "トラストネイビー（おまかせプロ）", description: "採用ページ・動画・AI搭載", previewPath: "/portfolio-templates/trust-navy-pro" },
     ],
   },
   {
@@ -81,9 +81,9 @@ export const INDUSTRIES: IndustryEntry[] = [
     description: "作品が映えるミニマルなポートフォリオ",
     icon: "Palette",
     templates: [
-      { id: "clean-arch", plan: "lite", name: "クリーンアーチ（おまかせ）", description: "余白を活かしたミニマルデザイン", previewPath: "/portfolio-templates/clean-arch" },
-      { id: "clean-arch-mid", plan: "middle", name: "クリーンアーチ（まるっと）", description: "受賞歴・ニュース・詳細ページ付き", previewPath: "/portfolio-templates/clean-arch-mid" },
-      { id: "clean-arch-pro", plan: "premium", name: "クリーンアーチ（ぜんぶ）", description: "多言語・360°ビュー・PDF搭載", previewPath: "/portfolio-templates/clean-arch-pro" },
+      { id: "clean-arch", plan: "otameshi", name: "クリーンアーチ（おためし）", description: "余白を活かしたミニマルデザイン", previewPath: "/portfolio-templates/clean-arch" },
+      { id: "clean-arch-mid", plan: "omakase", name: "クリーンアーチ（おまかせ）", description: "受賞歴・ニュース・詳細ページ付き", previewPath: "/portfolio-templates/clean-arch-mid" },
+      { id: "clean-arch-pro", plan: "omakase-pro", name: "クリーンアーチ（おまかせプロ）", description: "多言語・360°ビュー・PDF搭載", previewPath: "/portfolio-templates/clean-arch-pro" },
     ],
   },
   {

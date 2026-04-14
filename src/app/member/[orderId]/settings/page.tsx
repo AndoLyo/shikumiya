@@ -4,34 +4,34 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User, Mail, Phone, Building2, Globe, Lock, Check, Save,
-  Crown, ArrowUp, ArrowDown, Sparkles, X, Zap,
+  Crown, Sparkles, X,
 } from "lucide-react";
 
-type Plan = "lite" | "middle" | "premium";
+type Plan = "otameshi" | "omakase" | "omakase-pro";
 
 const PLANS = [
   {
-    id: "lite" as Plan,
-    name: "おまかせプラン",
-    price: "¥3,000",
-    priceNum: 3000,
+    id: "otameshi" as Plan,
+    name: "おためしプラン",
+    price: "¥0",
+    priceNum: 0,
     features: [
       "業種に合ったテンプレートを選択",
       "施工写真を最大10枚",
       "お問い合わせフォーム",
       "SSL/レスポンシブ対応",
       "独自ドメイン対応",
-      "月1回の内容更新",
+      "手動編集のみ",
     ],
   },
   {
-    id: "middle" as Plan,
-    name: "まるっとおまかせプラン",
-    price: "¥8,000",
-    priceNum: 8000,
+    id: "omakase" as Plan,
+    name: "おまかせプラン",
+    price: "¥1,480",
+    priceNum: 1480,
     recommended: true,
     features: [
-      "おまかせプランの全機能",
+      "おためしプランの全機能",
       "施工実績の詳細ページ",
       "お客様の声セクション",
       "ブログ/お知らせ機能",
@@ -42,12 +42,12 @@ const PLANS = [
     ],
   },
   {
-    id: "premium" as Plan,
-    name: "ぜんぶおまかせプラン",
-    price: "¥15,000~",
-    priceNum: 15000,
+    id: "omakase-pro" as Plan,
+    name: "おまかせプロプラン",
+    price: "¥4,980",
+    priceNum: 4980,
     features: [
-      "まるっとおまかせプランの全機能",
+      "おまかせプランの全機能",
       "AIチャットボット",
       "予約システム",
       "採用ページ",
@@ -61,16 +61,21 @@ const PLANS = [
   },
 ];
 
-const PLAN_LEVEL: Record<Plan, number> = { lite: 1, middle: 2, premium: 3 };
+
 
 export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
   const [showPlanModal, setShowPlanModal] = useState(false);
-  const [currentPlan, setCurrentPlan] = useState<Plan>("lite");
+  const [currentPlan, setCurrentPlan] = useState<Plan>("otameshi");
 
   useEffect(() => {
     const p = new URL(window.location.href).searchParams.get("plan");
-    if (p === "middle" || p === "premium") setCurrentPlan(p);
+    // Legacy compatibility mapping
+    const planMap: Record<string, Plan> = {
+      otameshi: "otameshi", omakase: "omakase", "omakase-pro": "omakase-pro",
+      lite: "otameshi", middle: "omakase", premium: "omakase-pro",
+    };
+    if (p && planMap[p]) setCurrentPlan(planMap[p]);
   }, []);
 
   const handleSave = (e: React.FormEvent) => {
@@ -114,17 +119,17 @@ export default function SettingsPage() {
           </h3>
           <div className="space-y-3">
             {[
-              ["現在のプラン", PLANS.find((p) => p.id === currentPlan)?.name || "おまかせプラン"],
-              ["月額", PLANS.find((p) => p.id === currentPlan)?.price + "/月" || "¥3,000/月"],
+              ["現在のプラン", PLANS.find((p) => p.id === currentPlan)?.name || "おためしプラン"],
+              ["月額", PLANS.find((p) => p.id === currentPlan)?.price + "/月" || "¥0/月"],
               ["次回請求日", "2025年5月1日"],
-              ["編集回数（今月）", currentPlan === "premium" ? "無制限" : currentPlan === "middle" ? "1 / 3回" : "0 / 1回"],
+              ["編集回数（今月）", currentPlan === "omakase-pro" ? "無制限" : currentPlan === "omakase" ? "1 / 3回" : "手動編集のみ"],
             ].map(([label, value], i) => (
               <div key={label} className={`flex items-center justify-between py-3 ${i < 3 ? "border-b border-gray-100" : ""}`}>
                 <span className="text-gray-500 text-sm">{label}</span>
                 {i === 0 ? (
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    currentPlan === "premium" ? "bg-orange-100 text-orange-600" :
-                    currentPlan === "middle" ? "bg-purple-100 text-purple-600" :
+                    currentPlan === "omakase-pro" ? "bg-orange-100 text-orange-600" :
+                    currentPlan === "omakase" ? "bg-purple-100 text-purple-600" :
                     "bg-gray-100 text-gray-600"
                   }`}>{value}</span>
                 ) : (
@@ -200,8 +205,6 @@ export default function SettingsPage() {
                 <div className="grid sm:grid-cols-3 gap-4">
                   {PLANS.map((plan) => {
                     const isCurrent = plan.id === currentPlan;
-                    const isUpgrade = PLAN_LEVEL[plan.id] > PLAN_LEVEL[currentPlan];
-                    const isDowngrade = PLAN_LEVEL[plan.id] < PLAN_LEVEL[currentPlan];
 
                     return (
                       <div
@@ -249,13 +252,9 @@ export default function SettingsPage() {
                           <button disabled className="w-full py-2.5 rounded-xl bg-gray-100 text-gray-400 text-xs font-medium cursor-not-allowed">
                             現在のプラン
                           </button>
-                        ) : isUpgrade ? (
-                          <button className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#e84393] via-[#6c5ce7] to-[#f39c12] text-white text-xs font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5">
-                            <ArrowUp className="w-3.5 h-3.5" /> アップグレードする
-                          </button>
                         ) : (
-                          <button className="w-full py-2.5 rounded-xl border border-gray-200 text-gray-500 text-xs font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-1.5">
-                            <ArrowDown className="w-3.5 h-3.5" /> ダウングレードする
+                          <button disabled className="w-full py-2.5 rounded-xl border border-gray-200 text-gray-400 text-xs font-medium cursor-not-allowed">
+                            準備中
                           </button>
                         )}
                       </div>

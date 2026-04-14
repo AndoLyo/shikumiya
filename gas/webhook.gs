@@ -13,6 +13,7 @@
 const SPREADSHEET_ID = "1AYtEM0IlSAXcMoYOVKTjrIF16gqrn-AOdCipLCFS4MQ";
 const SHEET_NAME = "注文データ";
 const EDIT_SHEET_NAME = "編集リクエスト";
+const USER_SHEET_NAME = "ユーザー認証";
 
 // ━━━━━━━━━━━━━━━━━━━━
 // POST: Webhookからの注文受信
@@ -65,6 +66,22 @@ function doGet(e) {
       return verifyMember(e.parameter.orderId, e.parameter.email);
     }
 
+    if (action === "get_all_customers") {
+      return getAllCustomers();
+    }
+
+    if (action === "find_by_email") {
+      return findByEmail(e.parameter.email);
+    }
+
+    if (action === "register_user") {
+      return registerUser(e.parameter.email, e.parameter.password);
+    }
+
+    if (action === "verify_password") {
+      return verifyUserPassword(e.parameter.email, e.parameter.password);
+    }
+
     if (action === "save_edit") {
       return saveEditRequest(
         e.parameter.orderId,
@@ -113,6 +130,134 @@ function getPendingOrders() {
   }
 
   return jsonResponse({ orders });
+}
+
+// ━━━━━━━━━━━━━━━━━━━━
+// ユーザー認証（メール+パスワード）
+// ━━━━━━━━━━━━━━━━━━━━
+
+function hashPassword(password) {
+  var raw = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, password + "shikumiya_salt_2026");
+  return raw.map(function(b) { return ("0" + ((b < 0 ? b + 256 : b).toString(16))).slice(-2); }).join("");
+}
+
+function getUserSheet() {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(USER_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(USER_SHEET_NAME);
+    sheet.appendRow(["メールアドレス", "パスワードハッシュ", "登録日時"]);
+    sheet.getRange(1, 1, 1, 3).setFontWeight("bold");
+  }
+  return sheet;
+}
+
+function registerUser(email, password) {
+  if (!email || !password) return jsonResponse({ success: false, error: "email and password required" });
+  if (password.length < 6) return jsonResponse({ success: false, error: "パスワードは6文字以上必要です" });
+
+  var sheet = getUserSheet();
+  var data = sheet.getDataRange().getValues();
+
+  // 重複チェック
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][0]).toLowerCase() === email.toLowerCase()) {
+      return jsonResponse({ success: false, error: "このメールアドレスは既に登録されています" });
+    }
+  }
+
+  sheet.appendRow([
+    email.toLowerCase(),
+    hashPassword(password),
+    new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
+  ]);
+
+  return jsonResponse({ success: true });
+}
+
+function verifyUserPassword(email, password) {
+  if (!email || !password) return jsonResponse({ valid: false, error: "email and password required" });
+
+  var sheet = getUserSheet();
+  var data = sheet.getDataRange().getValues();
+  var hash = hashPassword(password);
+
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][0]).toLowerCase() === email.toLowerCase()) {
+      if (String(data[i][1]) === hash) {
+        return jsonResponse({ valid: true });
+      } else {
+        return jsonResponse({ valid: false, error: "パスワードが間違っています" });
+      }
+    }
+  }
+
+  return jsonResponse({ valid: false, error: "このメールアドレスは登録されていません" });
+}
+
+// ━━━━━━━━━━━━━━━━━━━━
+// メールアドレスで注文検索
+// ━━━━━━━━━━━━━━━━━━━━
+
+function findByEmail(email) {
+  if (!email) return jsonResponse({ found: false, error: "email required" });
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) return jsonResponse({ found: false, orders: [] });
+
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0];
+  var col = function(name) { return headers.indexOf(name); };
+  var orders = [];
+
+  for (var i = 1; i < data.length; i++) {
+    var rowEmail = String(data[i][col("メールアドレス")] || "").trim().toLowerCase();
+    if (rowEmail === email.toLowerCase()) {
+      orders.push({
+        orderId: String(data[i][col("注文ID")] || ""),
+        companyName: String(data[i][col("会社名")] || ""),
+        plan: String(data[i][col("プラン")] || "lite"),
+        template: String(data[i][col("テンプレート")] || ""),
+        siteUrl: String(data[i][col("サイトURL")] || ""),
+        domain: String(data[i][col("ドメイン")] || ""),
+        status: String(data[i][col("ステータス")] || ""),
+        createdAt: String(data[i][col("日時")] || ""),
+      });
+    }
+  }
+
+  return jsonResponse({ found: orders.length > 0, orders: orders });
+}
+
+function getAllCustomers() {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) return jsonResponse({ customers: [] });
+
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0];
+  var customers = [];
+
+  var col = function(name) { return headers.indexOf(name); };
+
+  for (var i = 1; i < data.length; i++) {
+    customers.push({
+      orderId: String(data[i][col("注文ID")] || ""),
+      companyName: String(data[i][col("会社名")] || ""),
+      email: String(data[i][col("メールアドレス")] || ""),
+      plan: String(data[i][col("プラン")] || "lite"),
+      template: String(data[i][col("テンプレート")] || ""),
+      siteUrl: String(data[i][col("サイトURL")] || ""),
+      domain: String(data[i][col("ドメイン")] || ""),
+      status: String(data[i][col("ステータス")] || ""),
+      industry: String(data[i][col("業種")] || ""),
+      createdAt: String(data[i][col("日時")] || ""),
+      _row: i + 1,
+    });
+  }
+
+  return jsonResponse({ customers: customers });
 }
 
 function updateOrderStatus(row, status) {
@@ -172,6 +317,7 @@ function verifyMember(orderId, email) {
         stripeCustomerId: data[i][col("Stripe顧客ID")] || "",
         stripeSubscriptionId: data[i][col("StripeサブスクID")] || "",
         repoName: data[i][col("リポ名")] || "",
+        createdAt: data[i][col("日時")] || "",
       });
     }
   }

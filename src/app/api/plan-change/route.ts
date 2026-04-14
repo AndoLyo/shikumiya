@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "orderId, email, newPlan are required" }, { status: 400 });
     }
 
-    if (!["lite", "middle", "premium"].includes(newPlan)) {
+    if (!["otameshi", "omakase", "omakase-pro"].includes(newPlan)) {
       return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
     }
 
@@ -59,6 +59,17 @@ export async function POST(request: Request) {
     }
 
     const newPriceId = getStripePriceId(newPlan);
+
+    if (!newPriceId) {
+      // おためし（無料）プランへのダウングレード → サブスクをキャンセル
+      await stripe.subscriptions.cancel(subscriptionId);
+      return NextResponse.json({
+        success: true,
+        newPlan,
+        planName: PLAN_LABELS[newPlan],
+        message: `${PLAN_LABELS[newPlan]}プランに変更しました。サブスクリプションをキャンセルしました。`,
+      });
+    }
 
     await stripe.subscriptions.update(subscriptionId, {
       items: [{ id: itemId, price: newPriceId }],

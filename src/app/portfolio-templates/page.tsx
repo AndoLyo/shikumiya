@@ -32,17 +32,17 @@ interface Template {
 
 const templates: Template[] = [
   // 工務店
-  { id: "warm-craft", name: "Warm Craft", industry: "工務店", plan: "おまかせ", icon: Home, accentColor: "#7BA23F", features: ["施工実績", "会社概要", "問い合わせ"] },
-  { id: "warm-craft-mid", name: "Warm Craft Mid", industry: "工務店", plan: "まるっと", planBadge: "おすすめ", icon: Home, accentColor: "#7BA23F", features: ["Before/After", "お客様の声", "SEO強化"] },
-  { id: "warm-craft-pro", name: "Warm Craft Pro", industry: "工務店", plan: "ぜんぶ", icon: Home, accentColor: "#7BA23F", features: ["AIチャット", "予約システム", "採用ページ"] },
+  { id: "warm-craft", name: "Warm Craft", industry: "工務店", plan: "おためし", icon: Home, accentColor: "#7BA23F", features: ["施工実績", "会社概要", "問い合わせ"] },
+  { id: "warm-craft-mid", name: "Warm Craft Mid", industry: "工務店", plan: "おまかせ", planBadge: "おすすめ", icon: Home, accentColor: "#7BA23F", features: ["Before/After", "お客様の声", "SEO強化"] },
+  { id: "warm-craft-pro", name: "Warm Craft Pro", industry: "工務店", plan: "おまかせプロ", icon: Home, accentColor: "#7BA23F", features: ["AIチャット", "予約システム", "採用ページ"] },
   // 建設会社
-  { id: "trust-navy", name: "Trust Navy", industry: "建設会社", plan: "おまかせ", icon: Building2, accentColor: "#1B3A5C", features: ["施工実績", "会社概要", "問い合わせ"] },
-  { id: "trust-navy-mid", name: "Trust Navy Mid", industry: "建設会社", plan: "まるっと", planBadge: "おすすめ", icon: Building2, accentColor: "#1B3A5C", features: ["Before/After", "お客様の声", "SEO強化"] },
-  { id: "trust-navy-pro", name: "Trust Navy Pro", industry: "建設会社", plan: "ぜんぶ", icon: Building2, accentColor: "#1B3A5C", features: ["AIチャット", "採用ページ", "多言語"] },
+  { id: "trust-navy", name: "Trust Navy", industry: "建設会社", plan: "おためし", icon: Building2, accentColor: "#1B3A5C", features: ["施工実績", "会社概要", "問い合わせ"] },
+  { id: "trust-navy-mid", name: "Trust Navy Mid", industry: "建設会社", plan: "おまかせ", planBadge: "おすすめ", icon: Building2, accentColor: "#1B3A5C", features: ["Before/After", "お客様の声", "SEO強化"] },
+  { id: "trust-navy-pro", name: "Trust Navy Pro", industry: "建設会社", plan: "おまかせプロ", icon: Building2, accentColor: "#1B3A5C", features: ["AIチャット", "採用ページ", "多言語"] },
   // 設計事務所
-  { id: "clean-arch", name: "Clean Arch", industry: "設計事務所", plan: "おまかせ", icon: Compass, accentColor: "#2D3436", features: ["施工実績", "会社概要", "問い合わせ"] },
-  { id: "clean-arch-mid", name: "Clean Arch Mid", industry: "設計事務所", plan: "まるっと", planBadge: "おすすめ", icon: Compass, accentColor: "#2D3436", features: ["Before/After", "ブログ", "SEO強化"] },
-  { id: "clean-arch-pro", name: "Clean Arch Pro", industry: "設計事務所", plan: "ぜんぶ", icon: Compass, accentColor: "#2D3436", features: ["AIチャット", "多言語", "360°ビューア"] },
+  { id: "clean-arch", name: "Clean Arch", industry: "設計事務所", plan: "おためし", icon: Compass, accentColor: "#2D3436", features: ["施工実績", "会社概要", "問い合わせ"] },
+  { id: "clean-arch-mid", name: "Clean Arch Mid", industry: "設計事務所", plan: "おまかせ", planBadge: "おすすめ", icon: Compass, accentColor: "#2D3436", features: ["Before/After", "ブログ", "SEO強化"] },
+  { id: "clean-arch-pro", name: "Clean Arch Pro", industry: "設計事務所", plan: "おまかせプロ", icon: Compass, accentColor: "#2D3436", features: ["AIチャット", "多言語", "360°ビューア"] },
 ];
 
 /* ═══ デバイス設定 ═══ */
@@ -200,7 +200,7 @@ export default function PortfolioTemplatesPage() {
         <section className="max-w-[700px] mx-auto px-6 text-center mt-20">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h3 className="text-2xl sm:text-3xl text-gray-800 font-bold mb-4">ホームページを作りませんか？</h3>
-            <p className="text-gray-500 text-sm mb-8 leading-relaxed">写真を送るだけ。制作費0円、月額3,000円からホームページが完成します。</p>
+            <p className="text-gray-500 text-sm mb-8 leading-relaxed">写真を送るだけ。制作費0円、月額0円からホームページが完成します。</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/start" className={`inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full ${gradientBg} text-white font-bold text-sm tracking-wider hover:opacity-90 transition-all shadow-lg shadow-purple-200/40`}>
                 今すぐサイトを作る →
