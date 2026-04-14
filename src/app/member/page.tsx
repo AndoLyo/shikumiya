@@ -19,9 +19,13 @@ export default function MemberLoginPage() {
         sessionStorage.setItem("memberEmail", session.user.email);
       }
       if (session.orderId) {
+        // 注文あり → ダッシュボードへ
         router.push(`/member/${encodeURIComponent(session.orderId)}`);
         return;
       }
+      // 注文なし → サイト作成画面へ
+      router.push("/start");
+      return;
     }
     // 未ログインなら自動でモーダルを開く
     if (status === "unauthenticated") {
