@@ -18,7 +18,8 @@ import { normalizePlanId, PLAN_EDIT_LIMITS, type Plan } from "@/lib/stripe";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const TEMPLATE_RENDERERS: Record<string, React.ComponentType<any>> = {
   "warm-craft": dynamic(() => import("@/components/template-renderers/WarmCraftRenderer")),
-  // 今後追加: trust-navy, clean-arch
+  "clean-arch": dynamic(() => import("@/components/template-renderers/CleanArchRenderer")),
+  // 今後追加: trust-navy
 };
 
 /* ═══════════════════════════════════════
