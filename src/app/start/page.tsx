@@ -362,7 +362,7 @@ export default function StartPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                   >
-                    次へ — 会社名を入力 <ArrowRight className="w-4 h-4 inline ml-2" />
+                    次へ — ユーザー名を入力 <ArrowRight className="w-4 h-4 inline ml-2" />
                   </motion.button>
                 )}
               </div>
@@ -370,7 +370,7 @@ export default function StartPage() {
           )}
 
           {/* ═══════════════════════════════════════
-             STEP 2: 会社名 → デモサイト即表示
+             STEP 2: ユーザー名 → デモサイト即表示
              ═══════════════════════════════════════ */}
           {step === 2 && (() => {
             const planInfo = getPlanInfo(template);
@@ -380,7 +380,7 @@ export default function StartPage() {
             <motion.div key="step2" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}>
               <div className="text-center mb-8">
                 <h1 className="text-gray-800 text-2xl sm:text-3xl font-bold mb-2">
-                  会社名を入力してください
+                  ユーザー名を入力してください
                 </h1>
                 <p className="text-gray-400 text-sm">入力した名前がプレビューにリアルタイムで反映されます</p>
               </div>
@@ -402,7 +402,7 @@ export default function StartPage() {
 
                   {/* 会社名入力 */}
                   <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <label className="block text-sm text-gray-700 font-medium mb-2">会社名・屋号 <span className="text-red-400">*</span></label>
+                    <label className="block text-sm text-gray-700 font-medium mb-2">ユーザー名 <span className="text-red-400">*</span><span className="text-gray-400 text-xs font-normal ml-2">（後から変更できます）</span></label>
                     <input
                       type="text"
                       value={companyName}
@@ -489,7 +489,7 @@ export default function StartPage() {
                           {nameValid ? (
                             <><span className="text-green-500 font-medium">●</span> 「{companyName.trim()}」を反映中</>
                           ) : (
-                            "会社名を入力するとここに反映されます"
+                            "ユーザー名を入力するとここに反映されます"
                           )}
                         </p>
                         <button

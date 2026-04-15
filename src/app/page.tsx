@@ -197,7 +197,7 @@ function HeroSection() {
               >
                 {[
                   { num: "1", text: "Googleで登録（10秒）", done: false },
-                  { num: "2", text: "会社名を入力", done: false },
+                  { num: "2", text: "ユーザー名を入力するだけ", done: false },
                   { num: "3", text: "サイト完成！", done: false },
                 ].map((step, i) => (
                   <motion.div
@@ -247,6 +247,19 @@ function HeroSection() {
               >
                 登録は無料・クレジットカード不要
               </motion.p>
+
+              <motion.div
+                className="mt-5 pt-4 border-t border-gray-100 text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.1 }}
+              >
+                <p className="text-gray-400 text-xs">
+                  独自ドメイン（○○.comなど）をお持ちの方も
+                  <br />
+                  登録後にかんたんに設定できます
+                </p>
+              </motion.div>
             </div>
           </motion.div>
         </motion.div>
@@ -296,9 +309,9 @@ function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
             >
-              写真を送るだけで、プロ品質のサイトが完成。
+              個人でも法人でも、ユーザー名を入れるだけでサイトが完成。
               <br />
-              月々0円から、デザインも更新もすべておまかせ。
+              月々0円から。デザインも更新も、ぜんぶおまかせ。
             </motion.p>
 
             {/* Trust */}
@@ -328,7 +341,7 @@ function HeroSection() {
                     value={heroSlug}
                     onChange={(e) => setHeroSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
                     onKeyDown={(e) => e.key === "Enter" && handleDomainSubmit()}
-                    placeholder="あなたのサイト名を入力"
+                    placeholder="好きな名前を入力（例: yamada）"
                     className="flex-1 min-w-0 px-2 py-3 text-gray-800 text-sm placeholder:text-gray-300 focus:outline-none bg-transparent"
                   />
                 </div>
