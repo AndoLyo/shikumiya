@@ -166,8 +166,9 @@ export async function POST(request: Request) {
         const pageContent = await fetchFileFromRepo(sourceRepo, `src/app/portfolio-templates/${templateId}/page.tsx`);
         if (pageContent) {
           const rewritten = pageContent
-            .replace(/import\s+DemoBanner\s+from\s+["']@\/components\/portfolio-templates\/DemoBanner["'];?\s*\n?/g, "")
-            .replace(/<DemoBanner\s*\/>/g, "");
+            // DemoBanner関連を全て除去（import文のあらゆるバリエーションに対応）
+            .replace(/^.*DemoBanner.*$/gm, "")
+            .replace(/<DemoBanner\s*\/?\s*>/g, "");
           await pushFileToRepo(repoName, "src/app/page.tsx", rewritten, `Setup: page.tsx (${templateId})`);
         }
 

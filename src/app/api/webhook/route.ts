@@ -228,10 +228,9 @@ async function copyTemplateFiles(targetRepo: string, templateId: string): Promis
   if (pageContent) {
     // import パスを書き換え
     const rewritten = pageContent
-      // DemoBanner の import を除去
-      .replace(/import\s+DemoBanner\s+from\s+["']@\/components\/portfolio-templates\/DemoBanner["'];?\s*\n?/g, "")
-      // DemoBanner の JSX を除去
-      .replace(/<DemoBanner\s*\/>/g, "")
+      // DemoBanner関連を全て除去
+      .replace(/^.*DemoBanner.*$/gm, "")
+      .replace(/<DemoBanner\s*\/?\s*>/g, "")
       // コンポーネントパスの書き換え（万が一外部コンポーネントがある場合）
       .replace(new RegExp(`@/components/portfolio-templates/${templateId}/`, "g"), "@/components/")
       .replace(new RegExp(`@/components/portfolio-templates/${baseTemplateId}/`, "g"), "@/components/");
