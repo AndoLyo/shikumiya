@@ -206,7 +206,7 @@ export default function StartPage() {
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">ドメイン</span>
-              <span className="text-gray-700 font-medium text-xs">{selectedDomain || existingDomain || subdomain}</span>
+              <span className="text-gray-700 font-medium text-xs">{siteSlugInput ? `shikumiya-${siteSlugInput}.vercel.app` : subdomain}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">プラン</span>
