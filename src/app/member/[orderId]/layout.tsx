@@ -55,7 +55,7 @@ function getNavItems(orderId: string): NavItem[] {
   return [
     // 全プラン共通
     { id: "dashboard", label: "ダッシュボード", icon: LayoutDashboard, href: base, minPlan: "otameshi" },
-    { id: "edit-request", label: "サイト編集依頼", icon: FileEdit, href: `${base}/edit-request`, minPlan: "otameshi" },
+    { id: "editor", label: "サイト編集", icon: FileEdit, href: `${base}/editor`, minPlan: "otameshi" },
     { id: "history", label: "依頼履歴", icon: ClipboardList, href: `${base}/history`, minPlan: "otameshi" },
     // おまかせ以上
     { id: "analytics", label: "アクセス解析", icon: BarChart3, href: `${base}/analytics`, minPlan: "omakase",

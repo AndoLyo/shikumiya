@@ -260,7 +260,7 @@ export default function MemberDashboard() {
       {/* Quick actions */}
       <div className="grid sm:grid-cols-2 gap-4">
         <Link
-          href={isBuilding ? "#" : `/member/${orderId}/edit-request`}
+          href={isBuilding ? "#" : `/member/${orderId}/editor`}
           className={`block p-5 bg-white rounded-2xl border border-gray-100 transition-all group ${isBuilding ? "opacity-50 cursor-not-allowed" : "hover:border-purple-200"}`}
           onClick={(e) => isBuilding && e.preventDefault()}
         >

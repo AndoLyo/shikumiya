@@ -147,7 +147,7 @@ export default function FeaturesPage() {
           <p className="text-gray-500 text-xs mt-0.5">編集依頼フォームからお申し付けください。担当者が対応いたします。</p>
         </div>
         <a
-          href={`/member/${orderId}/edit-request`}
+          href={`/member/${orderId}/editor`}
           className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#e84393] via-[#6c5ce7] to-[#f39c12] text-white text-xs font-bold hover:opacity-90 transition-opacity flex items-center gap-1.5 flex-shrink-0"
         >
           <FileEdit className="w-3.5 h-3.5" /> 編集依頼する
