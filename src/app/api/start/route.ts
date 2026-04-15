@@ -33,6 +33,7 @@ export async function POST(request: Request) {
       phone,
       domain,           // 既存ドメイン or 新規取得ドメイン
       useSubdomain,     // 仮URLで開始するか
+      siteSlug: inputSlug, // ユーザーが入力したサイトURL用スラッグ
     } = body;
 
     // ─── バリデーション ───
@@ -46,12 +47,12 @@ export async function POST(request: Request) {
     // プランをテンプレIDから判定
     const plan: Plan = getPlanFromTemplateId(templateId);
 
-    // サイトスラッグ生成（会社名をURL-safe化）
-    const siteSlug = companyName
+    // サイトスラッグ（ユーザー入力 or タイムスタンプ）
+    const siteSlug = (inputSlug || "")
       .toLowerCase()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "")
       .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "")
       .trim()
       || `site-${Date.now()}`;
 
@@ -116,40 +117,12 @@ export async function POST(request: Request) {
     // ─── Stripe Checkout Session作成（月額サブスクリプション） ───
     const priceId = getStripePriceId(plan);
     if (!priceId) {
-      // おためし（無料）プラン → Stripeスキップ、GASに直接登録
-      logger.info("STRIPE", `無料プラン (${plan})。Stripeスキップ → GAS直接登録`, { orderId });
+      // おためし（無料）プラン → Stripeスキップ、サイト生成→GAS登録
+      logger.info("STRIPE", `無料プラン (${plan})。Stripeスキップ → サイト生成`, { orderId });
 
-      // GASに注文データを書き込む（Stripe webhookの代わり）
       const gasUrl = process.env.GAS_WEBHOOK_URL;
-      if (gasUrl) {
-        try {
-          const siteUrl = useSubdomain
-            ? `shikumiya-${companyName.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() || "sample"}.vercel.app`
-            : domain || "";
 
-          await fetch(gasUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              order_id: orderId,
-              company_name: companyName,
-              email,
-              phone: phone || "",
-              industry: industry || "other",
-              plan,
-              template: templateId,
-              site_url: siteUrl,
-              domain: domain || siteUrl,
-              _status: "制作中",
-            }),
-          });
-          logger.info("GITHUB_API", `無料プラン注文をGASに登録: ${orderId}`, { orderId });
-        } catch (gasErr) {
-          logger.warn("GITHUB_API", "GAS登録に失敗（続行）", { orderId, error: gasErr });
-        }
-      }
-
-      // サイト自動生成（無料プランでもサイトを作る）
+      // サイト自動生成
       try {
         logger.info("DEPLOY", `無料プラン: サイト生成開始 ${companyName}`, { orderId });
 

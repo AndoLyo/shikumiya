@@ -134,6 +134,7 @@ export default function StartPage() {
   // 申込
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [siteSlugInput, setSiteSlugInput] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -697,6 +698,42 @@ export default function StartPage() {
                 </div>
 
                 {/* 連絡先 */}
+                {/* サイトURL */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                  <h3 className="text-gray-800 font-bold text-sm mb-4 flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-purple-400" />
+                    サイトのURL
+                  </h3>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1.5 font-medium">
+                      サイトのアドレスを決めてください <span className="text-red-400">*</span>
+                    </label>
+                    <div className="flex items-center gap-0">
+                      <span className="text-gray-400 text-sm bg-gray-50 border border-r-0 border-gray-200 rounded-l-xl px-3 py-3 whitespace-nowrap">
+                        shikumiya-
+                      </span>
+                      <input
+                        type="text"
+                        value={siteSlugInput}
+                        onChange={(e) => setSiteSlugInput(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+                        placeholder="yamada-koumuten"
+                        className="flex-1 px-3 py-3 bg-gray-50 border border-gray-200 text-gray-800 text-sm placeholder:text-gray-300 focus:outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100"
+                      />
+                      <span className="text-gray-400 text-sm bg-gray-50 border border-l-0 border-gray-200 rounded-r-xl px-3 py-3 whitespace-nowrap">
+                        .vercel.app
+                      </span>
+                    </div>
+                    {siteSlugInput && (
+                      <p className="text-xs text-purple-500 mt-2">
+                        あなたのサイト: <strong>shikumiya-{siteSlugInput}.vercel.app</strong>
+                      </p>
+                    )}
+                    <p className="text-xs text-gray-400 mt-1">
+                      半角英数字とハイフンが使えます
+                    </p>
+                  </div>
+                </div>
+
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                   <h3 className="text-gray-800 font-bold text-sm mb-4 flex items-center gap-2">
                     <Mail className="w-4 h-4 text-purple-400" />
@@ -750,6 +787,7 @@ export default function StartPage() {
                             phone,
                             domain: existingDomain || selectedDomain || "",
                             useSubdomain,
+                            siteSlug: siteSlugInput,
                           }),
                         });
                         const data = await res.json();
@@ -767,7 +805,7 @@ export default function StartPage() {
                         setSubmitting(false);
                       }
                     }}
-                    disabled={submitting || !email.trim() || (!existingDomain && !selectedDomain && !useSubdomain)}
+                    disabled={submitting || !email.trim() || !siteSlugInput.trim()}
                     className={`px-10 py-4 rounded-full ${gradientBg} text-white font-bold text-base tracking-wider hover:opacity-90 transition-all shadow-lg shadow-purple-200/50 disabled:opacity-40 disabled:cursor-not-allowed`}
                   >
                     {submitting ? (
