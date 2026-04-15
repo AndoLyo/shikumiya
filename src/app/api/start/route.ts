@@ -135,7 +135,7 @@ export async function POST(request: Request) {
         await new Promise((r) => setTimeout(r, 5000)); // GitHub APIの伝播待ち
 
         // 2. テンプレートのpage.tsxをコピー
-        const sourceRepo = "lyo-vision-site";
+        const sourceRepo = process.env.GITHUB_TEMPLATE_SOURCE_REPO || "lyo-vision-site";
         const pageContent = await fetchFileFromRepo(sourceRepo, `src/app/portfolio-templates/${templateId}/page.tsx`);
         if (pageContent) {
           const rewritten = pageContent
@@ -177,7 +177,55 @@ export async function POST(request: Request) {
           }
         }
 
-        const generatedSiteUrl = `https://${repoName}.vercel.app`;
+        // 4. Vercelにデプロイ
+        let generatedSiteUrl = `https://${repoName}.vercel.app`;
+        const vercelToken = process.env.VERCEL_TOKEN;
+        const owner = process.env.GITHUB_OWNER || "AndoLyo";
+
+        if (vercelToken) {
+          try {
+            // Vercelプロジェクト作成（GitHubリポと連携）
+            const projectRes = await fetch("https://api.vercel.com/v10/projects", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${vercelToken}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name: repoName,
+                framework: "nextjs",
+                gitRepository: { type: "github", repo: `${owner}/${repoName}` },
+              }),
+            });
+
+            if (projectRes.ok) {
+              // デプロイ開始
+              const deployRes = await fetch("https://api.vercel.com/v13/deployments", {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${vercelToken}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  name: repoName,
+                  gitSource: { type: "github", org: owner, repo: repoName, ref: "main" },
+                }),
+              });
+
+              if (deployRes.ok) {
+                const deployData = await deployRes.json();
+                if (deployData.url) generatedSiteUrl = `https://${deployData.url}`;
+                logger.success("VERCEL_API", `デプロイ成功: ${generatedSiteUrl}`, { orderId });
+              }
+            } else {
+              const errText = await projectRes.text();
+              logger.warn("VERCEL_API", `プロジェクト作成失敗: ${errText}`, { orderId });
+            }
+          } catch (vercelErr) {
+            logger.warn("VERCEL_API", "Vercelデプロイ失敗（続行）", { orderId, error: vercelErr });
+          }
+        }
+
         logger.success("DEPLOY", `無料プラン: サイト生成完了 ${generatedSiteUrl}`, { orderId });
 
         // GASのサイトURLを更新
