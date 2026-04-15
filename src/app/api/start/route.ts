@@ -145,6 +145,20 @@ export async function POST(request: Request) {
           await pushFileToRepo(repoName, "src/app/page.tsx", rewritten, `Setup: page.tsx (${templateId})`);
         }
 
+        // 2b. 必要なライブラリファイルをコピー
+        const libFiles = [
+          "src/lib/site-config-schema.ts",
+          "src/lib/use-preview-name.ts",
+        ];
+        for (const libFile of libFiles) {
+          try {
+            const content = await fetchFileFromRepo(sourceRepo, libFile);
+            if (content) {
+              await pushFileToRepo(repoName, libFile, content, `Setup: ${libFile.split("/").pop()}`);
+            }
+          } catch { /* ファイルがなくても続行 */ }
+        }
+
         // 3. site.config.json生成
         const config = generateSiteConfig({
           orderId,

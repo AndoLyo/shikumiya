@@ -241,10 +241,18 @@ async function copyTemplateFiles(targetRepo: string, templateId: string): Promis
     logger.error("GITHUB_API", `page.tsx が見つかりません: ${templateId}`, { details: { sourceRepo } });
   }
 
-  // 2. site-config-schema.ts をコピー（型定義）
-  const schemaContent = await fetchFileFromRepo(sourceRepo, "src/lib/site-config-schema.ts");
-  if (schemaContent) {
-    await pushFileToRepo(targetRepo, "src/lib/site-config-schema.ts", schemaContent, "Setup: site-config-schema.ts");
+  // 2. 必要なライブラリファイルをコピー
+  const libFiles = [
+    "src/lib/site-config-schema.ts",
+    "src/lib/use-preview-name.ts",
+  ];
+  for (const libFile of libFiles) {
+    try {
+      const content = await fetchFileFromRepo(sourceRepo, libFile);
+      if (content) {
+        await pushFileToRepo(targetRepo, libFile, content, `Setup: ${libFile.split("/").pop()}`);
+      }
+    } catch { /* ファイルがなくても続行 */ }
   }
 
   logger.info("GITHUB_API", `テンプレートコピー完了: ${templateId}`, { details: { targetRepo } });
