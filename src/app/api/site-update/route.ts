@@ -31,16 +31,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "認証に失敗しました" }, { status: 401 });
     }
 
-    // 編集回数チェック（新旧プランID両対応）
-    const { normalizePlanId, PLAN_EDIT_LIMITS } = await import("@/lib/stripe");
-    const plan = normalizePlanId(verifyData.plan || "otameshi");
-    const max = PLAN_EDIT_LIMITS[plan] || 0;
-
-    if (verifyData.editsUsed >= max) {
-      return NextResponse.json({
-        error: `今月の編集回数上限（${max}回）に達しています。プランのアップグレードをご検討ください。`,
-      }, { status: 429 });
-    }
+    // 手動編集は全プランで無制限
+    // AI編集の回数制限は /api/ai-edit で別に管理
 
     // 2. リポ名取得
     const repoName = verifyData.repoName || `shikumiya-${orderId.replace(/^order_/, "").slice(0, 20)}`;
