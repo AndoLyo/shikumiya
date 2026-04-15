@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getStripePriceId, getPlanFromTemplateId, PLAN_LABELS, type Plan } from "@/lib/stripe";
 import { logger } from "@/lib/error-handler";
+import {
+  createRepoFromTemplate,
+  fetchFileFromRepo,
+  pushFileToRepo,
+} from "@/lib/github";
+import { generateSiteConfig, stringifySiteConfig } from "@/lib/template-config-generator";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2025-04-30.basil" as Stripe.LatestApiVersion,
@@ -142,6 +148,98 @@ export async function POST(request: Request) {
           logger.warn("GITHUB_API", "GAS登録に失敗（続行）", { orderId, error: gasErr });
         }
       }
+
+      // サイト自動生成（無料プランでもサイトを作る）
+      try {
+        logger.info("DEPLOY", `無料プラン: サイト生成開始 ${companyName}`, { orderId });
+
+        const slug = siteSlug || `site-${Date.now()}`;
+        const repoName = `shikumiya-${slug}`;
+        const templateRepo = process.env.GITHUB_TEMPLATE_REPO || "shikumiya-template";
+
+        // 1. テンプレートからリポ作成
+        await createRepoFromTemplate(templateRepo, repoName, `${companyName}のホームページ — しくみや`);
+        await new Promise((r) => setTimeout(r, 5000)); // GitHub APIの伝播待ち
+
+        // 2. テンプレートのpage.tsxをコピー
+        const sourceRepo = "lyo-vision-site";
+        const pageContent = await fetchFileFromRepo(sourceRepo, `src/app/portfolio-templates/${templateId}/page.tsx`);
+        if (pageContent) {
+          const rewritten = pageContent
+            .replace(/import\s+DemoBanner\s+from\s+["']@\/components\/portfolio-templates\/DemoBanner["'];?\s*\n?/g, "")
+            .replace(/<DemoBanner\s*\/>/g, "");
+          await pushFileToRepo(repoName, "src/app/page.tsx", rewritten, `Setup: page.tsx (${templateId})`);
+        }
+
+        // 3. site.config.json生成
+        const config = generateSiteConfig({
+          orderId,
+          companyName,
+          email,
+          phone: phone || "",
+          address: "",
+          ceo: "",
+          bio: "",
+          tagline: "",
+          industry: industry || "other",
+          templateId,
+          domain: domain || "",
+          siteSlug: slug,
+        });
+        await pushFileToRepo(repoName, "src/app/site.config.json", stringifySiteConfig(config), "Setup: サイト設定");
+
+        // site.config.jsonもコピー（テンプレート側のデモデータ）
+        const templateConfig = await fetchFileFromRepo(sourceRepo, `src/app/portfolio-templates/${templateId}/site.config.json`);
+        if (templateConfig) {
+          // テンプレートのデモデータをベースに、会社名等を上書き
+          try {
+            const tplConfig = JSON.parse(templateConfig);
+            tplConfig.company = { ...tplConfig.company, name: companyName, email, phone: phone || "" };
+            tplConfig.orderId = orderId;
+            tplConfig.plan = plan;
+            await pushFileToRepo(repoName, "src/app/site.config.json", JSON.stringify(tplConfig, null, 2), "Setup: サイト設定（テンプレートベース）");
+          } catch {
+            // パース失敗時はgenerateSiteConfigの結果をそのまま使う
+          }
+        }
+
+        const generatedSiteUrl = `https://${repoName}.vercel.app`;
+        logger.success("DEPLOY", `無料プラン: サイト生成完了 ${generatedSiteUrl}`, { orderId });
+
+        // GASのサイトURLを更新
+        if (gasUrl) {
+          try {
+            await fetch(gasUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                order_id: orderId,
+                company_name: companyName,
+                email,
+                phone: phone || "",
+                industry: industry || "other",
+                plan,
+                template: templateId,
+                site_url: generatedSiteUrl,
+                domain: domain || generatedSiteUrl,
+                _status: "公開中",
+                _repo_name: repoName,
+              }),
+            });
+          } catch { /* ignore */ }
+        }
+      } catch (siteErr) {
+        logger.error("DEPLOY", "無料プラン: サイト生成失敗", { orderId, error: siteErr });
+        // サイト生成に失敗しても注文自体は成功扱い
+      }
+
+      // Gist削除（サイト生成後は不要）
+      try {
+        await fetch(`https://api.github.com/gists/${gistId}`, {
+          method: "DELETE",
+          headers: { Authorization: `token ${githubToken}` },
+        });
+      } catch { /* ignore */ }
 
       return NextResponse.json({
         url: `/order/success?orderId=${orderId}&gistId=${gistId}&dev=true`,
