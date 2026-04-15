@@ -135,7 +135,7 @@ export async function POST(request: Request) {
         await new Promise((r) => setTimeout(r, 5000)); // GitHub APIの伝播待ち
 
         // 2. テンプレートのpage.tsxをコピー
-        const sourceRepo = process.env.GITHUB_TEMPLATE_SOURCE_REPO || "lyo-vision-site";
+        const sourceRepo = "shikumiya";
         const pageContent = await fetchFileFromRepo(sourceRepo, `src/app/portfolio-templates/${templateId}/page.tsx`);
         if (pageContent) {
           const rewritten = pageContent

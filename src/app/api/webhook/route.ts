@@ -220,7 +220,7 @@ async function createSite(orderMeta: OrderData, imageFiles: Record<string, strin
    メインリポ → 顧客リポ
    ═══════════════════════════════════════ */
 async function copyTemplateFiles(targetRepo: string, templateId: string): Promise<void> {
-  const sourceRepo = "lyo-vision-site";
+  const sourceRepo = "shikumiya";
   const baseTemplateId = templateId.replace(/-(?:mid|pro)$/, "");
 
   // 1. page.tsxをコピー（全コンポーネントはpage.tsx内にインライン定義済み）
