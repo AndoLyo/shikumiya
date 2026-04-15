@@ -72,12 +72,12 @@ function Header() {
           <button onClick={() => setLoginOpen(true)} className="text-sm text-gray-400 hover:text-purple-600 transition-colors cursor-pointer">
             ログイン
           </button>
-          <a
-            href="/start"
-            className={`flex items-center gap-2 px-5 py-2 rounded-full ${gradientBg} text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-lg shadow-purple-200/30`}
+          <button
+            onClick={() => setLoginOpen(true)}
+            className={`flex items-center gap-2 px-5 py-2 rounded-full ${gradientBg} text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-lg shadow-purple-200/30 cursor-pointer`}
           >
             今すぐサイトを作る
-          </a>
+          </button>
         </div>
 
         {/* Mobile */}
@@ -97,15 +97,15 @@ function Header() {
             <button onClick={()=>{ setIsOpen(false); setLoginOpen(true); }} className="text-gray-400 text-base text-left cursor-pointer">
               ログイン
             </button>
-            <a href="/start" onClick={()=>setIsOpen(false)} className={`mt-2 text-center px-5 py-3 rounded-full ${gradientBg} text-white font-medium`}>
+            <button onClick={()=>{ setIsOpen(false); setLoginOpen(true); }} className={`mt-2 text-center px-5 py-3 rounded-full ${gradientBg} text-white font-medium w-full cursor-pointer`}>
               今すぐサイトを作る
-            </a>
+            </button>
           </nav>
         </div>
       )}
     </header>
 
-    <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} />
+    <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} callbackUrl="/member" />
     </>
   );
 }
@@ -182,12 +182,12 @@ function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <a
-                href="/start"
-                className={`w-full sm:w-auto px-8 py-3.5 rounded-full ${gradientBg} text-white font-bold text-sm tracking-wider hover:opacity-90 transition-all shadow-lg shadow-purple-200/50 text-center`}
+              <button
+                onClick={() => setLoginOpen(true)}
+                className={`w-full sm:w-auto px-8 py-3.5 rounded-full ${gradientBg} text-white font-bold text-sm tracking-wider hover:opacity-90 transition-all shadow-lg shadow-purple-200/50 text-center cursor-pointer`}
               >
                 今すぐサイトを作る
-              </a>
+              </button>
               <a
                 href="#templates"
                 className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white/90 border border-purple-100 text-gray-600 text-sm tracking-wider hover:border-purple-300 hover:shadow-md transition-all text-center"
