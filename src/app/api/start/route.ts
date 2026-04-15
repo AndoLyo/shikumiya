@@ -240,8 +240,8 @@ export async function POST(request: Request) {
               });
 
               if (deployRes.ok) {
-                const deployData = await deployRes.json();
-                if (deployData.url) generatedSiteUrl = `https://${deployData.url}`;
+                // デプロイ固有URLではなく、プロジェクトURL（repoName.vercel.app）を使う
+                generatedSiteUrl = `https://${repoName}.vercel.app`;
                 logger.success("VERCEL_API", `デプロイ成功: ${generatedSiteUrl}`, { orderId });
               }
             } else {

@@ -15,15 +15,36 @@ export default function MemberLoginPage() {
   // ログイン済みなら自動遷移
   useEffect(() => {
     if (status === "authenticated" && session) {
-      if (session.user?.email) {
-        sessionStorage.setItem("memberEmail", session.user.email);
+      const email = session.user?.email;
+      if (email) {
+        sessionStorage.setItem("memberEmail", email);
       }
+
       if (session.orderId) {
-        // 注文あり → ダッシュボードへ
+        // セッションに注文あり → ダッシュボードへ
         router.push(`/member/${encodeURIComponent(session.orderId)}`);
         return;
       }
-      // 注文なし → サイト作成画面へ
+
+      // セッションに注文がない → GASに直接問い合わせ
+      if (email) {
+        fetch(`/api/member/find?email=${encodeURIComponent(email)}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.found && data.orders?.length > 0) {
+              // 注文あり → ダッシュボードへ
+              router.push(`/member/${encodeURIComponent(data.orders[0].orderId)}`);
+            } else {
+              // 注文なし → サイト作成画面へ
+              router.push("/start");
+            }
+          })
+          .catch(() => {
+            router.push("/start");
+          });
+        return;
+      }
+
       router.push("/start");
       return;
     }
