@@ -15,13 +15,35 @@ const SHEET_NAME = "注文データ";
 const EDIT_SHEET_NAME = "編集リクエスト";
 const USER_SHEET_NAME = "ユーザー認証";
 
+// プラン名マッピング（旧ID + 新ID 両対応）
+const PLAN_NAMES = {
+  otameshi: "おためし",
+  omakase: "おまかせ",
+  "omakase-pro": "おまかせプロ",
+  // 旧ID互換
+  lite: "おためし",
+  middle: "おまかせ",
+  premium: "おまかせプロ",
+};
+
+const PLAN_EDIT_LIMITS = {
+  otameshi: "0回（手動編集のみ）",
+  omakase: "月3回",
+  "omakase-pro": "無制限",
+  lite: "0回（手動編集のみ）",
+  middle: "月3回",
+  premium: "無制限",
+};
+
+const SITE_URL = "https://shikumiya.vercel.app";
+
 // ━━━━━━━━━━━━━━━━━━━━
 // POST: Webhookからの注文受信
 // ━━━━━━━━━━━━━━━━━━━━
 
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
+    var data = JSON.parse(e.postData.contents);
 
     if (data.action === "update_status") {
       return updateOrderStatus(data.row, data.status);
@@ -30,8 +52,18 @@ function doPost(e) {
     // 1. スプレッドシートに記録
     logToSheet(data);
 
-    // 2. 確認メール送信
-    sendCompletionEmail(data);
+    // 2. メール送信（プランに応じて分岐）
+    var plan = String(data.plan || "otameshi");
+    var siteUrl = data.site_url || "";
+    var status = data._status || "制作中";
+
+    if (status === "公開中" && siteUrl) {
+      // サイト完成済み（無料プランの即時生成）→ 完成メールを送る
+      sendSiteReadyEmail(data);
+    } else {
+      // 制作中 → 受付メールを送る
+      sendOrderReceivedEmail(data);
+    }
 
     return ContentService.createTextOutput(
       JSON.stringify({ success: true })
@@ -50,14 +82,14 @@ function doPost(e) {
 
 function doGet(e) {
   try {
-    const action = e.parameter.action || "pending";
+    var action = e.parameter.action || "pending";
 
     if (action === "pending") {
       return getPendingOrders();
     }
 
     if (action === "complete") {
-      const row = parseInt(e.parameter.row);
+      var row = parseInt(e.parameter.row);
       if (!row) return jsonResponse({ success: false, error: "row parameter required" });
       return updateOrderStatus(row, "完了");
     }
@@ -110,26 +142,26 @@ function doGet(e) {
 }
 
 function getPendingOrders() {
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheet = ss.getSheetByName(SHEET_NAME);
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) return jsonResponse({ orders: [] });
 
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const orders = [];
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0];
+  var orders = [];
 
-  for (let i = 1; i < data.length; i++) {
-    const statusCol = headers.indexOf("ステータス");
-    const status = data[i][statusCol];
+  for (var i = 1; i < data.length; i++) {
+    var statusCol = headers.indexOf("ステータス");
+    var status = data[i][statusCol];
     if (status === "制作中") {
-      const order = {};
-      headers.forEach((h, j) => { order[h] = data[i][j]; });
+      var order = {};
+      headers.forEach(function(h, j) { order[h] = data[i][j]; });
       order._row = i + 1;
       orders.push(order);
     }
   }
 
-  return jsonResponse({ orders });
+  return jsonResponse({ orders: orders });
 }
 
 // ━━━━━━━━━━━━━━━━━━━━
@@ -217,7 +249,7 @@ function findByEmail(email) {
       orders.push({
         orderId: String(data[i][col("注文ID")] || ""),
         companyName: String(data[i][col("会社名")] || ""),
-        plan: String(data[i][col("プラン")] || "lite"),
+        plan: String(data[i][col("プラン")] || "otameshi"),
         template: String(data[i][col("テンプレート")] || ""),
         siteUrl: String(data[i][col("サイトURL")] || ""),
         domain: String(data[i][col("ドメイン")] || ""),
@@ -246,7 +278,7 @@ function getAllCustomers() {
       orderId: String(data[i][col("注文ID")] || ""),
       companyName: String(data[i][col("会社名")] || ""),
       email: String(data[i][col("メールアドレス")] || ""),
-      plan: String(data[i][col("プラン")] || "lite"),
+      plan: String(data[i][col("プラン")] || "otameshi"),
       template: String(data[i][col("テンプレート")] || ""),
       siteUrl: String(data[i][col("サイトURL")] || ""),
       domain: String(data[i][col("ドメイン")] || ""),
@@ -261,14 +293,14 @@ function getAllCustomers() {
 }
 
 function updateOrderStatus(row, status) {
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheet = ss.getSheetByName(SHEET_NAME);
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) return jsonResponse({ success: false, error: "Sheet not found" });
 
-  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  const statusCol = headers.indexOf("ステータス") + 1;
+  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var statusCol = headers.indexOf("ステータス") + 1;
   if (statusCol > 0) sheet.getRange(row, statusCol).setValue(status);
-  return jsonResponse({ success: true, row, status });
+  return jsonResponse({ success: true, row: row, status: status });
 }
 
 function jsonResponse(obj) {
@@ -286,14 +318,14 @@ function verifyMember(orderId, email) {
     return jsonResponse({ valid: false, error: "orderId and email required" });
   }
 
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheet = ss.getSheetByName(SHEET_NAME);
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) return jsonResponse({ valid: false, error: "Sheet not found" });
 
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0];
 
-  const col = (name) => headers.indexOf(name);
+  var col = function(name) { return headers.indexOf(name); };
 
   for (var i = 1; i < data.length; i++) {
     var rowOrderId = String(data[i][col("注文ID")] || "").trim();
@@ -301,7 +333,7 @@ function verifyMember(orderId, email) {
 
     if (rowOrderId === orderId && rowEmail === email.toLowerCase()) {
       var editsUsed = countEditsUsed(orderId);
-      var plan = data[i][col("プラン")] || "lite";
+      var plan = data[i][col("プラン")] || "otameshi";
 
       return jsonResponse({
         valid: true,
@@ -385,7 +417,7 @@ function saveEditRequest(orderId, email, companyName, changesJson, requests) {
   GmailApp.sendEmail(
     "ando.lyo.ai@gmail.com",
     "【しくみや】編集リクエスト: " + (companyName || orderId),
-    "編集リクエストが届きました。\n\n注文ID: " + orderId + "\n会社名: " + (companyName || "不明") + "\nメール: " + (email || "不明") + "\n変更タイプ: " + changeType + "\n変更内容: " + (changesJson || "{}") + "\n備考: " + (requests || "なし"),
+    "編集リクエストが届きました。\n\n注文ID: " + orderId + "\nユーザー名: " + (companyName || "不明") + "\nメール: " + (email || "不明") + "\n変更タイプ: " + changeType + "\n変更内容: " + (changesJson || "{}") + "\n備考: " + (requests || "なし"),
     { name: "しくみや自動通知" }
   );
 
@@ -393,113 +425,112 @@ function saveEditRequest(orderId, email, companyName, changesJson, requests) {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━
-// メール①: 決済直後
+// メール①: 注文受付（有料プラン・制作中の場合）
 // ━━━━━━━━━━━━━━━━━━━━
 
-function sendCompletionEmail(data) {
-  const email = data.email;
+function sendOrderReceivedEmail(data) {
+  var email = data.email;
   if (!email) return;
 
-  const companyName = data.company_name || "お客様";
-  const orderId = data.order_id || "";
-  const planNames = { lite: "おまかせ", middle: "まるっとおまかせ", premium: "ぜんぶおまかせ" };
-  const plan = planNames[data.plan] || data.plan || "おまかせ";
+  var userName = data.company_name || "お客様";
+  var orderId = data.order_id || "";
+  var planName = PLAN_NAMES[data.plan] || data.plan || "おためし";
 
-  const subject = `【しくみや】ご注文ありがとうございます — ${companyName}様`;
+  var subject = "【しくみや】ご登録ありがとうございます — " + userName + "様";
 
-  const body = `${companyName} 様
-
-この度は「しくみや」をご利用いただき、ありがとうございます。
-お支払いを確認いたしました。
-
-ただいまより、ホームページの制作を開始します。
-
-━━━━━━━━━━━━━━━━━━━━
-■ ご注文内容
-━━━━━━━━━━━━━━━━━━━━
-注文ID: ${orderId}
-プラン: ${plan}プラン
-テンプレート: ${data.template || "未選択"}
-
-━━━━━━━━━━━━━━━━━━━━
-■ 今後の流れ
-━━━━━━━━━━━━━━━━━━━━
-1. 現在、サイトを制作中です（最短翌日に完成します）
-2. 完成次第、サイトURLを記載した完成メールをお届けします
-3. 完成後は会員ページからサイトの編集をご依頼いただけます
-
-ご不明な点がございましたら、お気軽にご連絡ください。
-
-━━━━━━━━━━━━━━━━━━━━
-しくみや by Lyo Vision
-https://lyo-vision.com
-メール: ando.lyo.ai@gmail.com
-━━━━━━━━━━━━━━━━━━━━`;
+  var body = userName + " 様\n\n" +
+    "この度は「しくみや」をご利用いただき、ありがとうございます。\n\n" +
+    "ただいまサイトを準備しています。\n\n" +
+    "━━━━━━━━━━━━━━━━━━━━\n" +
+    "■ ご登録内容\n" +
+    "━━━━━━━━━━━━━━━━━━━━\n" +
+    "注文ID: " + orderId + "\n" +
+    "プラン: " + planName + "プラン\n" +
+    "テンプレート: " + (data.template || "未選択") + "\n\n" +
+    "━━━━━━━━━━━━━━━━━━━━\n" +
+    "■ 今後の流れ\n" +
+    "━━━━━━━━━━━━━━━━━━━━\n" +
+    "1. サイトの準備が完了次第、完成メールをお届けします\n" +
+    "2. 完成後は会員ページからサイトの編集ができます\n\n" +
+    "会員ページ: " + SITE_URL + "/member\n\n" +
+    "ご不明な点がございましたら、お気軽にご連絡ください。\n\n" +
+    "━━━━━━━━━━━━━━━━━━━━\n" +
+    "しくみや\n" +
+    SITE_URL + "\n" +
+    "メール: ando.lyo.ai@gmail.com\n" +
+    "━━━━━━━━━━━━━━━━━━━━";
 
   GmailApp.sendEmail(email, subject, body, {
-    name: "しくみや by Lyo Vision",
+    name: "しくみや",
     replyTo: "ando.lyo.ai@gmail.com",
   });
 }
 
 // ━━━━━━━━━━━━━━━━━━━━
-// メール②: サイト完成後
+// メール②: サイト完成（即時生成の無料プラン含む）
+// ━━━━━━━━━━━━━━━━━━━━
+
+function sendSiteReadyEmail(data) {
+  var email = data.email;
+  if (!email) return;
+
+  var userName = data.company_name || "お客様";
+  var orderId = data.order_id || "";
+  var siteUrl = data.site_url || "";
+  var plan = data.plan || "otameshi";
+  var planName = PLAN_NAMES[plan] || plan || "おためし";
+  var editLimit = PLAN_EDIT_LIMITS[plan] || "0回";
+
+  var subject = "【しくみや】サイトが完成しました！ — " + userName + "様";
+
+  var body = userName + " 様\n\n" +
+    "サイトが完成しました！\n\n" +
+    "━━━━━━━━━━━━━━━━━━━━\n" +
+    "■ あなたのサイト\n" +
+    "━━━━━━━━━━━━━━━━━━━━\n" +
+    siteUrl + "\n\n" +
+    "上のURLをクリックして、ぜひご確認ください。\n\n" +
+    "━━━━━━━━━━━━━━━━━━━━\n" +
+    "■ 会員ページ\n" +
+    "━━━━━━━━━━━━━━━━━━━━\n" +
+    "サイトの編集はこちらから:\n" +
+    SITE_URL + "/member\n\n" +
+    "Googleアカウントでログインしてください。\n\n" +
+    planName + "プランでのAI編集: " + editLimit + "\n\n" +
+    "━━━━━━━━━━━━━━━━━━━━\n" +
+    "しくみや\n" +
+    SITE_URL + "\n" +
+    "メール: ando.lyo.ai@gmail.com\n" +
+    "━━━━━━━━━━━━━━━━━━━━";
+
+  GmailApp.sendEmail(email, subject, body, {
+    name: "しくみや",
+    replyTo: "ando.lyo.ai@gmail.com",
+  });
+
+  // 管理者通知
+  GmailApp.sendEmail(
+    "ando.lyo.ai@gmail.com",
+    "【しくみや】サイト完成: " + userName + "様",
+    "サイトが完成しました。\n\nユーザー名: " + userName + "\nサイトURL: " + siteUrl + "\nプラン: " + planName + "プラン\nメール: " + email,
+    { name: "しくみや自動通知" }
+  );
+}
+
+// ━━━━━━━━━━━━━━━━━━━━
+// メール③: 手動で完成メールを送る（GET API用）
 // ━━━━━━━━━━━━━━━━━━━━
 
 function sendSiteCompletionEmail(orderId, email, companyName, siteUrl, plan) {
   if (!email) return jsonResponse({ success: false, error: "email required" });
 
-  companyName = companyName || "お客様";
-  const planNames = { lite: "おまかせ", middle: "まるっとおまかせ", premium: "ぜんぶおまかせ" };
-  const planName = (planNames[plan] || plan || "おまかせ") + "プラン";
-
-  const editLimits = { lite: "月1回", middle: "月3回", premium: "無制限" };
-  const editLimit = editLimits[plan] || "月1回";
-
-  const subject = `【しくみや】ホームページが完成しました！ — ${companyName}様`;
-
-  const body = `${companyName} 様
-
-お待たせいたしました！
-ホームページが完成しました。
-
-━━━━━━━━━━━━━━━━━━━━
-■ あなたのホームページ
-━━━━━━━━━━━━━━━━━━━━
-${siteUrl}
-
-上記URLをクリックして、ぜひご確認ください。
-名刺やチラシにURLを載せれば、すぐにお客様にお見せできます。
-
-━━━━━━━━━━━━━━━━━━━━
-■ 管理ページ
-━━━━━━━━━━━━━━━━━━━━
-サイトの編集依頼はこちらから:
-https://lyo-vision.com/member
-
-ログイン情報:
-- 注文ID: ${orderId}
-- メールアドレス: ${email}
-
-${planName}では${editLimit}まで編集依頼を送れます。
-
-━━━━━━━━━━━━━━━━━━━━
-しくみや by Lyo Vision
-https://lyo-vision.com
-メール: ando.lyo.ai@gmail.com
-━━━━━━━━━━━━━━━━━━━━`;
-
-  GmailApp.sendEmail(email, subject, body, {
-    name: "しくみや by Lyo Vision",
-    replyTo: "ando.lyo.ai@gmail.com",
+  sendSiteReadyEmail({
+    order_id: orderId,
+    email: email,
+    company_name: companyName,
+    site_url: siteUrl,
+    plan: plan || "otameshi",
   });
-
-  GmailApp.sendEmail(
-    "ando.lyo.ai@gmail.com",
-    `【しくみや】サイト完成: ${companyName}様`,
-    `サイトが完成しました。\n\n会社名: ${companyName}\nサイトURL: ${siteUrl}\nプラン: ${planName}\nメール: ${email}`,
-    { name: "しくみや自動通知" }
-  );
 
   return jsonResponse({ success: true });
 }
@@ -509,11 +540,11 @@ https://lyo-vision.com
 // ━━━━━━━━━━━━━━━━━━━━
 
 function logToSheet(data) {
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  let sheet = ss.getSheetByName(SHEET_NAME);
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
 
   // 固定フィールド
-  const fixedFields = [
+  var fixedFields = [
     { key: "_timestamp", label: "日時" },
     { key: "order_id", label: "注文ID" },
     { key: "company_name", label: "会社名" },
@@ -529,18 +560,18 @@ function logToSheet(data) {
     { key: "_repo_name", label: "リポ名" },
     { key: "_status", label: "ステータス" },
   ];
-  const fixedKeys = fixedFields.map(f => f.key);
+  var fixedKeys = fixedFields.map(function(f) { return f.key; });
 
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
-    sheet.appendRow(fixedFields.map(f => f.label));
+    sheet.appendRow(fixedFields.map(function(f) { return f.label; }));
     sheet.getRange(1, 1, 1, fixedFields.length).setFontWeight("bold");
   }
 
-  const lastCol = Math.max(sheet.getLastColumn(), 1);
-  const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(String);
+  var lastCol = Math.max(sheet.getLastColumn(), 1);
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(String);
 
-  const keyToLabel = {
+  var keyToLabel = {
     company_name: "会社名", email: "メールアドレス", phone: "電話番号",
     industry: "業種", plan: "プラン", template: "テンプレート",
     site_url: "サイトURL", domain: "ドメイン", order_id: "注文ID",
@@ -549,38 +580,50 @@ function logToSheet(data) {
     address: "住所", created_at: "申込日時", amount_total: "決済金額",
   };
 
-  const skipKeys = ["_timestamp", "_status", "_repo_name"];
-  const allDataKeys = Object.keys(data).filter(k => !skipKeys.includes(k));
+  var skipKeys = ["_timestamp", "_status", "_repo_name"];
+  var allDataKeys = Object.keys(data).filter(function(k) { return skipKeys.indexOf(k) === -1; });
 
-  for (const key of allDataKeys) {
-    if (fixedKeys.includes(key)) continue;
-    const label = keyToLabel[key] || key;
-    if (!headers.includes(label)) {
-      const newCol = headers.length + 1;
+  for (var ki = 0; ki < allDataKeys.length; ki++) {
+    var key = allDataKeys[ki];
+    if (fixedKeys.indexOf(key) >= 0) continue;
+    var label = keyToLabel[key] || key;
+    if (headers.indexOf(label) === -1) {
+      var newCol = headers.length + 1;
       sheet.getRange(1, newCol).setValue(label).setFontWeight("bold");
       headers.push(label);
     }
   }
 
   // データ行構築
-  const row = [];
-  for (let i = 0; i < headers.length; i++) {
-    const header = headers[i];
+  var row = [];
+  for (var i = 0; i < headers.length; i++) {
+    var header = headers[i];
     if (header === "日時") {
       row.push(new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }));
     } else if (header === "ステータス") {
-      row.push("制作中");
+      row.push(data._status || "制作中");
     } else if (header === "リポ名") {
-      const slug = (data.company_name || "").toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").trim();
-      row.push(slug ? "shikumiya-" + slug : "");
+      var repoName = data._repo_name || "";
+      if (!repoName) {
+        var slug = (data.company_name || "").toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").trim();
+        repoName = slug ? "shikumiya-" + slug : "";
+      }
+      row.push(repoName);
     } else {
-      const key = Object.entries(keyToLabel).find(([k, v]) => v === header)?.[0];
-      if (key) {
-        const val = data[key];
+      var foundKey = null;
+      var entries = Object.entries(keyToLabel);
+      for (var ei = 0; ei < entries.length; ei++) {
+        if (entries[ei][1] === header) { foundKey = entries[ei][0]; break; }
+      }
+      if (foundKey) {
+        var val = data[foundKey];
         row.push(Array.isArray(val) ? val.join(", ") : (val || ""));
       } else {
-        const fixedField = fixedFields.find(f => f.label === header);
-        if (fixedField && !["_timestamp", "_status", "_repo_name"].includes(fixedField.key)) {
+        var fixedField = null;
+        for (var fi = 0; fi < fixedFields.length; fi++) {
+          if (fixedFields[fi].label === header) { fixedField = fixedFields[fi]; break; }
+        }
+        if (fixedField && skipKeys.indexOf(fixedField.key) === -1) {
           row.push(data[fixedField.key] || "");
         } else {
           row.push("");

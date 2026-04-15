@@ -56,6 +56,23 @@ export async function POST(request: Request) {
       .trim()
       || `site-${Date.now()}`;
 
+    // ─── リポ名の重複チェック ───
+    const repoName = `shikumiya-${siteSlug}`;
+    const githubToken = process.env.GITHUB_TOKEN;
+    const owner = process.env.GITHUB_OWNER || "AndoLyo";
+
+    if (githubToken) {
+      const checkRes = await fetch(`https://api.github.com/repos/${owner}/${repoName}`, {
+        headers: { Authorization: `token ${githubToken}` },
+      });
+      if (checkRes.ok) {
+        return NextResponse.json(
+          { error: `「${siteSlug}」は既に使われています。別のURLを入力してください。` },
+          { status: 400 }
+        );
+      }
+    }
+
     logger.info("STRIPE", `新規申込開始: ${companyName} (${plan})`, {
       details: { industry, templateId, plan, email },
     });
@@ -77,7 +94,6 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString(),
     };
 
-    const githubToken = process.env.GITHUB_TOKEN;
     if (!githubToken) {
       logger.error("GITHUB_API", "GITHUB_TOKENが設定されていません");
       return NextResponse.json({ error: "サーバー設定エラー" }, { status: 500 });
@@ -126,8 +142,6 @@ export async function POST(request: Request) {
       try {
         logger.info("DEPLOY", `無料プラン: サイト生成開始 ${companyName}`, { orderId });
 
-        const slug = siteSlug || `site-${Date.now()}`;
-        const repoName = `shikumiya-${slug}`;
         const templateRepo = process.env.GITHUB_TEMPLATE_REPO || "shikumiya-template";
 
         // 1. テンプレートからリポ作成
@@ -172,7 +186,7 @@ export async function POST(request: Request) {
           industry: industry || "other",
           templateId,
           domain: domain || "",
-          siteSlug: slug,
+          siteSlug: siteSlug,
         });
         await pushFileToRepo(repoName, "src/app/site.config.json", stringifySiteConfig(config), "Setup: サイト設定");
 
@@ -194,7 +208,6 @@ export async function POST(request: Request) {
         // 4. Vercelにデプロイ
         let generatedSiteUrl = `https://${repoName}.vercel.app`;
         const vercelToken = process.env.VERCEL_TOKEN;
-        const owner = process.env.GITHUB_OWNER || "AndoLyo";
 
         if (vercelToken) {
           try {
