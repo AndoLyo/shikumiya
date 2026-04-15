@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import LoginModal from "@/components/LoginModal";
 import {
@@ -115,7 +115,145 @@ function Header() {
    参考: Wix + Squarespace + Framer
    ═══════════════════════════════════════ */
 function HeroSection() {
+  const [heroSlug, setHeroSlug] = useState("");
+  const [showDomainModal, setShowDomainModal] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+
+  const handleDomainSubmit = () => {
+    if (heroSlug.trim()) {
+      setShowDomainModal(true);
+    }
+  };
+
   return (
+    <>
+    {/* ── ドメイン確認 → ログインモーダル ── */}
+    <AnimatePresence>
+      {showDomainModal && (
+        <motion.div
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowDomainModal(false)} />
+          <motion.div
+            className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
+            initial={{ scale: 0.8, y: 40, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            exit={{ scale: 0.9, y: 20, opacity: 0 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+          >
+            {/* キラキラ背景 */}
+            <motion.div
+              className={`h-2 w-full ${gradientBg}`}
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+            />
+
+            <div className="p-8">
+              {/* ドメインプレビュー */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="text-center mb-6"
+              >
+                <motion.div
+                  className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-green-50 border border-green-200 mb-4"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.3, type: "spring" }}
+                >
+                  <Check className="w-4 h-4 text-green-500" />
+                  <span className="text-green-600 text-sm font-medium">このURLは使えます！</span>
+                </motion.div>
+
+                <motion.p
+                  className="text-lg font-bold text-gray-800"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  あなたのサイトURL
+                </motion.p>
+                <motion.p
+                  className={`text-xl font-bold mt-2 ${gradientText}`}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5, type: "spring" }}
+                >
+                  shikumiya-{heroSlug}.vercel.app
+                </motion.p>
+              </motion.div>
+
+              {/* ステップ表示 */}
+              <motion.div
+                className="space-y-3 mb-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
+                {[
+                  { num: "1", text: "Googleで登録（10秒）", done: false },
+                  { num: "2", text: "会社名を入力", done: false },
+                  { num: "3", text: "サイト完成！", done: false },
+                ].map((step, i) => (
+                  <motion.div
+                    key={i}
+                    className="flex items-center gap-3 text-sm"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.7 + i * 0.1 }}
+                  >
+                    <div className={`w-6 h-6 rounded-full ${gradientBg} text-white text-xs font-bold flex items-center justify-center`}>
+                      {step.num}
+                    </div>
+                    <span className="text-gray-600">{step.text}</span>
+                  </motion.div>
+                ))}
+              </motion.div>
+
+              {/* Google認証ボタン */}
+              <motion.button
+                onClick={() => {
+                  // slugをsessionStorageに保存してからログイン
+                  sessionStorage.setItem("pendingSlug", heroSlug);
+                  setShowDomainModal(false);
+                  setLoginOpen(true);
+                }}
+                className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl border-2 border-gray-200 text-gray-700 font-bold hover:bg-gray-50 hover:border-gray-300 transition-all text-base"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <svg width="20" height="20" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z" fill="#4285F4"/>
+                  <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z" fill="#34A853"/>
+                  <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z" fill="#FBBC05"/>
+                  <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58Z" fill="#EA4335"/>
+                </svg>
+                Googleで始める
+              </motion.button>
+
+              <motion.p
+                className="text-center text-gray-400 text-xs mt-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+              >
+                登録は無料・クレジットカード不要
+              </motion.p>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+
+    <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} callbackUrl="/member" />
     <section className={`relative min-h-screen flex items-center pt-16 overflow-hidden ${gradientBgSoft}`}>
       {/* Decorative blobs */}
       <div className="absolute top-10 left-5 w-80 h-80 rounded-full bg-pink-200/40 blur-[100px]" />
@@ -175,25 +313,42 @@ function HeroSection() {
               <span>✓ いつでも解約OK</span>
             </motion.div>
 
-            {/* CTA */}
+            {/* CTA: ドメイン入力 */}
             <motion.div
-              className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3"
+              className="mt-8 w-full max-w-[480px] mx-auto lg:mx-0"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <button
-                onClick={() => setLoginOpen(true)}
-                className={`w-full sm:w-auto px-8 py-3.5 rounded-full ${gradientBg} text-white font-bold text-sm tracking-wider hover:opacity-90 transition-all shadow-lg shadow-purple-200/50 text-center cursor-pointer`}
-              >
-                今すぐサイトを作る
-              </button>
-              <a
-                href="#templates"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white/90 border border-purple-100 text-gray-600 text-sm tracking-wider hover:border-purple-300 hover:shadow-md transition-all text-center"
-              >
-                テンプレートを見る →
-              </a>
+              <div className="flex items-center bg-white rounded-2xl shadow-lg shadow-purple-100/50 border border-purple-100/50 p-1.5">
+                <div className="flex items-center flex-1 min-w-0">
+                  <span className="text-gray-300 text-sm pl-3 pr-1 whitespace-nowrap hidden sm:inline">shikumiya-</span>
+                  <input
+                    type="text"
+                    value={heroSlug}
+                    onChange={(e) => setHeroSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+                    onKeyDown={(e) => e.key === "Enter" && handleDomainSubmit()}
+                    placeholder="あなたのサイト名を入力"
+                    className="flex-1 min-w-0 px-2 py-3 text-gray-800 text-sm placeholder:text-gray-300 focus:outline-none bg-transparent"
+                  />
+                </div>
+                <button
+                  onClick={handleDomainSubmit}
+                  disabled={!heroSlug.trim()}
+                  className={`px-5 py-3 rounded-xl ${gradientBg} text-white font-bold text-sm whitespace-nowrap hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1.5`}
+                >
+                  無料で作る <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+              {heroSlug && (
+                <motion.p
+                  className="text-xs text-purple-400 mt-2 ml-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  shikumiya-{heroSlug}.vercel.app
+                </motion.p>
+              )}
             </motion.div>
           </div>
 
@@ -265,6 +420,7 @@ function HeroSection() {
         </div>
       </div>
     </section>
+    </>
   );
 }
 
