@@ -212,7 +212,7 @@ export default function StartPage() {
 
           <div className="bg-gray-50 rounded-2xl p-5 text-left space-y-3 mb-6">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">会社名</span>
+              <span className="text-gray-400">ユーザー名</span>
               <span className="text-gray-700 font-medium">{companyName}</span>
             </div>
             <div className="flex justify-between text-sm">
@@ -415,7 +415,7 @@ export default function StartPage() {
                     <button onClick={back} className="text-purple-400 text-xs hover:text-purple-600 flex-shrink-0">変更</button>
                   </div>
 
-                  {/* 会社名入力 */}
+                  {/* ユーザー名入力 */}
                   <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <label className="block text-sm text-gray-700 font-medium mb-2">ユーザー名 <span className="text-red-400">*</span><span className="text-gray-400 text-xs font-normal ml-2">（後から変更できます）</span></label>
                     <input
