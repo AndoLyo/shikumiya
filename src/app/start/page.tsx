@@ -123,7 +123,7 @@ export default function StartPage() {
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
   const [useSubdomain, setUseSubdomain] = useState(false);
 
-  // 未ログインの場合、3秒後にLoginModalを自動表示
+  // 未ログインの場合、1.5秒後にLoginModalを自動表示
   useEffect(() => {
     if (authStatus === "unauthenticated") {
       const timer = setTimeout(() => setShowAuthModal(true), 1500);
@@ -133,8 +133,23 @@ export default function StartPage() {
 
   // 申込
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [siteSlugInput, setSiteSlugInput] = useState("");
+
+  // トップページで入力したスラッグを自動反映
+  useEffect(() => {
+    const pendingSlug = sessionStorage.getItem("pendingSlug");
+    if (pendingSlug && !siteSlugInput) {
+      setSiteSlugInput(pendingSlug);
+      sessionStorage.removeItem("pendingSlug");
+    }
+  }, [siteSlugInput]);
+
+  // ログイン済みならメールアドレスを自動設定
+  useEffect(() => {
+    if (session?.user?.email && !email) {
+      setEmail(session.user.email);
+    }
+  }, [session, email]);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -515,7 +530,7 @@ export default function StartPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                   >
-                    次へ — ドメイン・連絡先 <ArrowRight className="w-4 h-4 inline ml-2" />
+                    次へ — サイトURLを決める <ArrowRight className="w-4 h-4 inline ml-2" />
                   </motion.button>
                 )}
               </div>
@@ -568,7 +583,7 @@ export default function StartPage() {
           </AnimatePresence>
 
           {/* ═══════════════════════════════════════
-             STEP 3: ドメイン + 連絡先 → 申込完了
+             STEP 3: サイトURL → 申込完了
              ═══════════════════════════════════════ */}
           {step === 3 && (
             <motion.div key="step3" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}>
@@ -576,7 +591,7 @@ export default function StartPage() {
                 <h1 className="text-gray-800 text-2xl sm:text-3xl font-bold mb-2">
                   あと少しで完了です
                 </h1>
-                <p className="text-gray-400 text-sm">ドメインと連絡先を入力してください</p>
+                <p className="text-gray-400 text-sm">サイトのURLを確認してください</p>
               </div>
 
               <div className="max-w-[600px] mx-auto space-y-6">
@@ -618,22 +633,7 @@ export default function StartPage() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                  <h3 className="text-gray-800 font-bold text-sm mb-4 flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-purple-400" />
-                    連絡先
-                  </h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-xs text-gray-500 mb-1.5 font-medium">メールアドレス <span className="text-red-400">*</span></label>
-                      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="info@example.com" className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm placeholder:text-gray-300 focus:outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100" />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-gray-500 mb-1.5 font-medium">電話番号（任意）</label>
-                      <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="090-1234-5678" className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm placeholder:text-gray-300 focus:outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100" />
-                    </div>
-                  </div>
-                </div>
+                {/* メールアドレスはGoogleアカウントから自動取得。電話番号は後から会員ページで設定 */}
 
                 {/* 料金確認 */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -667,10 +667,9 @@ export default function StartPage() {
                             industry,
                             templateId: template,
                             companyName,
-                            email,
-                            phone,
-                            domain: existingDomain || selectedDomain || "",
-                            useSubdomain,
+                            email: email || session?.user?.email || "",
+                            domain: "",
+                            useSubdomain: true,
                             siteSlug: siteSlugInput,
                           }),
                         });
@@ -689,7 +688,7 @@ export default function StartPage() {
                         setSubmitting(false);
                       }
                     }}
-                    disabled={submitting || !email.trim() || !siteSlugInput.trim()}
+                    disabled={submitting || !siteSlugInput.trim()}
                     className={`px-10 py-4 rounded-full ${gradientBg} text-white font-bold text-base tracking-wider hover:opacity-90 transition-all shadow-lg shadow-purple-200/50 disabled:opacity-40 disabled:cursor-not-allowed`}
                   >
                     {submitting ? (
