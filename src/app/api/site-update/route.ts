@@ -133,7 +133,7 @@ export async function POST(request: Request) {
       success: true,
       applied: { textChanges, imageChanges },
       message: `${totalChanges}件の変更を適用しました。数分以内にサイトに反映されます。`,
-      editsRemaining: max - verifyData.editsUsed - 1,
+      editsRemaining: null, // 手動編集は無制限
     });
 
   } catch (err) {

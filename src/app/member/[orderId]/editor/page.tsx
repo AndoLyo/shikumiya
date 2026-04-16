@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -25,6 +25,61 @@ const TEMPLATE_RENDERERS: Record<string, React.ComponentType<any>> = {
 /* ═══════════════════════════════════════
    色定義
    ═══════════════════════════════════════ */
+/* ═══════════════════════════════════════
+   画像アップロードUI
+   ═══════════════════════════════════════ */
+function ImageUploadUI({ onUpload }: { onUpload: (base64: string) => void }) {
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert("5MB以下の画像を選んでください");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      setPreview(result);
+      onUpload(result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div>
+      <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
+      {preview ? (
+        <div style={{ marginBottom: 8 }}>
+          <img src={preview} alt="プレビュー" style={{ maxWidth: "100%", maxHeight: 200, borderRadius: 8, objectFit: "cover" }} />
+          <button
+            onClick={() => fileRef.current?.click()}
+            style={{ marginTop: 8, fontSize: 12, color: "#6c5ce7", background: "none", border: "none", cursor: "pointer" }}
+          >
+            別の画像を選ぶ
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={() => fileRef.current?.click()}
+          style={{
+            width: "100%", padding: 20, borderRadius: 10,
+            border: "2px dashed #a29bfe", background: "rgba(108, 92, 231, 0.06)",
+            color: "#6c5ce7", fontSize: 14, fontWeight: 600, cursor: "pointer",
+            display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+          }}
+        >
+          <Camera size={24} />
+          写真を選んでください
+          <span style={{ fontSize: 11, color: "#999", fontWeight: 400 }}>JPG, PNG（5MB以下）</span>
+        </button>
+      )}
+    </div>
+  );
+}
+
 const C = {
   purple: "#6c5ce7",
   purpleLight: "#a29bfe",
@@ -85,6 +140,17 @@ export default function EditorPage() {
   const [repoName, setRepoName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // フォント
+  const FONTS = [
+    { id: "gothic", label: "ゴシック体", css: "'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif" },
+    { id: "mincho", label: "明朝体", css: "'Noto Serif JP', 'Hiragino Mincho ProN', serif" },
+    { id: "maru", label: "丸ゴシック", css: "'M PLUS Rounded 1c', 'Noto Sans JP', sans-serif" },
+    { id: "mono", label: "等幅", css: "'JetBrains Mono', 'Noto Sans JP', monospace" },
+    { id: "elegant", label: "エレガント", css: "'Playfair Display', 'Noto Serif JP', serif" },
+  ];
+  const [selectedFont, setSelectedFont] = useState(FONTS[0]);
+  const [showFontPicker, setShowFontPicker] = useState(false);
 
   // モード
   const [mode, setMode] = useState<"view" | "edit" | "ai">("edit");
@@ -166,9 +232,18 @@ export default function EditorPage() {
     setApplying(true);
     try {
       const email = session?.user?.email;
-      const changeArray = Array.from(changes.entries()).map(([fieldId, c]) => ({
-        type: "text", configPath: fieldId, newValue: c.newValue,
-      }));
+      const changeArray = Array.from(changes.entries()).map(([fieldId, c]) => {
+        // base64画像データかどうかを判定
+        const isImage = c.newValue.startsWith("data:image/");
+        if (isImage) {
+          return {
+            type: "image",
+            imagePath: `public/images/${fieldId.replace(/\./g, "-")}.jpg`,
+            imageData: c.newValue.split(",")[1], // base64部分のみ
+          };
+        }
+        return { type: "text", configPath: fieldId, newValue: c.newValue };
+      });
       await fetch("/api/site-update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -324,6 +399,39 @@ export default function EditorPage() {
               反映する（{changes.size}件）
             </button>
           )}
+          {/* フォント切替 */}
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setShowFontPicker(!showFontPicker)}
+              style={{
+                padding: "5px 10px", borderRadius: 6, border: `1px solid ${C.border}`,
+                background: C.card, color: C.text, fontSize: 11, cursor: "pointer",
+                display: "flex", alignItems: "center", gap: 4,
+              }}>
+              <span style={{ fontFamily: selectedFont.css, fontSize: 13 }}>A</span>
+              <span>{selectedFont.label}</span>
+            </button>
+            {showFontPicker && (
+              <div style={{
+                position: "absolute", top: "100%", right: 0, marginTop: 4, zIndex: 100,
+                background: C.card, border: `1px solid ${C.border}`, borderRadius: 10,
+                boxShadow: "0 4px 16px rgba(0,0,0,0.1)", padding: 4, minWidth: 160,
+              }}>
+                {FONTS.map((f) => (
+                  <button key={f.id} onClick={() => { setSelectedFont(f); setShowFontPicker(false); }}
+                    style={{
+                      width: "100%", textAlign: "left", padding: "8px 12px", borderRadius: 6,
+                      border: "none", background: selectedFont.id === f.id ? C.purpleBg : "transparent",
+                      color: C.text, fontSize: 13, cursor: "pointer", fontFamily: f.css,
+                      fontWeight: selectedFont.id === f.id ? 700 : 400,
+                    }}>
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div style={{ display: "flex", gap: 2 }}>
             {(["mobile", "desktop"] as const).map((d) => (
               <button key={d} onClick={() => setDevice(d)}
@@ -352,6 +460,7 @@ export default function EditorPage() {
               boxShadow: "0 2px 20px rgba(0,0,0,0.06)",
               overflow: "hidden", alignSelf: "flex-start",
               position: "relative",
+              fontFamily: selectedFont.css,
             }}>
               {TemplateRenderer ? (
                 <TemplateRenderer
@@ -399,14 +508,11 @@ export default function EditorPage() {
                           }}
                         />
                       ) : (
-                        <button style={{
-                          width: "100%", padding: 16, borderRadius: 10,
-                          border: `2px dashed ${C.purpleLight}`, background: C.purpleBg,
-                          color: C.purple, fontSize: 13, cursor: "pointer",
-                          display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                        }}>
-                          <Camera size={16} /> 写真を選んで差し替え
-                        </button>
+                        <ImageUploadUI
+                          onUpload={(base64) => {
+                            setEditText(base64);
+                          }}
+                        />
                       )}
 
                       <div style={{ display: "flex", gap: 8, marginTop: 10 }}>

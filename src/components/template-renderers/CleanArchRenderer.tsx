@@ -101,7 +101,15 @@ export default function CleanArchRenderer({ config, editMode = false, onFieldCli
   }
 
   return (
-    <div style={{ background: "#fff", fontFamily: "system-ui, -apple-system, sans-serif", color: "#333" }}>
+    <div
+      style={{ background: "#fff", fontFamily: "system-ui, -apple-system, sans-serif", color: "#333" }}
+      onClick={(e) => {
+        // 編集モード時、aタグのリンク遷移を無効化
+        if (editMode && (e.target as HTMLElement).closest("a")) {
+          e.preventDefault();
+        }
+      }}
+    >
 
       {/* ═══ Header ═══ */}
       <header style={{
@@ -180,9 +188,14 @@ export default function CleanArchRenderer({ config, editMode = false, onFieldCli
                     <E fieldId={`projects.${i}.title`} value={w.titleJa}>
                       <p style={{ fontSize: 14, fontWeight: 300, color: "#333", letterSpacing: "0.1em", margin: "0 0 2px" }}>{w.title}</p>
                     </E>
-                    <E fieldId={`projects.${i}.category`} value={w.type}>
-                      <p style={{ fontSize: 11, color: "#aaa", margin: 0 }}>{w.type}　{w.year}</p>
-                    </E>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center", margin: "2px 0 0" }}>
+                      <E fieldId={`projects.${i}.category`} value={w.type}>
+                        <span style={{ fontSize: 11, color: "#aaa" }}>{w.type}</span>
+                      </E>
+                      <E fieldId={`projects.${i}.year`} value={w.year}>
+                        <span style={{ fontSize: 11, color: "#aaa" }}>{w.year}</span>
+                      </E>
+                    </div>
                     <E fieldId={`projects.${i}.description`} value={w.desc}>
                       <p style={{ fontSize: 13, color: "#888", marginTop: 8, lineHeight: 1.8 }}>{w.desc}</p>
                     </E>
